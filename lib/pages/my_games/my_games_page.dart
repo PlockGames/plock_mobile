@@ -60,7 +60,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          removeProject(project);
+                          _showGameDeletionDialog(context, project);
                         },
                       ),
                     ],
@@ -112,6 +112,32 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 );
               },
               child: const Text('Créer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Show a dialog to delete a game
+  void _showGameDeletionDialog(context, String name) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Supprimer le jeu ?'),
+          content: Text('Voulez-vous vraiment supprimer le jeu $name ?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                removeProject(name);
+                Navigator.pop(context);
+              },
+              child: const Text('Supprimer'),
             ),
           ],
         );
