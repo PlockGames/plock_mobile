@@ -8,13 +8,13 @@ import 'package:plock_mobile/main.dart';
 void main() {
 
   testWidgets('Create a game test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+    // Build our app
     await tester.pumpWidget(const MyApp());
 
     // Verify page content
     expect(find.text('Mes projets'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
+    // Tap the '+' icon
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
@@ -27,7 +27,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Test');
     await tester.pump();
 
-    // Tap the 'Créer' button and trigger a frame.
+    // Tap the 'Créer' button
     await tester.tap(find.text('Créer'));
     await tester.pump();
 
@@ -36,13 +36,13 @@ void main() {
   });
 
   testWidgets('Edit a game test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+    // Build our app
     await tester.pumpWidget(const MyApp());
 
     // Verify page content
     expect(find.text('Mes projets'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
+    // Tap the '+' icon
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
@@ -50,7 +50,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Test');
     await tester.pump();
 
-    // Tap the 'Créer' button and trigger a frame.
+    // Tap the 'Créer' button
     await tester.tap(find.text('Créer'));
     await tester.pump();
 
@@ -62,7 +62,7 @@ void main() {
     await widgetsAppState.didPopRoute();
     await tester.pump();
 
-    // Tap the 'edit' icon and trigger a frame.
+    // Tap the 'edit' icon
     await tester.tap(find.byIcon(Icons.edit));
     await tester.pump();
 
@@ -71,13 +71,13 @@ void main() {
   });
 
   testWidgets('Delete a game test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+    // Build our app
     await tester.pumpWidget(const MyApp());
 
     // Verify page content
     expect(find.text('Mes projets'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
+    // Tap the '+' icon
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
@@ -85,7 +85,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Test');
     await tester.pump();
 
-    // Tap the 'Créer' button and trigger a frame.
+    // Tap the 'Créer' button
     await tester.tap(find.text('Créer'));
     await tester.pump();
 
@@ -97,8 +97,17 @@ void main() {
     await widgetsAppState.didPopRoute();
     await tester.pump();
 
-    // Tap the 'delete' icon and trigger a frame.
+    // Tap the 'delete' icon
     await tester.tap(find.byIcon(Icons.delete));
+    await tester.pump();
+
+    // Verify that the game deletion dialog is displayed
+    expect(find.text('Supprimer le jeu ?'), findsOneWidget);
+    expect(find.text('Annuler'), findsOneWidget);
+    expect(find.text('Supprimer'), findsOneWidget);
+
+    // Tap the 'Supprimer' button
+    await tester.tap(find.text('Supprimer'));
     await tester.pump();
 
     // Verify that the game is deleted
