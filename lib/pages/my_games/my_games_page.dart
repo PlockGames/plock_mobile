@@ -24,6 +24,12 @@ class _MyGamesPageState extends State<MyGamesPage> {
     });
   }
 
+  void removeProject(name) {
+    setState(() {
+      projects.remove(name);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +55,12 @@ class _MyGamesPageState extends State<MyGamesPage> {
                               builder: (context) => GameEditorPage(game: project),
                             ),
                           );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          removeProject(project);
                         },
                       ),
                     ],
