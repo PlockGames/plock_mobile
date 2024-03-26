@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/theme.dart';
 
+import 'models/games/game_object.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Plock',
       theme: plockTheme,
       home: const MyHomePage(),
@@ -33,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ObjectEditorPage(),
+      body: ObjectEditorPage(gameObject: GameObject(name: 'New Object')),
     );
   }
 }
