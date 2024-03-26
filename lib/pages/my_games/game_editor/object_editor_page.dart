@@ -31,6 +31,12 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     });
   }
 
+  void removeComponent(Component component) {
+    setState(() {
+      gameObject.components.remove(component);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController = TextEditingController(text: gameObject.name);
@@ -68,6 +74,13 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
               Row(
                 children: [
                   Text(component.name),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      removeComponent(component);
+                    },
+                  ),
                 ],
               )
 
