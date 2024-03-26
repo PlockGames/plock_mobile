@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/games/game.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
 
-import '../../../models/games/component.dart';
+import '../../../models/games/component_type.dart';
+import 'edit_component_page.dart';
 
 class ObjectEditorPage extends StatefulWidget {
   GameObject gameObject = GameObject(name: 'New Object');
@@ -25,13 +25,13 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     gameObject = widget.gameObject;
   }
 
-  void addComponent(Component component) {
+  void addComponent(ComponentType component) {
     setState(() {
-      gameObject.components.add(component);
+      gameObject.components.add(component.instance());
     });
   }
 
-  void removeComponent(Component component) {
+  void removeComponent(ComponentType component) {
     setState(() {
       gameObject.components.remove(component);
     });
@@ -75,6 +75,18 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                 children: [
                   Text(component.name),
                   const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditComponentPage(
+                            component: component,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
