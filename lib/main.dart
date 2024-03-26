@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
-
+import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'models/games/game_object.dart';
 
 void main() {
@@ -34,7 +34,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

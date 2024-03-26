@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'game_editor/game_editor_page.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
+import '../../models/games/game.dart';
 
 /// The page that display the games created by the user
 class MyGamesPage extends StatefulWidget {
@@ -8,25 +8,25 @@ class MyGamesPage extends StatefulWidget {
 
   @override
   State<MyGamesPage> createState() => _MyGamesPageState();
-
 }
 
 /// The state of the [MyGamesPage]
 class _MyGamesPageState extends State<MyGamesPage> {
-
   /// The list of the games created by the user
   /// TODO: Replace this with a real list of games
-  var projects = <String>[];
+  var projects = <Game>[];
 
-  void addProject(String name) {
+  Game addProject(String name) {
+    Game game = Game(name: name);
     setState(() {
-      projects.add(name);
+      projects.add(game);
     });
+    return game;
   }
 
-  void removeProject(name) {
+  void removeProject(Game game) {
     setState(() {
-      projects.remove(name);
+      projects.remove(game);
     });
   }
 
@@ -44,7 +44,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 ListTile(
                   title: Row(
                     children: [
-                      Text(project),
+                      Text(project.name),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.edit),
@@ -52,7 +52,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => GameEditorPage(game: project),
+                              builder: (context) => EditorPage(game: project),
                             ),
                           );
                         },
@@ -75,8 +75,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
           },
           backgroundColor: Colors.grey[500],
           child: const Icon(Icons.add, size: 30),
-        )
-    );
+        ));
   }
 
   /// Show a dialog to create a new game, asking for the name
@@ -88,9 +87,9 @@ class _MyGamesPageState extends State<MyGamesPage> {
         return AlertDialog(
           title: const Text('Nouveau jeu'),
           content: TextFormField(
-                controller: nameController,
-                decoration: const InputDecoration(hintText: 'Nom'),
-              ),
+            controller: nameController,
+            decoration: const InputDecoration(hintText: 'Nom'),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -102,12 +101,12 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 if (name.isEmpty) {
                   return;
                 }
-                addProject(name);
+                Game game = addProject(name);
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GameEditorPage(game: name),
+                    builder: (context) => EditorPage(game: game),
                   ),
                 );
               },
@@ -120,10 +119,11 @@ class _MyGamesPageState extends State<MyGamesPage> {
   }
 
   /// Show a dialog to delete a game
-  void _showGameDeletionDialog(context, String name) {
+  void _showGameDeletionDialog(context, Game game) {
     showDialog(
       context: context,
       builder: (_) {
+        String name = game.name;
         return AlertDialog(
           title: const Text('Supprimer le jeu ?'),
           content: Text('Voulez-vous vraiment supprimer le jeu $name ?'),
@@ -134,7 +134,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
             ),
             TextButton(
               onPressed: () {
-                removeProject(name);
+                removeProject(game);
                 Navigator.pop(context);
               },
               child: const Text('Supprimer'),

@@ -39,78 +39,72 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController(text: gameObject.name);
+    TextEditingController nameController =
+        TextEditingController(text: gameObject.name);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            BackButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            const Text('Object Editor'),
-          ],
+        appBar: AppBar(
+          title: Row(
+            children: [
+              const Text('Object Editor'),
+            ],
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              onChanged: (value) {
-                gameObject.name = value;
-              },
-              decoration: const InputDecoration(
-                hintText: 'Name',
-                border: OutlineInputBorder(),
-                label: Text('Name'),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: nameController,
+                onChanged: (value) {
+                  gameObject.name = value;
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Name',
+                  border: OutlineInputBorder(),
+                  label: Text('Name'),
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-            for (var component in gameObject.components)
-              Row(
-                children: [
-                  Text(component.name),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditComponentPage(
-                            component: component,
+              const SizedBox(height: 40),
+              for (var component in gameObject.components)
+                Row(
+                  children: [
+                    Text(component.name),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => EditComponentPage(
+                              component: component,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      removeComponent(component);
-                    },
-                  ),
-                ],
-              )
-
-          ],
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        removeComponent(component);
+                      },
+                    ),
+                  ],
+                )
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddComponentPage(
-                onAddComponent: addComponent,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AddComponentPage(
+                  onAddComponent: addComponent,
+                ),
               ),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
-      )
-    );
+            );
+          },
+          child: const Icon(Icons.add),
+        ));
   }
 }
