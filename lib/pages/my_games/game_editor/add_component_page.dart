@@ -1,19 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/games/game.dart';
 
-import '../../../models/components/component_rect.dart';
-import '../../../models/games/component.dart';
-import '../../../models/games/game_object.dart';
+import '../../../models/component_types/component_rect.dart';
+import '../../../models/games/component_type.dart';
 
 // The component list
-Map<String, Component> components = {
+Map<String, ComponentType> components = {
   'ComponentRect': ComponentRect(),
 };
 
 class AddComponentPage extends StatefulWidget {
   // A callback function to add a component to the game object
-  final void Function(Component) onAddComponent;
+  final void Function(ComponentType) onAddComponent;
 
   AddComponentPage({super.key, required this.onAddComponent});
 
