@@ -11,4 +11,7 @@ class ComponentRect extends Component {
 
   @override
   String get type => 'ComponentRect';
+
+  @override
+  String get name => 'Rectangle';
 }
