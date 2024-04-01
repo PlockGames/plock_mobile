@@ -1,0 +1,23 @@
+    name: Push on Epitech repository
+    
+    on:
+      push:
+    # ${GITHUB_REPOSITORY#*/}
+    jobs:
+      build:
+        if: github.repository == 'PlockGames/plock_mobile'
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+              token: ${{ secrets.TOKEN_GITHUB }}
+          - name: Commit files
+            run: |
+              git config --local user.email "github-actions[bot]@users.noreply.github.com"
+              git config --local user.name "github-actions[bot]"
+              git checkout $CI_COMMIT_REF_NAME
+              git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $CI_COMMIT_REF_NAME
+            env:
+              CI_COMMIT_REF_NAME: ${{ github.ref }}
+              MY_KEY: ${{ secrets.TOKEN_GITHUB }}
