@@ -2,8 +2,8 @@ name: Push on Epitech repository
 
 on:
   push:
-    branches:
-      - main  # Adjust this if your main branch has a different name
+# ${GITHUB_REPOSITORY#*/}
+    
 
 jobs:
   build:
