@@ -14,8 +14,8 @@ jobs:
       # Ajoutez une étape pour copier uniquement le dossier 'mobile' dans votre répertoire miroir
       - name: Copy mobile directory
         run: |
-          mkdir -p plock_mobile/mobile
-          cp -r * plock_mobile/mobile/
+          mkdir -p mobile
+          cp -r * mobile/
         working-directory: ${{ github.workspace }}
       
 
