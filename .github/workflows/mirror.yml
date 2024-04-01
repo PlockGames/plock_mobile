@@ -11,11 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Set the working directory to the root of your Flutter project
-      - name: Set working directory
-        run: cd ${{ github.workspace }}
-        working-directory: ${{ github.workspace }}
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOKEN_GITHUB }}
 
 
       # Configure Git in the root of your Flutter project
@@ -30,4 +28,7 @@ jobs:
           cd ${{ github.workspace }}
           git add .
           git commit -m "Mirror mobile directory changes"
-          git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git main
+          git push --force https://github.com/EpitechMscProPromo2025/T-DEV-800-TLS_2.git $CI_COMMIT_REF_NAME
+        env:
+          CI_COMMIT_REF_NAME: ${{ github.ref }}
+          MY_KEY: ${{ secrets.TOKEN_GITHUB }}
