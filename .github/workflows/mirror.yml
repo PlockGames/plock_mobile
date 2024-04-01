@@ -2,8 +2,7 @@ name: Push on Epitech repository
 
 on:
   push:
-    branches:
-      - main # Ajoutez ici les branches que vous souhaitez surveiller pour les poussées
+
 
 jobs:
   build:
