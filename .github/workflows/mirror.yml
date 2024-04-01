@@ -1,10 +1,8 @@
-name: Push on Epitech repository
+name: Push Plock Mobile to Epitech repository
 
 on:
   push:
 # ${GITHUB_REPOSITORY#*/}
-
-
 jobs:
   build:
     if: github.repository == 'PlockGames/plock_mobile'
@@ -13,20 +11,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-
-
-      # Configure Git in the root of your Flutter project
-      - name: Setup Git
+      - name: Commit files
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
-      # Add, commit, and push changes in the root of your Flutter project
-      - name: Commit files
-        run: |
           git checkout $CI_COMMIT_REF_NAME
-          git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $CI_COMMIT_REF_NAME
+          git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git  $CI_COMMIT_REF_NAME
         env:
           CI_COMMIT_REF_NAME: ${{ github.ref }}
 
