@@ -2,7 +2,8 @@ name: Push on Epitech repository
 
 on:
   push:
-
+    branches:
+      - main  # Adjust this if your main branch has a different name
 
 jobs:
   build:
@@ -11,23 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Ajoutez une étape pour copier uniquement le dossier 'mobile' dans votre répertoire miroir
-      - name: Copy mobile directory
-        run: |
-          mkdir -p mobile
-          cp -r * mobile/
-        working-directory: ${{ github.workspace }}
-      
+      # Set the working directory to the root of your Flutter project
+      - name: Set working directory
+        run: cd ${{ github.workspace }}
 
-      # Configurez Git dans le répertoire miroir
+      # Configure Git in the root of your Flutter project
       - name: Setup Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      # Effectuez l'ajout, le commit et le push des changements dans le répertoire miroir
+      # Add, commit, and push changes in the root of your Flutter project
       - name: Commit files
         run: |
+          cd ${{ github.workspace }}
           git add .
           git commit -m "Mirror mobile directory changes"
           git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git main
