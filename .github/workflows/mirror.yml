@@ -2,22 +2,32 @@ name: Push on Epitech repository
 
 on:
   push:
-# ${GITHUB_REPOSITORY#*/}
+    branches:
+      - main # Ajoutez ici les branches que vous souhaitez surveiller pour les poussées
+
 jobs:
   build:
     if: github.repository == 'PlockGames/plock_mobile'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.TOKEN_GITHUB }}
-      - name: Commit files
+
+      # Ajoutez une étape pour copier uniquement le dossier 'mobile' dans votre répertoire miroir
+      - name: Copy mobile directory
+        run: |
+          mkdir -p mobile
+          cp -r * mobile/
+        working-directory: mobile
+
+      # Configurez Git dans le répertoire miroir
+      - name: Setup Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git checkout $CI_COMMIT_REF_NAME
-          git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $CI_COMMIT_REF_NAME
-        env:
-          CI_COMMIT_REF_NAME: ${{ github.ref }}
-          MY_KEY: ${{ secrets.TOKEN_GITHUB }}
+
+      # Effectuez l'ajout, le commit et le push des changements dans le répertoire miroir
+      - name: Commit files
+        run: |
+          git add .
+          git commit -m "Mirror mobile directory changes"
+          git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git main
