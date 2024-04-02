@@ -56,7 +56,7 @@ class ObjectComponent extends PositionComponent
     super.render(canvas);
     if (isObjectSelected(this)) {
       rectangleSelect.paint = Paint()
-        ..color = const Color(0xFFF5D142)
+        ..color = Color.fromARGB(255, 223, 180, 12)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
     } else {
