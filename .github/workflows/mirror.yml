@@ -22,4 +22,4 @@ jobs:
           git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git  $CI_COMMIT_REF_NAME
         env:
           CI_COMMIT_REF_NAME: ${{ github.ref }}
-          AUTOMNE_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          AUTOMNE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
