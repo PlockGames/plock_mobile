@@ -1,22 +1,17 @@
-name: Push on Epitech repository
-
+# .github/workflows/mirror.yml
+name: 'mirror'
 on:
   push:
-# ${GITHUB_REPOSITORY#*/}
+  workflow_dispatch:
+
 jobs:
-  build:
-    if: github.repository == 'PlockGames/plock_mobile'
+  mirror:
     runs-on: ubuntu-latest
+    name: mirror
     steps:
-      - uses: actions/checkout@v4
+      - name: mirror
+        id: mirror
+        uses: bridgelightcloud/github-mirror-action@v1
         with:
-          fetch-depth: 0
-          token: ${{ secrets.TOKEN_GITHUB }}
-      - name: Commit files
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git checkout $CI_COMMIT_REF_NAME
-          git push --force https://github.com/EpitechMscProPromo2025/T-DEV-800-TLS_2.git $CI_COMMIT_REF_NAME
-        env:
-          CI_COMMIT_REF_NAME: ${{ github.ref }}
+          origin: 'https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
