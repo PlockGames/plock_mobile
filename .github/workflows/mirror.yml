@@ -25,6 +25,8 @@ jobs:
         run: |
             cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
             ls -la
+            cd front
+            ls -la
 
       # - name: Commit files
       #   run: |
