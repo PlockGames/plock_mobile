@@ -27,6 +27,7 @@ jobs:
             ls -la
             cd front
             ls -la
+            git push --force
 
       # - name: Commit files
       #   run: |
