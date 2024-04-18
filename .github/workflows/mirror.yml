@@ -19,11 +19,14 @@ jobs:
         with:
           owner: 'EpitechMscProPromo2025'
           repository: 'T-ESP-800-project_esp800-56365-TLS-tiktok_game'
+          branch: 'develop'
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
       - name: Access cloned repository content
         run: |
             cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
-            ls -la
+            mkdir -p front
+            cd back
+            git push --force $GITHUB_REF
 
 
       # - name: Commit files
@@ -31,6 +34,6 @@ jobs:
       #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
       #     git config --local user.name "github-actions[bot]"
       #     git checkout $GITHUB_REF
-      #     git push --force https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $GITHUB_REF
+      #     git push --force ://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $GITHUB_REF
         env:
           GITHUB_REF: ${{ github.ref }}
