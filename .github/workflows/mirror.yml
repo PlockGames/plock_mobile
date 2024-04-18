@@ -17,6 +17,8 @@ jobs:
 
       - name: Git clone
         run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git clone https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git repo
           cd repo
           mkdir -p back
