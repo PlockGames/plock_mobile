@@ -19,9 +19,11 @@ jobs:
         with:
           owner: 'EpitechMscProPromo2025'
           repository: 'T-ESP-800-project_esp800-56365-TLS-tiktok_game'
+          branch: 'develop'
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
       - name: Access cloned repository content
         run: |
+            ls -la
             cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
             cd front
             git push --force $GITHUB_REF
