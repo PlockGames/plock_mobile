@@ -14,9 +14,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.AUTOMNE_TOKEN }}
-      - name: Get code from commit
-        run: |
-            ls -la
 
       - name: Clone Epitech repo
         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
@@ -25,12 +22,11 @@ jobs:
           repository: 'T-ESP-800-project_esp800-56365-TLS-tiktok_game'
           branch: 'develop'
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
-      - name: Access cloned repository content
+      - name: Copy code from commit to the cloned repo and git push 
         run: |
+            rsync -av --exclude='T-ESP-800-project_esp800-56365-TLS-tiktok_game' . /T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/
             cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
-            ls -la
             cd front
-            ls -la
             git push --force
 
       # - name: Commit files
