@@ -24,8 +24,7 @@ jobs:
       - name: Access cloned repository content
         run: |
             cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
-            mkdir -p front
-            cd back
+            cd front
             git push --force $GITHUB_REF
 
 
