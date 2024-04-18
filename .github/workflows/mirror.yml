@@ -14,19 +14,17 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.AUTOMNE_TOKEN }}
-
-      - name: Git clone
+      - name: Clone Epitech repo
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+        with:
+          owner: 'EpitechMscProPromo2025'
+          repository: 'T-ESP-800-project_esp800-56365-TLS-tiktok_game'
+          access-token: ${{ secrets.AUTOMNE_TOKEN }}
+      - name: Access cloned repository content
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git config --get-all --show-origin credential.helper
+            cd T-ESP-800-project_esp800-56365-TLS-tiktok_game
+            ls -la
 
-          git clone https://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git repo
-          cd repo
-          mkdir -p back
-          cd back
-          touch test
-          ls
 
       # - name: Commit files
       #   run: |
