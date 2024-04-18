@@ -14,6 +14,10 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.AUTOMNE_TOKEN }}
+      - name: Get code from commit
+        run: |
+            ls -la
+
       - name: Clone Epitech repo
         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
         with:
