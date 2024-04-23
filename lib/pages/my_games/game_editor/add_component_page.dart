@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/component_types/component_rect.dart';
+import '../../../models/component_types/component_event.dart';
 import '../../../models/games/component_type.dart';
 
 // The component list
 Map<String, ComponentType> components = {
   'ComponentRect': ComponentRect(),
+  'ComponentEvent': ComponentEvent(),
 };
 
 class AddComponentPage extends StatefulWidget {

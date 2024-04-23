@@ -1,9 +1,7 @@
-import 'dart:js_interop';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:plock_mobile/models/component_types/component_rect.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 

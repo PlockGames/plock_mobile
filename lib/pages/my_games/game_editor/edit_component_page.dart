@@ -28,14 +28,12 @@ class _EditComponentPageState extends State<EditComponentPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Form(
-          child: ListView(
+        child: Column(
             children: [
               for (var pair in _component.fields.entries)
                 pair.value.getField(pair.key)
             ],
           ),
-        ),
       ),
     );
   }
