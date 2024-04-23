@@ -1,8 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/pages/my_games/my_games_page.dart';
-
-import 'models/games/game_object.dart';
+import 'package:plock_mobile/navbar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,11 +31,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MyGamesPage(),
+      bottomNavigationBar: const Navigation(),
     );
   }
 }
