@@ -24,6 +24,7 @@ jobs:
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
       - name: Copy code from commit to the cloned repo and git push 
         run: |
+          ls
           sudo rsync -av --progress . /T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude T-ESP-800-project_esp800-56365-TLS-tiktok_game
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           git push --force
