@@ -30,6 +30,7 @@ jobs:
       - name: Commit files
         run: |
           git add *
+          git commit #GITHUB_REF
           git push --force
         env:
           GITHUB_REF: ${{ github.ref }}
