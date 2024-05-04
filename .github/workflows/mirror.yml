@@ -29,6 +29,7 @@ jobs:
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
       - name: Commit files
         run: |
+          git add *
           git push --force
         env:
           GITHUB_REF: ${{ github.ref }}
