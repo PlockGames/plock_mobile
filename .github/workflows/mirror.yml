@@ -27,13 +27,11 @@ jobs:
           ls T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           sudo rsync -a . T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude T-ESP-800-project_esp800-56365-TLS-tiktok_game
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
-          ls 
-          git push --force
-      # - name: Commit files
-      #   run: |
-      #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-      #     git config --local user.name "github-actions[bot]"
-      #     git checkout $GITHUB_REF
-      #     git push --force ://github.com/EpitechMscProPromo2025/T-ESP-800-project_esp800-56365-TLS-tiktok_game.git $GITHUB_REF
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout $GITHUB_REF
+          git push --force $GITHUB_REF
         env:
           GITHUB_REF: ${{ github.ref }}
