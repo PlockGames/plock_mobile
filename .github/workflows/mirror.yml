@@ -32,7 +32,7 @@ jobs:
         with:
           # Personal access token (PAT) used to query for the authenticated user.
           # Default: ${{ github.token }}
-          token: ""
+          token: 
       
       - name: Commit files
         run: |
