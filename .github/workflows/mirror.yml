@@ -27,7 +27,7 @@ jobs:
           ls T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           sudo rsync -a . T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude T-ESP-800-project_esp800-56365-TLS-tiktok_game
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
-          ls T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
+          ls 
           git push --force
       # - name: Commit files
       #   run: |
