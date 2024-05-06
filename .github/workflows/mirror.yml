@@ -25,7 +25,6 @@ jobs:
       - name: Copy code from commit to the cloned repo and git push 
         run: |
           rm -rf .git .github
-          ls T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           sudo rsync -a . T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude='T-ESP-800-project_esp800-56365-TLS-tiktok_game' --exclude='.git' --exclude='.github'
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
       - name: Configure git user in the action
@@ -35,7 +34,7 @@ jobs:
       
       - name: Commit files
         run: |
-          ls -la
+          ls - ../.git
           git branch
           git commit -am "${{ github.event.head_commit.message }}"
           git push --force
