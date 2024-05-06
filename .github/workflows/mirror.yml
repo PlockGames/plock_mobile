@@ -28,11 +28,11 @@ jobs:
           rm -rf .git .github
           sudo rsync -a * T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude='T-ESP-800-project_esp800-56365-TLS-tiktok_game' --exclude='.git' --exclude='.github'
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
+          pwd
       - name: Configure git user in the action
         uses: tidylabs/action-git-config-user@v2
         with:
-          token: ${{ github.token }}
-      
+          token: ${{ github.token }} 
       - name: Commit files
         run: |
           pwd
