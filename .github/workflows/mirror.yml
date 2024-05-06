@@ -35,8 +35,7 @@ jobs:
           token: ${{ github.token }} 
       - name: Commit files
         run: |
-          pwd
-          git branch
+          cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           git commit -am "${{ github.event.head_commit.message }}"
           git push --force
         env:
