@@ -35,8 +35,7 @@ jobs:
       - name: Commit files
         run: |
           ls
-          git add *
-          git commit -m "${{ github.event.head_commit.message }}"
+          git commit -a -m "${{ github.event.head_commit.message }}"
           git push --force
         env:
           GITHUB_REF: ${{ github.ref }}
