@@ -24,6 +24,7 @@ jobs:
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
       - name: Copy code from commit to the cloned repo and git push 
         run: |
+          ls T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
           sudo rsync -a . T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude T-ESP-800-project_esp800-56365-TLS-tiktok_game
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
       - name: Configure git user in the action
@@ -34,6 +35,8 @@ jobs:
       - name: Commit files
         run: |
           ls
+          git branch
+          git commit -am "${{ github.event.head_commit.message }}"
           git push --force
         env:
           GITHUB_REF: ${{ github.ref }}
