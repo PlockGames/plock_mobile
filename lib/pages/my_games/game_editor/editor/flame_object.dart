@@ -35,7 +35,7 @@ class ObjectComponent extends PositionComponent
     position = Vector2(100, 100);
 
     rectangle = RectangleComponent(
-      size: Vector2(60, 60),
+      size: Vector2(50, 50),
       position: Vector2(0, 0),
     );
 

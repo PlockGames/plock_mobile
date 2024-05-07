@@ -1,12 +1,15 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import '../../../models/games/component_type.dart';
+import '../../../models/games/game.dart';
 import 'edit_component_page.dart';
 
 class ObjectEditorPage extends StatefulWidget {
-  GameObject gameObject = GameObject(name: 'New Object');
+  GameObject gameObject = GameObject(name: 'Initial Object');
 
   ObjectEditorPage({super.key, required this.gameObject});
 

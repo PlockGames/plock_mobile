@@ -6,7 +6,7 @@ class ComponentType {
   ComponentType();
 
   String get type => 'Component';
-  String get name => 'Component';
+  String get name => 'Rectangle';
 
   ComponentType instance() {
     ComponentType comp = ComponentType();

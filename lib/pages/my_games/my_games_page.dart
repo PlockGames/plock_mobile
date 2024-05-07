@@ -52,7 +52,10 @@ class _MyGamesPageState extends State<MyGamesPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditorPage(game: project),
+                              builder: (context) => EditorPage(
+                                game: project,
+                                onGameObjectUpdated: (updatedGameObject) {},
+                              ),
                             ),
                           );
                         },
@@ -106,7 +109,10 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditorPage(game: game),
+                    builder: (context) => EditorPage(
+                      game: game,
+                      onGameObjectUpdated: (updatedGameObject) {},
+                    ),
                   ),
                 );
               },
