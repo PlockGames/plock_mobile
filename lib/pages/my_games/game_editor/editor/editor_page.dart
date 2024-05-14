@@ -18,13 +18,12 @@ class EditorPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EditorPageState createState() => _EditorPageState(game: game);
+  _EditorPageState createState() => _EditorPageState();
 }
 
 class _EditorPageState extends State<EditorPage> {
-  final Plock.Game game;
 
-  _EditorPageState({required this.game});
+  _EditorPageState();
 
   openEditor(BuildContext context) {
     return (ObjectComponent object) {
@@ -42,13 +41,20 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
+  addGameObject(GameObject gameObject) {
+    setState(() {
+      widget.game.objects.add(gameObject);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         Expanded(
           child: GameWidget(
-              game: Editor({openEditor: openEditor(context), game: game})),
+              game: Editor(openEditor: openEditor(context), game: widget.game, addGameObject: addGameObject),
+          ),
         ),
       ],
     );

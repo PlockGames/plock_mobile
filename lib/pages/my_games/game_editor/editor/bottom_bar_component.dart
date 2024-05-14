@@ -11,6 +11,7 @@ class BottomBarComponent extends PositionComponent {
   final selectObject;
   final isObjectSelected;
   final openEditor;
+  final addGameObject;
 
   late BottomBarbuttonComponent addBtn;
   late BottomBarbuttonComponent deleteBtn;
@@ -19,7 +20,7 @@ class BottomBarComponent extends PositionComponent {
   late Svg svgInstance;
 
   BottomBarComponent(this.screenSize, this.objectContainer, this.selectObject,
-      this.isObjectSelected, this.openEditor);
+      this.isObjectSelected, this.openEditor, this.addGameObject);
 
   selectedObject() {
     for (final component in objectContainer.children) {
@@ -44,7 +45,9 @@ class BottomBarComponent extends PositionComponent {
 
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
-      this.objectContainer.add(ObjectComponent(selectObject, isObjectSelected));
+          var newObject = ObjectComponent(selectObject, isObjectSelected);
+      this.objectContainer.add(newObject);
+      addGameObject(newObject.gameObject);
     });
 
     deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(60, 0),

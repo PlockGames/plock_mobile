@@ -8,10 +8,15 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/flame_object.dart
 class Editor extends FlameGame {
   ObjectComponent? selectedObject;
   final openEditor;
+  final addGameObject;
   final Plock.Game game;
   late TextComponent selectedObjectName;
 
-  Editor({required this.openEditor, required this.game});
+  Editor({
+    required this.openEditor,
+    required this.game,
+    required this.addGameObject,
+  });
 
   selectObject(ObjectComponent? object) {
     selectedObject = object;
@@ -31,7 +36,13 @@ class Editor extends FlameGame {
     super.onLoad();
     final objectContainer = PositionComponent();
     final bottomBar = BottomBarComponent(
-        size, objectContainer, selectObject, isObjectSelected, openEditor);
+        size,
+        objectContainer,
+        selectObject,
+        isObjectSelected,
+        openEditor,
+        addGameObject
+    );
     selectedObjectName = TextComponent()
       ..text = selectedObject?.name ?? ''
       ..anchor = Anchor.topLeft
