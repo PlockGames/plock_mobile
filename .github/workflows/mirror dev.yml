@@ -22,13 +22,15 @@ jobs:
           repository: 'T-ESP-800-project_esp800-56365-TLS-tiktok_game'
           branch: 'develop'
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
+    
       - name: Copy code from commit to the cloned repo and git push 
         run: |
           ls -la T-ESP-800-project_esp800-56365-TLS-tiktok_game
           rm -rf .git .github
+          rm -rf T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/
           sudo rsync -a * T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude='T-ESP-800-project_esp800-56365-TLS-tiktok_game' --exclude='.git' --exclude='.github'
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
-          pwd
+  
       - name: Configure git user in the action
         uses: tidylabs/action-git-config-user@v2
         with:
