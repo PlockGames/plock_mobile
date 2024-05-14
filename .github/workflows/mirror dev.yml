@@ -27,7 +27,7 @@ jobs:
         run: |
           ls -la T-ESP-800-project_esp800-56365-TLS-tiktok_game
           rm -rf .git .github
-          rm -rf T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/
+          rm -rf T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/*
           sudo rsync -a * T-ESP-800-project_esp800-56365-TLS-tiktok_game/front/ --exclude='T-ESP-800-project_esp800-56365-TLS-tiktok_game' --exclude='.git' --exclude='.github'
           cd T-ESP-800-project_esp800-56365-TLS-tiktok_game/front
   
