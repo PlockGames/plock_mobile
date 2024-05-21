@@ -1,7 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/flame_object.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 
 import '../../../../models/games/game.dart' as Plock;
@@ -31,20 +31,22 @@ class _EditorPageState extends State<EditorPage> {
           context,
           MaterialPageRoute(
               builder: (context) => ObjectEditorPage(
-                    gameObject: object.gameObject,
-                    // onGameObjectUpdated: (updatedGameObject) {
-                    //   setState(() {
-                    //     // currentGameObject = updatedGameObject;
-                    //   });
-                    // })),
+                    object: object,
                   )));
     };
   }
 
   addGameObject(GameObject gameObject) {
-    setState(() {
-      widget.game.objects.add(gameObject);
-    });
+    widget.game.objects.add(gameObject);
+  }
+
+  removeGameObject(GameObject gameObject) {
+    widget.game.objects.remove(gameObject);
+  }
+
+  updateGameObject(GameObject gameObject) {
+    widget.game.objects.remove(gameObject);
+    widget.game.objects.add(gameObject);
   }
 
   @override
@@ -53,7 +55,13 @@ class _EditorPageState extends State<EditorPage> {
       children: <Widget>[
         Expanded(
           child: GameWidget(
-              game: Editor(openEditor: openEditor(context), game: widget.game, addGameObject: addGameObject),
+              game: Editor(
+                  openEditor: openEditor(context),
+                  game: widget.game,
+                  addGameObject: addGameObject,
+                  removeGameObject: removeGameObject,
+                  updateGameObject: updateGameObject,
+              ),
           ),
         ),
       ],

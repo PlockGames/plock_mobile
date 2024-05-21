@@ -1,4 +1,6 @@
+import 'package:flame/components.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
+import 'package:plock_mobile/models/games/display_components.dart';
 
 class ComponentType {
   Map<String, ComponentField> fields = Map<String, ComponentField>.identity();
@@ -6,7 +8,7 @@ class ComponentType {
   ComponentType();
 
   String get type => 'Component';
-  String get name => 'Rectangle';
+  String get name => 'Unknown';
 
   ComponentType instance() {
     ComponentType comp = ComponentType();
@@ -14,5 +16,15 @@ class ComponentType {
       comp.fields[key] = value.instance();
     });
     return comp;
+  }
+
+  DisplayComponents getDisplayComponent() {
+    return DisplayComponents();
+  }
+
+  void setOnUpdate(onUpdate) {
+    fields.forEach((key, value) {
+      value.onUpdate = onUpdate;
+    });
   }
 }

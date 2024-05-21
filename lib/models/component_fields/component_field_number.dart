@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
 class ComponentFieldNumber extends ComponentField {
-int value;
+int _value;
 
   ComponentFieldNumber({
-    required this.value,
-  });
+    required value,
+    onUpdate,
+  }) : _value = value {
+    this.onUpdate = onUpdate;
+  }
 
   @override
   String get type => 'ComponentFieldNumber';
+
+  @override
+  get value => _value;
 
   @override
   Widget getField(String name) {
@@ -19,15 +25,23 @@ int value;
         labelText: name,
       ),
       keyboardType: TextInputType.number,
-      controller: TextEditingController(text: value.toString()),
+      controller: TextEditingController(text: _value.toString()),
       onChanged: (text) {
-        value = int.parse(text);
+        if (text.isEmpty) {
+          _value = 0;
+        } else {
+          _value = int.parse(text);
+        }
+        print(onUpdate);
+        if (onUpdate != null) {
+          onUpdate();
+        }
       },
     );
   }
 
   @override
   ComponentFieldNumber instance() {
-    return ComponentFieldNumber(value: value);
+    return ComponentFieldNumber(value: _value, onUpdate: onUpdate);
   }
 }
