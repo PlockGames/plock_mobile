@@ -54,7 +54,7 @@ class ObjectComponent extends PositionComponent
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = Vector2(50, 50);
+    size = Vector2(0, 0);
     position = Vector2(_gameObject.position.x, _gameObject.position.y);
     updateDisplay();
   }
@@ -66,7 +66,12 @@ class ObjectComponent extends PositionComponent
     displayComponents = [];
 
     for (var component in _gameObject.components) {
-      DisplayComponents displayComponent = component.getDisplayComponent();
+      DisplayComponents displayComponent = component.getDisplayComponent(
+          onTapUpCallback,
+          onDragStartCallback,
+          onDragUpdateCallback,
+          onDragEndCallback,
+          onDragCancelCallback);
       if (displayComponent.display != null) {
         displayComponents.add(displayComponent.display!);
         add(displayComponent.display!);
@@ -103,8 +108,7 @@ class ObjectComponent extends PositionComponent
     super.update(dt);
   }
 
-  @override
-  bool onTapUp(TapUpEvent info) {
+  bool onTapUpCallback(TapUpEvent info) {
     if (isObjectSelected(this)) {
       selectObject(null);
     } else {
@@ -113,13 +117,11 @@ class ObjectComponent extends PositionComponent
     return true;
   }
 
-  @override
-  void onDragStart(DragStartEvent event) {
+  void onDragStartCallback(DragStartEvent event) {
     super.onDragStart(event);
   }
 
-  @override
-  void onDragUpdate(DragUpdateEvent event) {
+  void onDragUpdateCallback(DragUpdateEvent event) {
     super.onDragUpdate(event);
     _gameObject.position.x += event.localDelta.x;
     _gameObject.position.y += event.localDelta.y;
@@ -127,14 +129,12 @@ class ObjectComponent extends PositionComponent
     position.y = _gameObject.position.y;
   }
 
-  @override
-  void onDragEnd(DragEndEvent event) {
+  void onDragEndCallback(DragEndEvent event) {
     super.onDragEnd(event);
     updateObject(this);
   }
 
-  @override
-  void onDragCancel(DragCancelEvent event) {
+  void onDragCancelCallback(DragCancelEvent event) {
     super.onDragCancel(event);
   }
 }

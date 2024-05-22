@@ -18,7 +18,12 @@ class ComponentType {
     return comp;
   }
 
-  DisplayComponents getDisplayComponent() {
+  DisplayComponents getDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback) {
     return DisplayComponents();
   }
 

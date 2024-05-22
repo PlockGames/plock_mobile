@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
+import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../games/component_type.dart';
@@ -19,15 +20,35 @@ class ComponentRect extends ComponentType {
   String get name => 'Rectangle';
 
   @override
-  DisplayComponents getDisplayComponent() {
+  ComponentType instance() {
+    ComponentRect comp = ComponentRect();
+    fields.forEach((key, value) {
+      comp.fields[key] = value.instance();
+    });
+    return comp;
+  }
+
+  @override
+  DisplayComponents getDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback
+      ) {
     Vector2 size = Vector2(
       fields["width"]!.value.toDouble(),
       fields["height"]!.value.toDouble(),
     );
 
-    RectangleComponent display = RectangleComponent(
+    RectangleComponent display = ComponentFlameRect(
       size: size,
       position: Vector2(0, 0),
+      onTapeUpCallback: onTapeUpCallback,
+      onDragCancelCallback: onDragCancelCallback,
+      onDragEndCallback: onDragEndCallback,
+      onDragStartCallback: onDragStartCallback,
+      onDragUpdateCallback: onDragUpdateCallback
     );
 
     RectangleComponent select = RectangleComponent(
