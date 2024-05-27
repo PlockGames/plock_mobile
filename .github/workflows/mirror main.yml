@@ -2,15 +2,14 @@ name: Push on Epitech repository
 
 env:
   EPITECH_REPO: "T-ESP-800-project_esp800-56365-TLS-tiktok_game"
-  BRANCH: "main"
-
 
 on:
   push:
     branches:
-      - main     
+      - develop  
+      - main   
 jobs: 
-  build:
+  mirror:
     if: github.repository == 'PlockGames/plock_mobile'
     runs-on: ubuntu-latest
     steps:
@@ -20,13 +19,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.AUTOMNE_TOKEN }}
 
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+
         #Clone le repo Epitech 
       - name: Clone Epitech repo
         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
         with:
           owner: 'EpitechMscProPromo2025'
           repository: ${{ env.EPITECH_REPO }}
-          branch: ${{ env.BRANCH }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
           access-token: ${{ secrets.AUTOMNE_TOKEN }}
     
       - name: Copy code from commit to the cloned repo and git push 
