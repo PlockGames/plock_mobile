@@ -55,8 +55,8 @@ class Editor extends FlameGame {
         openEditor: openEditor,
         addGameObject: addGameObject,
         updateObject: updateObject,
-        deleteGameObject: removeGameObject
-    );
+        deleteGameObject: removeGameObject,
+        game: game);
     selectedObjectName = TextComponent()
       ..text = selectedObject?.name ?? ''
       ..anchor = Anchor.topLeft
@@ -67,7 +67,11 @@ class Editor extends FlameGame {
     add(selectedObjectName);
 
     game.objects.forEach((element) {
-      add(ObjectComponent(selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
+      add(ObjectComponent(
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          gameObject: element,
+          updateObject: updateObject));
     });
   }
 
