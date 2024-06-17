@@ -2,26 +2,26 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
+import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../games/component_type.dart';
 
-class ComponentRect extends ComponentType {
-  ComponentRect() {
-    fields["width"] = ComponentFieldNumber(value: 50);
-    fields["height"] = ComponentFieldNumber(value: 50);
+class ComponentCircle extends ComponentType {
+  ComponentCircle() {
+    fields["radius"] = ComponentFieldNumber(value: 10);
   }
 
   @override
-  String get type => 'ComponentRect';
+  String get type => 'ComponentCircle';
 
   @override
-  String get name => 'Rectangle';
+  String get name => 'Circle';
 
   @override
   ComponentType instance() {
-    ComponentRect comp = ComponentRect();
+    ComponentCircle comp = ComponentCircle();
     fields.forEach((key, value) {
       comp.fields[key] = value.instance();
     });
@@ -36,13 +36,10 @@ class ComponentRect extends ComponentType {
       onDragEndCallback,
       onDragCancelCallback
       ) {
-    Vector2 size = Vector2(
-      fields["width"]!.value.toDouble(),
-      fields["height"]!.value.toDouble(),
-    );
+    double radius = fields["radius"]!.value.toDouble();
 
-    RectangleComponent display = ComponentFlameRect(
-      size: size,
+    CircleComponent display = ComponentFlameCircle(
+      radius: radius,
       position: Vector2(0, 0),
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
@@ -51,8 +48,8 @@ class ComponentRect extends ComponentType {
       onDragUpdateCallback: onDragUpdateCallback
     );
 
-    RectangleComponent select = RectangleComponent(
-      size: size,
+    CircleComponent select = CircleComponent(
+      radius: radius,
       position: Vector2(0, 0),
       paint: Paint()
         ..color = const Color(0x00F5D142)
@@ -66,13 +63,10 @@ class ComponentRect extends ComponentType {
 
   @override
   Component? getGameDisplayComponent() {
-    Vector2 size = Vector2(
-      fields["width"]!.value.toDouble(),
-      fields["height"]!.value.toDouble(),
-    );
+    double radius = fields["radius"]!.value.toDouble();
 
-    return RectangleComponent(
-      size: size,
+    return CircleComponent(
+      radius: radius,
       position: Vector2(0, 0),
     );
   }

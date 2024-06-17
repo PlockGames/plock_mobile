@@ -29,7 +29,8 @@ class Game {
     Game game = Game(name: json['title']);
     var gameDataResponse = await ApiService.getGameWithData(json['id'].toString());
     var gameData = jsonDecode(gameDataResponse.body)["data"];
-    for (var object in jsonDecode(gameData)["objects"]) {
+    var objects = jsonDecode(gameData)["objects"];
+    for (var object in objects) {
       game.objects.add(GameObject.fromJson(object));
     }
 

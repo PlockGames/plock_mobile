@@ -40,4 +40,9 @@ String _value;
   set value(dynamic value) {
     _value = value;
   }
+
+  @override
+  String toJson() {
+    return "\"$_value\"";
+  }
 }
