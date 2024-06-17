@@ -63,4 +63,19 @@ class ComponentRect extends ComponentType {
     display.add(select);
     return DisplayComponents(display: display, select: select);
   }
+
+  @override
+  ShapeComponent? getGameDisplayComponent() {
+    Vector2 size = Vector2(
+      fields["width"]!.value.toDouble(),
+      fields["height"]!.value.toDouble(),
+    );
+
+    print('size: $size');
+
+    return RectangleComponent(
+      size: size,
+      position: Vector2(0, 0),
+    );
+  }
 }

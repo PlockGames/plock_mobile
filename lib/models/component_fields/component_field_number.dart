@@ -19,6 +19,11 @@ int _value;
   get value => _value;
 
   @override
+  set value(dynamic value) {
+    _value = value;
+  }
+
+  @override
   Widget getField(String name) {
     return TextField(
       decoration: InputDecoration(

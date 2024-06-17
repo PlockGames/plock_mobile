@@ -7,4 +7,8 @@ class Vector2 {
   String toJson() {
     return '{"x": $x, "y": $y}';
   }
+
+  static Vector2 fromJson(Map<String, dynamic> json) {
+    return Vector2(json['x'], json['y']);
+  }
 }

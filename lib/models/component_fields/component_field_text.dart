@@ -35,4 +35,9 @@ String _value;
 
   @override
   String get value => _value;
+
+  @override
+  set value(dynamic value) {
+    _value = value;
+  }
 }
