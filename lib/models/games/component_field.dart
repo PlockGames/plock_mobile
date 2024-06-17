@@ -17,5 +17,6 @@ class ComponentField {
     return ComponentField(onUpdate: onUpdate);
   }
 
+  set value(dynamic value) {}
   get value => null;
 }

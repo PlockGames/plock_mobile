@@ -1,13 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/data/ComponentList.dart';
 
 import '../../../models/component_types/component_rect.dart';
 import '../../../models/games/component_type.dart';
-
-// The component list
-Map<String, ComponentType> components = {
-  'ComponentRect': ComponentRect(),
-};
 
 class AddComponentPage extends StatefulWidget {
   // A callback function to add a component to the game object
@@ -33,7 +29,7 @@ class _AddComponentPageState extends State<AddComponentPage> {
       ),
       body: ListView(
         children: [
-          for (var component in components.values)
+          for (var component in ComponentList.get().values)
             ListTile(
               title: Text(component.name),
               onTap: () {

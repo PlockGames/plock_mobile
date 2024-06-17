@@ -29,6 +29,10 @@ class ComponentType {
     return DisplayComponents();
   }
 
+  ShapeComponent? getGameDisplayComponent() {
+    return null;
+  }
+
   void setOnUpdate(onUpdate) {
     fields.forEach((key, value) {
       value.onUpdate = onUpdate;
@@ -41,13 +45,14 @@ class ComponentType {
       map.add({key: value.value});
     });
 
-    String json = "";
+    String json = "{\"type\": \"" + type + "\", ";
     map.forEach((element) {
-      json += "{\"" + element.keys.first + "\": " + element.values.first.toString() + "}";
+      json += "\"" + element.keys.first + "\": " + element.values.first.toString();
       if (map.indexOf(element) != map.length - 1) {
         json += ",";
       }
     });
+    json += "}";
 
     return json;
   }

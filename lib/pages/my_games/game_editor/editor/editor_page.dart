@@ -61,7 +61,6 @@ class _EditorPageState extends State<EditorPage> {
         thumbnailUrl: "",
         data: widget.game.toJson(),
       ));
-      print(upload.body);
       Navigator.pop(context);
     };
   }
