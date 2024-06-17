@@ -5,7 +5,10 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static String url = "http://141.94.223.12:3000";
 
-  static Future<http.Response> getAllGames() async {
+  static Future<http.Response> getAllGames(int? page) async {
+    if (page != null) {
+      return await http.get(Uri.parse("$url/games?page=$page"));
+    }
     return await http.get(Uri.parse("$url/games"));
   }
 

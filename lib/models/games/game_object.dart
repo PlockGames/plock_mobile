@@ -36,7 +36,6 @@ class GameObject {
       var comp = componentModel.instance();
       comp.fields.forEach((key, value) {
         comp.fields[key].value = component[key];
-        print("key: $key, value: ${comp.fields[key].value}");
       });
       gameObject.components.add(comp);
 
