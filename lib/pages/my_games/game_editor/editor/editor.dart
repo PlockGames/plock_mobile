@@ -13,6 +13,7 @@ class Editor extends FlameGame {
   final addGameObject;
   final removeGameObject;
   final updateGameObject;
+  final uploadGame;
 
   final Plock.Game game;
   late TextComponent selectedObjectName;
@@ -23,6 +24,7 @@ class Editor extends FlameGame {
     required this.addGameObject,
     required this.removeGameObject,
     required this.updateGameObject,
+    required this.uploadGame,
   });
 
   selectObject(ObjectComponent? object) {
@@ -55,7 +57,8 @@ class Editor extends FlameGame {
         openEditor: openEditor,
         addGameObject: addGameObject,
         updateObject: updateObject,
-        deleteGameObject: removeGameObject
+        deleteGameObject: removeGameObject,
+        uploadGame: uploadGame
     );
     selectedObjectName = TextComponent()
       ..text = selectedObject?.name ?? ''

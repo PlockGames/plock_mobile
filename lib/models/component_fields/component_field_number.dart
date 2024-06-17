@@ -32,7 +32,6 @@ int _value;
         } else {
           _value = int.parse(text);
         }
-        print(onUpdate);
         if (onUpdate != null) {
           onUpdate();
         }
@@ -44,4 +43,5 @@ int _value;
   ComponentFieldNumber instance() {
     return ComponentFieldNumber(value: _value, onUpdate: onUpdate);
   }
+
 }

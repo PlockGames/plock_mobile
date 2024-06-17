@@ -14,10 +14,12 @@ class BottomBarComponent extends PositionComponent {
   final addGameObject;
   final updateObject;
   final deleteGameObject;
+  final uploadGame;
 
   late BottomBarbuttonComponent addBtn;
   late BottomBarbuttonComponent deleteBtn;
   late BottomBarbuttonComponent editBtn;
+  late BottomBarbuttonComponent uploadBtn;
 
   late Svg svgInstance;
 
@@ -30,6 +32,7 @@ class BottomBarComponent extends PositionComponent {
     required this.addGameObject,
     required this.updateObject,
     required this.deleteGameObject,
+    required this.uploadGame,
   });
 
   selectedObject() {
@@ -70,10 +73,16 @@ class BottomBarComponent extends PositionComponent {
       openEditor(selectedObject());
     });
 
+    uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
+        tapAction: () {
+        uploadGame();
+    });
+
     add(background);
     add(addBtn);
     add(deleteBtn);
     add(editBtn);
+    add(uploadBtn);
   }
 
   @override

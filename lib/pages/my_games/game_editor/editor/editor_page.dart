@@ -5,6 +5,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 
 import '../../../../models/games/game.dart' as Plock;
+import '../../../../services/api.dart';
 import 'Editor.dart';
 
 class EditorPage extends StatefulWidget {
@@ -49,6 +50,22 @@ class _EditorPageState extends State<EditorPage> {
     widget.game.objects.add(gameObject);
   }
 
+  uploadGame(BuildContext context) {
+    return () async {
+      var upload = await ApiService.createGame(CreateGameDto(
+        title: widget.game.name,
+        tags: [],
+        creatorId: 1,
+        playTime: "0",
+        gameType: "test",
+        thumbnailUrl: "",
+        data: widget.game.toJson(),
+      ));
+      print(upload.body);
+      Navigator.pop(context);
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -61,6 +78,7 @@ class _EditorPageState extends State<EditorPage> {
                   addGameObject: addGameObject,
                   removeGameObject: removeGameObject,
                   updateGameObject: updateGameObject,
+                  uploadGame: uploadGame(context),
               ),
           ),
         ),
