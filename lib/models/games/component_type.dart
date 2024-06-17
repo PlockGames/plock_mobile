@@ -29,7 +29,7 @@ class ComponentType {
     return DisplayComponents();
   }
 
-  ShapeComponent? getGameDisplayComponent() {
+  Component? getGameDisplayComponent() {
     return null;
   }
 
@@ -42,12 +42,12 @@ class ComponentType {
   String toJson() {
     var map = [];
     fields.forEach((key, value) {
-      map.add({key: value.value});
+      map.add({key: value.toJson()});
     });
 
     String json = "{\"type\": \"" + type + "\", ";
     map.forEach((element) {
-      json += "\"" + element.keys.first + "\": " + element.values.first.toString();
+      json += "\"" + element.keys.first + "\": " + element.values.first;
       if (map.indexOf(element) != map.length - 1) {
         json += ",";
       }

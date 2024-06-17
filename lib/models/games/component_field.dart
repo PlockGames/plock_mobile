@@ -17,6 +17,10 @@ class ComponentField {
     return ComponentField(onUpdate: onUpdate);
   }
 
+  String toJson() {
+    return "";
+  }
+
   set value(dynamic value) {}
   get value => null;
 }

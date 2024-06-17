@@ -31,7 +31,7 @@ class GamePlayerObject extends PositionComponent {
     displayComponents = [];
 
     for (var component in gameObject.components) {
-      ShapeComponent? displayComponent = component.getGameDisplayComponent();
+      Component? displayComponent = component.getGameDisplayComponent();
       if (displayComponent != null) {
         displayComponents.add(displayComponent);
         add(displayComponent);

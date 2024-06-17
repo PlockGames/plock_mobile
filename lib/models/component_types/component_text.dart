@@ -1,27 +1,27 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:plock_mobile/models/component_fields/component_field_number.dart';
-import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
+import 'package:flame/text.dart';
+import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
 
-class ComponentRect extends ComponentType {
-  ComponentRect() {
-    fields["width"] = ComponentFieldNumber(value: 50);
-    fields["height"] = ComponentFieldNumber(value: 50);
+class ComponentText extends ComponentType {
+  ComponentText() {
+    fields["text"] = ComponentFieldText(value: "Text");
   }
 
   @override
-  String get type => 'ComponentRect';
+  String get type => 'ComponentText';
 
   @override
-  String get name => 'Rectangle';
+  String get name => 'Text';
 
   @override
   ComponentType instance() {
-    ComponentRect comp = ComponentRect();
+    ComponentText comp = ComponentText();
     fields.forEach((key, value) {
       comp.fields[key] = value.instance();
     });
@@ -36,13 +36,10 @@ class ComponentRect extends ComponentType {
       onDragEndCallback,
       onDragCancelCallback
       ) {
-    Vector2 size = Vector2(
-      fields["width"]!.value.toDouble(),
-      fields["height"]!.value.toDouble(),
-    );
+    String text = fields["text"]!.value.toString();
 
-    RectangleComponent display = ComponentFlameRect(
-      size: size,
+    TextComponent display = ComponentFlameText(
+      text: text,
       position: Vector2(0, 0),
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
@@ -52,7 +49,7 @@ class ComponentRect extends ComponentType {
     );
 
     RectangleComponent select = RectangleComponent(
-      size: size,
+      size: display.absoluteScaledSize,
       position: Vector2(0, 0),
       paint: Paint()
         ..color = const Color(0x00F5D142)
@@ -66,13 +63,10 @@ class ComponentRect extends ComponentType {
 
   @override
   Component? getGameDisplayComponent() {
-    Vector2 size = Vector2(
-      fields["width"]!.value.toDouble(),
-      fields["height"]!.value.toDouble(),
-    );
+    String text = fields["text"]!.value.toString();
 
-    return RectangleComponent(
-      size: size,
+    return TextComponent(
+      text: text,
       position: Vector2(0, 0),
     );
   }

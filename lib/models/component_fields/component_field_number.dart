@@ -49,4 +49,9 @@ int _value;
     return ComponentFieldNumber(value: _value, onUpdate: onUpdate);
   }
 
+  @override
+  String toJson() {
+    return _value.toString();
+  }
+
 }
