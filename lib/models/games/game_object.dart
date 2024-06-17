@@ -38,7 +38,6 @@ class GameObject {
         comp.fields[key].value = component[key];
       });
       gameObject.components.add(comp);
-
     }
     return gameObject;
   }
