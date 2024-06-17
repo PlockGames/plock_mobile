@@ -9,6 +9,6 @@ class Vector2 {
   }
 
   static Vector2 fromJson(Map<String, dynamic> json) {
-    return Vector2(json['x'], json['y']);
+    return Vector2(json['x'].toDouble(), json['y'].toDouble());
   }
 }
