@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -25,13 +26,21 @@ class PlayPageState extends State<PlayPage> {
   }
 
   Future<List<plock.Game>> getAllGamesWithData() async {
-    var allGames = await ApiService.getAllGames();
+    var lastResponse = await ApiService.getAllGames(1);
+    List<dynamic> decoded = jsonDecode(lastResponse.body);
+    var allGames = decoded;
+
+    for (int page = 2; 0 < decoded.length; page++) {
+      lastResponse = await ApiService.getAllGames(page);
+      decoded = jsonDecode(lastResponse.body);
+      allGames.addAll(decoded);
+    }
+
     List<plock.Game> allGameWithData = <plock.Game>[];
-    for (var game in jsonDecode(allGames.body)) {
+    for (var game in allGames) {
       var gameData = await ApiService.getGameWithData(game['id'].toString());
       plock.Game loadedGame = await plock.Game.jsonToGame(jsonDecode(gameData.body));
       allGameWithData.add(loadedGame);
-
     }
     return allGameWithData;
   }

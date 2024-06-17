@@ -71,8 +71,6 @@ class ComponentRect extends ComponentType {
       fields["height"]!.value.toDouble(),
     );
 
-    print('size: $size');
-
     return RectangleComponent(
       size: size,
       position: Vector2(0, 0),
