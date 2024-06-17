@@ -1,9 +1,7 @@
-import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 
-import '../../models/games/display_components.dart';
 import '../../models/games/game_object.dart';
 
 class GamePlayerObject extends PositionComponent {
