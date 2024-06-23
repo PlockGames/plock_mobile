@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/flame_object.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 class BottomBarComponent extends PositionComponent {
   final Vector2 screenSize;
@@ -11,15 +11,29 @@ class BottomBarComponent extends PositionComponent {
   final selectObject;
   final isObjectSelected;
   final openEditor;
+  final addGameObject;
+  final updateObject;
+  final deleteGameObject;
+  final uploadGame;
 
   late BottomBarbuttonComponent addBtn;
   late BottomBarbuttonComponent deleteBtn;
   late BottomBarbuttonComponent editBtn;
+  late BottomBarbuttonComponent uploadBtn;
 
   late Svg svgInstance;
 
-  BottomBarComponent(this.screenSize, this.objectContainer, this.selectObject,
-      this.isObjectSelected, this.openEditor);
+  BottomBarComponent({
+    required this.screenSize,
+    required this.objectContainer,
+    required this.selectObject,
+    required this.isObjectSelected,
+    required this.openEditor,
+    required this.addGameObject,
+    required this.updateObject,
+    required this.deleteGameObject,
+    required this.uploadGame,
+  });
 
   selectedObject() {
     for (final component in objectContainer.children) {
@@ -44,12 +58,14 @@ class BottomBarComponent extends PositionComponent {
 
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
-      this.objectContainer.add(ObjectComponent(selectObject, isObjectSelected));
+          var newObject = ObjectComponent(selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
+          objectContainer.add(newObject);
+          addGameObject(newObject.gameObject);
     });
 
     deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(60, 0),
         tapAction: () {
-      this.objectContainer.remove(selectedObject());
+          objectContainer.remove(selectedObject());
     });
 
     editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(120, 0),
@@ -57,10 +73,16 @@ class BottomBarComponent extends PositionComponent {
       openEditor(selectedObject());
     });
 
+    uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
+        tapAction: () {
+        uploadGame();
+    });
+
     add(background);
     add(addBtn);
     add(deleteBtn);
     add(editBtn);
+    add(uploadBtn);
   }
 
   @override

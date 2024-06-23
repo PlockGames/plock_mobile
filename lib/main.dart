@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
-import 'models/games/game_object.dart';
+import 'package:plock_mobile/pages/play/play_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,11 +31,34 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  late TabController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TabController(length: 2, vsync: this, initialIndex: 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MyGamesPage(),
+      appBar: null,
+      bottomNavigationBar: TabBar(
+        controller: controller,
+        physics: const NeverScrollableScrollPhysics(),
+        tabs: const <Widget>[
+          Tab(icon: Icon(Icons.play_arrow)),
+          Tab(icon: Icon(Icons.create)),
+        ],
+      ),
+      body: TabBarView(
+        controller: controller,
+        children: <Widget>[
+          const PlayPage(),
+          const MyGamesPage(),
+        ],
+      ),
     );
   }
 }

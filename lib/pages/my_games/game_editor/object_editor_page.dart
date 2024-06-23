@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import '../../../models/games/component_type.dart';
 import 'edit_component_page.dart';
 
 class ObjectEditorPage extends StatefulWidget {
-  GameObject gameObject = GameObject(name: 'New Object');
+  late ObjectComponent object;
 
-  ObjectEditorPage({super.key, required this.gameObject});
+  ObjectEditorPage({super.key, required this.object});
 
   @override
   State<StatefulWidget> createState() {
@@ -17,36 +17,37 @@ class ObjectEditorPage extends StatefulWidget {
 }
 
 class _ObjectEditorPageState extends State<ObjectEditorPage> {
-  GameObject gameObject = GameObject(name: 'New Object');
-
   @override
   void initState() {
     super.initState();
-    gameObject = widget.gameObject;
   }
 
   void addComponent(ComponentType component) {
     setState(() {
-      gameObject.components.add(component.instance());
+      ComponentType instance = component.instance();
+      instance.setOnUpdate(widget.object.updateDisplay);
+      widget.object.gameObject.components.add(instance);
+      widget.object.updateDisplay();
     });
   }
 
   void removeComponent(ComponentType component) {
     setState(() {
-      gameObject.components.remove(component);
+      widget.object.gameObject.components.remove(component);
+      widget.object.updateDisplay();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController =
-        TextEditingController(text: gameObject.name);
+        TextEditingController(text: widget.object.gameObject.name);
 
     return Scaffold(
         appBar: AppBar(
-          title: Row(
+          title: const Row(
             children: [
-              const Text('Object Editor'),
+              Text('Object Editor'),
             ],
           ),
         ),
@@ -57,7 +58,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
               TextField(
                 controller: nameController,
                 onChanged: (value) {
-                  gameObject.name = value;
+                  widget.object.gameObject.name = value;
                 },
                 decoration: const InputDecoration(
                   hintText: 'Name',
@@ -66,7 +67,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                 ),
               ),
               const SizedBox(height: 40),
-              for (var component in gameObject.components)
+              for (var component in widget.object.gameObject.components)
                 Row(
                   children: [
                     Text(component.name),

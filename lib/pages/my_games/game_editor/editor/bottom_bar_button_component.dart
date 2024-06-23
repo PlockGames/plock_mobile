@@ -17,12 +17,12 @@ class BottomBarbuttonComponent extends PositionComponent with TapCallbacks {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = Vector2(50, 50);
+    size = Vector2(60, 60);
 
     svgInstance = await Svg.load(svgPath);
     final svgComponent = SvgComponent(
       svg: svgInstance,
-      size: Vector2(50, 50),
+      size: Vector2(60, 60),
       position: Vector2(0, 0),
     );
 

@@ -1,16 +1,31 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/flame_object.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 class Editor extends FlameGame {
   ObjectComponent? selectedObject;
-  final openEditor;
 
+  // Callback to update the game
+  final openEditor;
+  final addGameObject;
+  final removeGameObject;
+  final updateGameObject;
+  final uploadGame;
+
+  final Plock.Game game;
   late TextComponent selectedObjectName;
 
-  Editor(this.openEditor) {}
+  Editor({
+    required this.openEditor,
+    required this.game,
+    required this.addGameObject,
+    required this.removeGameObject,
+    required this.updateGameObject,
+    required this.uploadGame,
+  });
 
   selectObject(ObjectComponent? object) {
     selectedObject = object;
@@ -18,6 +33,11 @@ class Editor extends FlameGame {
 
   isObjectSelected(ObjectComponent object) {
     return selectedObject == object;
+  }
+
+  updateObject(ObjectComponent object) {
+    updateGameObject(object.gameObject);
+    object.updateDisplay();
   }
 
   @override
@@ -30,7 +50,16 @@ class Editor extends FlameGame {
     super.onLoad();
     final objectContainer = PositionComponent();
     final bottomBar = BottomBarComponent(
-        size, objectContainer, selectObject, isObjectSelected, openEditor);
+        screenSize: size,
+        objectContainer: objectContainer,
+        selectObject: selectObject,
+        isObjectSelected: isObjectSelected,
+        openEditor: openEditor,
+        addGameObject: addGameObject,
+        updateObject: updateObject,
+        deleteGameObject: removeGameObject,
+        uploadGame: uploadGame
+    );
     selectedObjectName = TextComponent()
       ..text = selectedObject?.name ?? ''
       ..anchor = Anchor.topLeft
@@ -39,6 +68,10 @@ class Editor extends FlameGame {
     add(objectContainer);
     add(bottomBar);
     add(selectedObjectName);
+
+    game.objects.forEach((element) {
+      add(ObjectComponent(selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
+    });
   }
 
   @override

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
 class ComponentFieldText extends ComponentField {
-String value;
+String _value;
 
   ComponentFieldText({
-    required this.value,
-  });
+    required String value,
+    onUpdate,
+  }) : _value = value {
+    this.onUpdate = onUpdate;
+  }
 
   @override
   String get type => 'ComponentFieldText';
@@ -17,16 +20,29 @@ String value;
       decoration: InputDecoration(
         labelText: name,
       ),
-      controller: TextEditingController(text: value),
+      controller: TextEditingController(text: _value),
       onChanged: (text) {
-        value = text;
+        _value = text;
+        onUpdate();
       },
     );
   }
 
   @override
   ComponentFieldText instance() {
-    return ComponentFieldText(value: value);
+    return ComponentFieldText(value: _value, onUpdate: onUpdate);
   }
 
+  @override
+  String get value => _value;
+
+  @override
+  set value(dynamic value) {
+    _value = value;
+  }
+
+  @override
+  String toJson() {
+    return "\"$_value\"";
+  }
 }
