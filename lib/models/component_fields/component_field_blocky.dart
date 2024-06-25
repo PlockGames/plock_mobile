@@ -6,7 +6,10 @@ import 'package:plock_mobile/models/component_fields/blocky/data/initial_toolbox
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:flutter_blockly/flutter_blockly.dart' as Blocky;
 
-class ComponentFieldBlocky extends ComponentField {
+import 'blocky/data/custom_blocks_list.dart';
+import 'blocky/data/pl_blockly_editor_widget.dart';
+
+class ComponentFieldBlockly extends ComponentField {
   static const Map<String, dynamic> initialJson = {
     'blocks': {
       'languageVersion': 0,
@@ -20,8 +23,16 @@ class ComponentFieldBlocky extends ComponentField {
       ],
     },
   };
+  String _value_lua = "";
+  Map<String, dynamic> _value = initialJson;
 
-  ComponentFieldBlocky();
+  ComponentFieldBlockly({value}) {
+    if (value != null) {
+      _value = value;
+    } else {
+      _value = initialJson;
+    }
+  }
 
   @override
   String get type => 'ComponentFieldBlocky';
@@ -37,7 +48,6 @@ class ComponentFieldBlocky extends ComponentField {
       ),
     );
 
-    print(initialToolbox.toJson());
     Blocky.BlocklyOptions workspaceConfiguration = Blocky.BlocklyOptions(
       theme: blockyTheme,
       css: true,
@@ -53,19 +63,24 @@ class ComponentFieldBlocky extends ComponentField {
       horizontalLayout: true,
       collapse: false,
       trashcan: false,
-
     );
 
     void onInject(Blocky.BlocklyData data) {
-      debugPrint('onInject: ${data.xml}\n${jsonEncode(data.json)}');
+      //debugPrint('onInject: ${data.xml}\n${jsonEncode(data.json)}');
     }
 
     void onChange(Blocky.BlocklyData data) {
-      debugPrint('onChange: ${data.xml}\n${jsonEncode(data.json)}\n${data.dart}');
+      //debugPrint('onChange: ${data.lua}');
+      if (data.json == null) {
+        _value = initialJson;
+      } else {
+        _value = data.json!;
+        _value_lua = data.lua;
+      }
     }
 
     void onDispose(Blocky.BlocklyData data) {
-      debugPrint('onDispose: ${data.xml}\n${jsonEncode(data.json)}');
+      //debugPrint('onDispose: ${data.xml}\n${jsonEncode(data.json)}');
     }
 
     void onError(dynamic err) {
@@ -74,19 +89,20 @@ class ComponentFieldBlocky extends ComponentField {
 
 
     return Expanded(
-        child: Blocky.BlocklyEditorWidget(
+        child: PlBlocklyEditorWidget(
           workspaceConfiguration: workspaceConfiguration,
-          initial: initialJson,
+          initial: _value,
           onInject: onInject,
           onChange: onChange,
           onDispose: onDispose,
           onError: onError,
+          blocks: customBlocksManager.toJs(),
         )
     );
   }
 
   @override
-  ComponentFieldBlocky instance() {
-    return ComponentFieldBlocky();
+  ComponentFieldBlockly instance() {
+    return ComponentFieldBlockly(value: _value);
   }
 }

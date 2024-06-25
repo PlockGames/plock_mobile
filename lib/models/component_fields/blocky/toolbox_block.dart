@@ -1,5 +1,4 @@
 import 'package:plock_mobile/models/component_fields/blocky/block_data/toolbox_block_field.dart';
-
 import 'block_data/toolbox_block_data.dart';
 import 'block_data/toolbox_block_mutation.dart';
 import 'block_data/toolbox_block_shadow.dart';
@@ -8,8 +7,9 @@ import 'block_data/toolbox_block_value.dart';
 class ToolboxBlock extends ToolboxBlockData {
   final String type;
   List<ToolboxBlockData> fields = [];
+  bool isCustom;
 
-  ToolboxBlock({this.type = ''});
+  ToolboxBlock({this.type = '', this.isCustom = false});
 
   factory ToolboxBlock.fromJson(Map<String, dynamic> json) {
     return ToolboxBlock();
@@ -18,17 +18,24 @@ class ToolboxBlock extends ToolboxBlockData {
   Map<String, dynamic> toJson() {
     final xml = getBlockXml();
 
-    if (xml.isEmpty) {
+    if (isCustom) {
       return {
         'kind': 'block',
-        'type': type,
+        'blockxml': "<block type=\"play_sound\"></block>"
+      };
+    } else {
+      if (xml.isEmpty) {
+        return {
+          'kind': 'block',
+          'type': type,
+        };
+      }
+
+      return {
+        'kind': 'block',
+        'blockxml': getBlockXml(),
       };
     }
-
-    return {
-      'kind': 'block',
-      'blockxml': getBlockXml(),
-    };
   }
 
 String getBlockXml() {

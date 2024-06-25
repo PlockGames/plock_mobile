@@ -7,7 +7,7 @@ class ComponentEvent extends ComponentType {
 
   ComponentEvent() {
     fields["trigger"] = ComponentFieldText(value: "test");
-    fields["event"] = ComponentFieldBlocky();
+    fields["event"] = ComponentFieldBlockly();
   }
 
   @override
@@ -15,4 +15,13 @@ class ComponentEvent extends ComponentType {
 
   @override
   String get name => 'Event';
+
+  @override
+  ComponentType instance() {
+    ComponentEvent comp = ComponentEvent();
+    fields.forEach((key, value) {
+      comp.fields[key] = value.instance();
+    });
+    return comp;
+  }
 }

@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dar
 import '../toolbox_block.dart';
 import 'blocks/colour/block_colour_blend.dart';
 import 'blocks/colour/block_colour_rgb.dart';
+import 'blocks/components/block_component_rect_width.dart';
 import 'blocks/controls/block_controls_for.dart';
 import 'blocks/controls/block_controls_repeat_ext.dart';
 import 'blocks/lists/block_lists_create_with.dart';
@@ -109,10 +110,16 @@ final initialToolbox = Toolbox(categories: [
   ToolboxCategory(
       name: "colour",
       blocks: [
-        ToolboxBlock(type: "colour_picker").addField("COLOUR", "#ff0000"),
+        //ToolboxBlock(type: "colour_picker").addField("COLOUR", "#ff0000"), // BROKEN ! TO FIX...
         ToolboxBlock(type: "colour_random"),
         blockColourRgb,
         blockColourBlend,
+      ]
+  ),
+  ToolboxCategory(
+      name: "components",
+      blocks: [
+        blockRectWidth,
       ]
   ),
   ToolboxCategory(
