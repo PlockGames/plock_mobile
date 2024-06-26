@@ -36,21 +36,16 @@ final blockRectWidthJson = CustomBlock.fromJson(
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
   var width = generator.valueToCode(block, 'width', lua.Order.ATOMIC);
-  return 'result[i] = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"; i = i+1';
-''').setFunctionDart('''
-  var object = generator.valueToCode(block, 'object', dart.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', dart.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
-''').setFunctionJs('''
-  var object = generator.valueToCode(block, 'object', javascript.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', javascript.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  var result = 'width = ' + width + ';';
+  result += 'object = ' + object + ';';
+  result += 'result[i] = \\\\"changeRectWidth \\\\" .. object .. \\\\" \\\\" .. tostring(width);';
+  result += 'i = i+1;';
+  return result;
+''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
+    .setFunctionJs('''
+  return 'console.log(\\\\"not implemented\\\\")';
 ''').setFunctionPhp('''
-  var object = generator.valueToCode(block, 'object', php.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', php.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  return 'print(\\\\"not implemented\\\\")';
 ''').setFunctionPython('''
-  var object = generator.valueToCode(block, 'object', python.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', python.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  return 'print(\\\\"not implemented\\\\")';
 ''');

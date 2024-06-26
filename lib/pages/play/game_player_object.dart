@@ -92,13 +92,38 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     return true;
   }
 
+  String gameToLua() {
+    String result = "game = {";
+    for (var object in game.objects) {
+      result += object.name + " = {";
+
+      for (var component in object.components) {
+        if (component.type == 'ComponentEvent') {
+          continue;
+        }
+        result += component.type + " = {";
+        for (var field in component.fields.keys) {
+          result += "$field = ${component.fields[field]!.value},";
+        }
+        result += "},";
+      }
+      result += "};";
+    }
+    result += "};";
+    return result;
+  }
+
   void executeEvent(String event) {
     LuaState lua = LuaState.newState();
     lua.openLibs();
-    lua.loadString('''result = {};
+    print('''${gameToLua()}
+    result = {};
     i = 1;
     $event''');
-    //lua.loadString(event);
+    lua.loadString('''${gameToLua()}
+    result = {};
+    i = 1;
+    $event''');
     lua.call(0, 0);
     lua.getGlobal("result");
     if (lua.isTable(-1)) {

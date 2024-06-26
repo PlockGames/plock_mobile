@@ -41,6 +41,7 @@ class CustomBlock {
   final String helpUrl;
   bool previousStatement = false;
   bool nextStatement = false;
+  String? output;
   String functionLua = '';
   String functionDart = '';
   String functionJs = '';
@@ -54,6 +55,7 @@ class CustomBlock {
       required this.colour,
       required this.tooltip,
       required this.helpUrl,
+      this.output,
       this.previousStatement=false,
       this.nextStatement=false
       });
@@ -76,6 +78,10 @@ class CustomBlock {
     }
     if (json.keys.contains("nextStatement")) {
       cb.nextStatement = true;
+    }
+
+    if (json.keys.contains("output")) {
+      cb.output = json['output'];
     }
 
     return cb;
@@ -142,6 +148,10 @@ class CustomBlock {
 
     if (nextStatement) {
       json['nextStatement'] = 'null';
+    }
+
+    if (output != null) {
+      json['output'] = output!;
     }
 
     return json;

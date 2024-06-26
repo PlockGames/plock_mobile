@@ -36,21 +36,17 @@ final blockRectHeightJson = CustomBlock.fromJson(
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
   var height = generator.valueToCode(block, 'height', lua.Order.ATOMIC);
-  return 'result[i] = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"; i = i+1';
+  var result = 'height = ' + height + ';';
+  result += 'object = ' + object + ';';
+  result += 'result[i] = \\\\"changeRectHeight \\\\" .. object .. \\\\" \\\\" .. tostring(height);';
+  result += 'i = i+1;';
+  return result;
 ''').setFunctionDart('''
-  var object = generator.valueToCode(block, 'object', dart.Order.ATOMIC);
-  var height = generator.valueToCode(block, 'height', dart.Order.ATOMIC);
-  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
+  return '';
 ''').setFunctionJs('''
-  var object = generator.valueToCode(block, 'object', javascript.Order.ATOMIC);
-  var height = generator.valueToCode(block, 'height', javascript.Order.ATOMIC);
-  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
+  return '';
 ''').setFunctionPhp('''
-  var object = generator.valueToCode(block, 'object', php.Order.ATOMIC);
-  var height = generator.valueToCode(block, 'height', php.Order.ATOMIC);
-  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
+  return '';
 ''').setFunctionPython('''
-  var object = generator.valueToCode(block, 'object', python.Order.ATOMIC);
-  var height = generator.valueToCode(block, 'height', python.Order.ATOMIC);
-  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
+  return '';
 ''');
