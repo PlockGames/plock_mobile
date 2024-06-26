@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dar
 import '../toolbox_block.dart';
 import 'blocks/colour/block_colour_blend.dart';
 import 'blocks/colour/block_colour_rgb.dart';
+import 'blocks/components/block_component_rect_height.dart';
 import 'blocks/components/block_component_rect_width.dart';
 import 'blocks/controls/block_controls_for.dart';
 import 'blocks/controls/block_controls_repeat_ext.dart';
@@ -120,6 +121,7 @@ final initialToolbox = Toolbox(categories: [
       name: "components",
       blocks: [
         blockRectWidth,
+        blockRectHeight,
       ]
   ),
   ToolboxCategory(

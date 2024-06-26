@@ -5,7 +5,8 @@ import '../../models/games/game_object.dart';
 class EventManager {
 
   static Map<String, Function> eventsList = {
-    "changeRectWidth": changeRectWidth
+    "changeRectWidth": changeRectWidth,
+    "changeRectHeight": changeRectHeight,
   };
 
   static void callEvent(String event, Game game) {
@@ -27,6 +28,19 @@ class EventManager {
       GameObject object = game.objects.firstWhere((element) => element.name == objectName);
       ComponentRect rect = object.components.firstWhere((element) => element.type == "ComponentRect") as ComponentRect;
       rect.fields["width"]!.value = newWidth.toInt();
+      game.isDirty = true;
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  static void changeRectHeight(List<String> args, Game game) {
+    String objectName = args[1];
+    double newHeight = double.parse(args[2]);
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.name == objectName);
+      ComponentRect rect = object.components.firstWhere((element) => element.type == "ComponentRect") as ComponentRect;
+      rect.fields["height"]!.value = newHeight.toInt();
       game.isDirty = true;
     } catch (e) {
       print("Error: $e");

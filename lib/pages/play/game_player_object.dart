@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:lua_dardo/debug.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:lua_dardo/lua.dart';
 import 'package:plock_mobile/pages/play/event_manager.dart';
@@ -8,7 +10,7 @@ import 'package:plock_mobile/pages/play/event_manager.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
-class GamePlayerObject extends PositionComponent {
+class GamePlayerObject extends PositionComponent with TapCallbacks {
 
   late GameObject gameObject;
   late Game game;
@@ -27,24 +29,14 @@ class GamePlayerObject extends PositionComponent {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = Vector2(0, 0);
+    size = Vector2(50, 50);
     position = Vector2(gameObject.position.x, gameObject.position.y);
     updateDisplay();
     updateEvents();
 
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_START') {
-        LuaState lua = LuaState.newState();
-        lua.openLibs();
-        lua.loadString(component.fields['event']!.value);
-        lua.call(0, 0);
-        lua.getGlobal("result");
-        if (lua.isString(-1)) {
-          String? result = lua.toStr(-1);
-          if (result != null) {
-            EventManager.callEvent(result, game);
-          }
-        }
+        executeEvent(component.fields['event']!.value);
       }
     }
   }
@@ -84,7 +76,44 @@ class GamePlayerObject extends PositionComponent {
 
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
-        print("execute on update code :3");
+        executeEvent(component.fields['event']!.value);
+      }
+    }
+  }
+
+  @override
+  bool onTapUp(TapUpEvent info) {
+    print("on tap");
+    for (var component in eventComponents) {
+      if (component.fields['trigger']!.value == 'ON_TAP') {
+        executeEvent(component.fields['event']!.value);
+      }
+    }
+    return true;
+  }
+
+  void executeEvent(String event) {
+    LuaState lua = LuaState.newState();
+    lua.openLibs();
+    lua.loadString('''result = {};
+    i = 1;
+    $event''');
+    //lua.loadString(event);
+    lua.call(0, 0);
+    lua.getGlobal("result");
+    if (lua.isTable(-1)) {
+      final size = lua.len2(-1);
+      for (int i = 1; i <= size!; i++) {
+        lua.pushInteger(i);
+        lua.getTable(-2);
+        if (lua.isString(-1)) {
+          var result = lua.toStr(-1);
+          if (result != null) {
+            print(result);
+            EventManager.callEvent(result, game);
+          }
+        }
+        lua.pop(1);
       }
     }
   }

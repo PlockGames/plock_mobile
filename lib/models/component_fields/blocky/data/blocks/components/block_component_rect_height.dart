@@ -1,12 +1,12 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
-final blockRectWidth = ToolboxBlock(type: "rect_width");
+final blockRectHeight = ToolboxBlock(type: "rect_height");
 
-final blockRectWidthJson = CustomBlock.fromJson(
+final blockRectHeightJson = CustomBlock.fromJson(
 {
-  "type": "rect_width",
-  "message0": "Change rect width of %1 object %2 to  %3 %4",
+  "type": "rect_height",
+  "message0": "Change rect height of %1 object %2 to  %3 %4",
   "args0": [
     {
       "type": "input_dummy"
@@ -22,7 +22,7 @@ final blockRectWidthJson = CustomBlock.fromJson(
     },
     {
       "type": "input_value",
-      "name": "width",
+      "name": "height",
       "check": "Number",
       "align": "RIGHT"
     }
@@ -35,22 +35,22 @@ final blockRectWidthJson = CustomBlock.fromJson(
 }
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', lua.Order.ATOMIC);
-  return 'result[i] = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"; i = i+1';
+  var height = generator.valueToCode(block, 'height', lua.Order.ATOMIC);
+  return 'result[i] = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"; i = i+1';
 ''').setFunctionDart('''
   var object = generator.valueToCode(block, 'object', dart.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', dart.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  var height = generator.valueToCode(block, 'height', dart.Order.ATOMIC);
+  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
 ''').setFunctionJs('''
   var object = generator.valueToCode(block, 'object', javascript.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', javascript.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  var height = generator.valueToCode(block, 'height', javascript.Order.ATOMIC);
+  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
 ''').setFunctionPhp('''
   var object = generator.valueToCode(block, 'object', php.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', php.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  var height = generator.valueToCode(block, 'height', php.Order.ATOMIC);
+  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
 ''').setFunctionPython('''
   var object = generator.valueToCode(block, 'object', python.Order.ATOMIC);
-  var width = generator.valueToCode(block, 'width', python.Order.ATOMIC);
-  return 'result = \\\\"changeRectWidth ' + object + ' ' + width + '\\\\"';
+  var height = generator.valueToCode(block, 'height', python.Order.ATOMIC);
+  return 'result = \\\\"changeRectHeight ' + object + ' ' + height + '\\\\"';
 ''');
