@@ -1,12 +1,18 @@
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_pos_x.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/text/block_text_to_number.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
 
 import '../toolbox_block.dart';
 import 'blocks/colour/block_colour_blend.dart';
 import 'blocks/colour/block_colour_rgb.dart';
-import 'blocks/components/block_component_get_rect_width.dart';
+import 'blocks/components/block_component_rect_get_height.dart';
+import 'blocks/components/block_component_rect_get_width.dart';
 import 'blocks/components/block_component_rect_height.dart';
 import 'blocks/components/block_component_rect_width.dart';
+import 'blocks/components/block_object_pos_y.dart';
 import 'blocks/controls/block_controls_for.dart';
 import 'blocks/controls/block_controls_repeat_ext.dart';
 import 'blocks/lists/block_lists_create_with.dart';
@@ -34,6 +40,7 @@ import 'blocks/text/block_text_is_empty.dart';
 import 'blocks/text/block_text_length.dart';
 import 'blocks/text/block_text_print.dart';
 import 'blocks/text/block_text_prompt_ext.dart';
+import 'blocks/text/block_text_to_string.dart';
 import 'blocks/text/block_text_trim.dart';
 
 final initialToolbox = Toolbox(categories: [
@@ -81,6 +88,7 @@ final initialToolbox = Toolbox(categories: [
       blocks: [
         blockTextCharAt,
         ToolboxBlock(type: "text").addField("TEXT", "text"),
+        blockTextToString,
         blockTextAppend,
         blockTextLength,
         blockTextIsEmpty,
@@ -91,6 +99,7 @@ final initialToolbox = Toolbox(categories: [
         blockTextTrim,
         blockTextPrint,
         blockTextPromptExt,
+        blockTextToNumber,
       ]
   ),
   ToolboxCategory(
@@ -124,6 +133,11 @@ final initialToolbox = Toolbox(categories: [
         blockRectWidth,
         blockRectHeight,
         blockGetRectWidth,
+        blockGetRectHeight,
+        blockTextText,
+        blockObjectPosX,
+        blockObjectPosY,
+        blockGetTextText,
       ]
   ),
   ToolboxCategory(

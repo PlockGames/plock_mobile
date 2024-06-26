@@ -31,6 +31,7 @@ class GamePlayer extends FlameGame {
         GamePlayerObject object = component as GamePlayerObject;
         object.updateDisplay();
         object.updateEvents();
+        object.updateObjectData();
       }
     }
   }

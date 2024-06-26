@@ -65,6 +65,10 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     }
   }
 
+  void updateObjectData() {
+    position = Vector2(gameObject.position.x, gameObject.position.y);
+  }
+
   @override
   void render(Canvas canvas) {
     super.render(canvas);
