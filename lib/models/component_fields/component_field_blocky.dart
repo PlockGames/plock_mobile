@@ -105,4 +105,17 @@ class ComponentFieldBlockly extends ComponentField {
   ComponentFieldBlockly instance() {
     return ComponentFieldBlockly(value: _value);
   }
+
+  @override
+  String get value => _value_lua;
+
+  @override
+  set value(dynamic value) {
+    _value_lua = value;
+  }
+
+  @override
+  String toJson() {
+    return "\"$_value_lua\"";
+  }
 }

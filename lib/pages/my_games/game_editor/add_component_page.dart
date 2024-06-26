@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 
-import '../../../models/component_types/component_rect.dart';
-import '../../../models/component_types/component_event.dart';
 import '../../../models/games/component_type.dart';
 
 class AddComponentPage extends StatefulWidget {
