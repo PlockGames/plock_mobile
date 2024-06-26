@@ -7,6 +7,7 @@ import 'game_object.dart';
 class Game {
   final String name;
   List<GameObject> objects = List<GameObject>.empty(growable: true);
+  bool isDirty = false;
 
   Game({required this.name});
 
@@ -28,8 +29,10 @@ class Game {
   static jsonToGame(Map<String, dynamic> json) async {
     Game game = Game(name: json['title']);
     var gameDataResponse = await ApiService.getGameWithData(json['id'].toString());
-    var gameData = jsonDecode(gameDataResponse.body)["data"];
-    var objects = jsonDecode(gameData)["objects"];
+    String gameData = jsonDecode(gameDataResponse.body)["data"];
+    gameData = gameData.replaceAll('\n', '');
+    var dataJson = jsonDecode(gameData);
+    var objects = dataJson['objects'];
     for (var object in objects) {
       game.objects.add(GameObject.fromJson(object));
     }

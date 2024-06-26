@@ -9,20 +9,30 @@ import 'game_player_object.dart';
 
 class GamePlayer extends FlameGame {
   final plock.Game game;
+  List<Component> components = [];
 
   GamePlayer(this.game);
 
   @override
   Future<void> onLoad() async {
     for (var object in game.objects) {
-      add(GamePlayerObject(gameObject: object)
-      );
+      Component newComponent = GamePlayerObject(gameObject: object, game: game);
+      components.add(newComponent);
+      add(newComponent);
     }
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+    if (game.isDirty) {
+      game.isDirty = false;
+      for (var component in components) {
+        GamePlayerObject object = component as GamePlayerObject;
+        object.updateDisplay();
+        object.updateEvents();
+      }
+    }
   }
 
   @override

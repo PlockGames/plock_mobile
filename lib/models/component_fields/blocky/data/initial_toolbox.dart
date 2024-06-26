@@ -78,7 +78,7 @@ final initialToolbox = Toolbox(categories: [
       name: "text",
       blocks: [
         blockTextCharAt,
-        ToolboxBlock(type: "text").addField("TEXT", ""),
+        ToolboxBlock(type: "text").addField("TEXT", "text"),
         blockTextAppend,
         blockTextLength,
         blockTextIsEmpty,

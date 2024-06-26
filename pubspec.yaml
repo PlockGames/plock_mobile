@@ -38,6 +38,7 @@ dependencies:
   flame_svg: ^1.10.0
   webview_flutter: ^4.7.0
   flutter_blockly: ^1.4.2
+  lua_dardo: ^0.0.3
   http: ^1.2.1
 
 dev_dependencies:

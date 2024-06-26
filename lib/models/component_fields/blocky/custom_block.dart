@@ -7,7 +7,6 @@ class Arg {
     Arg({required this.type, this.name, this.check, this.align});
 
     factory Arg.fromJson(Map<String, dynamic> json) {
-      print(json);
         return Arg(
             type: json['type'],
             name: json['name'],
@@ -61,7 +60,6 @@ class CustomBlock {
 
   factory CustomBlock.fromJson(Map<String, dynamic> json) {
 
-    print(json['previousStatement']);
     var cb = CustomBlock(
       type: json['type'],
       message: json['message0'],
