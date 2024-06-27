@@ -1,12 +1,12 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
-final blockRectHeight = ToolboxBlock(type: "rect_height");
+final blockCircleRadius = ToolboxBlock(type: "circleRadius");
 
-final blockRectHeightJson = CustomBlock.fromJson(
+final blockCircleRadiusJson = CustomBlock.fromJson(
 {
-  "type": "rect_height",
-  "message0": "Change rect height of %1 object %2 to  %3 %4",
+  "type": "circleRadius",
+  "message0": "Change circle radius of %1 object %2 to  %3 %4",
   "args0": [
     {
       "type": "input_dummy"
@@ -22,7 +22,7 @@ final blockRectHeightJson = CustomBlock.fromJson(
     },
     {
       "type": "input_value",
-      "name": "height",
+      "name": "radius",
       "check": "Number",
       "align": "RIGHT"
     }
@@ -30,22 +30,21 @@ final blockRectHeightJson = CustomBlock.fromJson(
   "previousStatement": null,
   "nextStatement": null,
   "colour": 230,
-  "tooltip": "Change a rect component size",
+  "tooltip": "Change a circle component radius",
   "helpUrl": ""
 }
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var height = generator.valueToCode(block, 'height', lua.Order.ATOMIC);
-  var result = 'height = ' + height + ';';
+  var radius = generator.valueToCode(block, 'radius', lua.Order.ATOMIC);
+  var result = 'radius = ' + radius + ';';
   result += 'object = ' + object + ';';
-  result += 'changeRectHeight(object,height);';
+  result += 'changeCircleRadius(object,radius);';
   return result;
-''').setFunctionDart('''
-  return '';
-''').setFunctionJs('''
-  return '';
+''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
+    .setFunctionJs('''
+  return 'console.log(\\\\"not implemented\\\\")';
 ''').setFunctionPhp('''
-  return '';
+  return 'print(\\\\"not implemented\\\\")';
 ''').setFunctionPython('''
-  return '';
+  return 'print(\\\\"not implemented\\\\")';
 ''');

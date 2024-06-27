@@ -21,8 +21,7 @@ final blockGetRectHeightJson = CustomBlock.fromJson(
     }
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  object = object.slice(1, -1);
-  var result = 'game[\\\\"' + object + '\\\\"][\\\\"ComponentRect\\\\"][\\\\"height\\\\"]';
+  var result = 'getRectHeight(' + object + ')';
   return [result, lua.Order.NONE];
 ''').setFunctionDart('''
   return '';

@@ -38,8 +38,7 @@ final blockObjectPosYJson = CustomBlock.fromJson(
   var y = generator.valueToCode(block, 'y', lua.Order.ATOMIC);
   var result = 'y = ' + y + ';';
   result += 'object = ' + object + ';';
-  result += 'result[i] = \\\\"changeObjectPosY \\\\" .. object .. \\\\" \\\\" .. y;';
-  result += 'i = i+1;';
+  result += 'changeObjectPosY(object,y);';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

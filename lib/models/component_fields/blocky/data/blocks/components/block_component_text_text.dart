@@ -38,8 +38,7 @@ final blockTextTextJson = CustomBlock.fromJson(
   var text = generator.valueToCode(block, 'text', lua.Order.ATOMIC);
   var result = 'text = ' + text + ';';
   result += 'object = ' + object + ';';
-  result += 'result[i] = \\\\"changeTextText \\\\" .. object .. \\\\" \\\\" .. text;';
-  result += 'i = i+1;';
+  result += 'changeTextText(object,text);';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

@@ -1,12 +1,12 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
-final blockGetTextText = ToolboxBlock(type: "text_get_text");
+final blockGetCircleRadius = ToolboxBlock(type: "circle_get_radius");
 
-final blockGetTextTextJson = CustomBlock.fromJson(
+final blockGetCircleRadiusJson = CustomBlock.fromJson(
     {
-      "type": "text_get_text",
-      "message0": "Get text of object  %1",
+      "type": "circle_get_radius",
+      "message0": "Get circle radius of object  %1",
       "args0": [
         {
           "type": "input_value",
@@ -14,14 +14,14 @@ final blockGetTextTextJson = CustomBlock.fromJson(
           "check": "String"
         }
       ],
-      "output": "String",
+      "output": "Number",
       "colour": 230,
-      "tooltip": "Get the text of the text component",
+      "tooltip": "Get the radius of the circle component",
       "helpUrl": ""
     }
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var result = 'getTextText(' + object + ')';
+  var result = 'getCircleRadius(' + object + ')';
   return [result, lua.Order.NONE];
 ''').setFunctionDart('''
   return '';

@@ -21,8 +21,7 @@ final blockGetRectWidthJson = CustomBlock.fromJson(
     }
 ).setFunctionLua('''
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  object = object.slice(1, -1);
-  var result = 'game[\\\\"' + object + '\\\\"][\\\\"ComponentRect\\\\"][\\\\"width\\\\"]';
+  var result = 'getRectWidth(' + object + ')';
   return [result, lua.Order.NONE];
 ''').setFunctionDart('''
   return '';

@@ -7,7 +7,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #fff;
+  background-color: #000;
 }
 .wrapper {
   display: flex;
@@ -16,7 +16,7 @@ body {
   height: 100%;
   min-width: 320px;
   min-height: 320px;
-  background-color: #fff;
+  background-color: #000;
   box-sizing: border-box;
 }
 .wrapper-web {

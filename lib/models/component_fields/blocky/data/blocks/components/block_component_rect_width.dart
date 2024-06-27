@@ -38,8 +38,7 @@ final blockRectWidthJson = CustomBlock.fromJson(
   var width = generator.valueToCode(block, 'width', lua.Order.ATOMIC);
   var result = 'width = ' + width + ';';
   result += 'object = ' + object + ';';
-  result += 'result[i] = \\\\"changeRectWidth \\\\" .. object .. \\\\" \\\\" .. tostring(width);';
-  result += 'i = i+1;';
+  result += 'changeRectWidth(object,width);';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''
