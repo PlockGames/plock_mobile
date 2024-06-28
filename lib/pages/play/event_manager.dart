@@ -14,6 +14,8 @@ class EventManager {
 
   static void registerEvents(LuaState lua, Game game) {
       lua.registerAsync("wait", _wait(game));
+      lua.register("getScreenWidth", _getScreenWidth(game));
+      lua.register("getScreenHeight", _getScreenHeight(game));
       // Rect component
       lua.registerAsync("changeRectWidth", _changeRectWidth(game));
       lua.registerAsync("changeRectHeight", _changeRectHeight(game));
@@ -35,12 +37,27 @@ class EventManager {
   static EventAsync _wait(Game game) {
     return (lua) async {
       int? time = await lua.checkInteger(1);
-      lua.printStack();
       if (time != null) {
         await Future.delayed(Duration(milliseconds: time));
         return 0;
       }
       return 0;
+    };
+  }
+
+  static Event _getScreenWidth(Game game) {
+    return (lua) {
+      print(game.screenSize.x);
+      lua.pushNumber(game.screenSize.x);
+      return 1;
+    };
+  }
+
+  static Event _getScreenHeight(Game game) {
+    return (lua) {
+      print(game.screenSize.y);
+      lua.pushNumber(game.screenSize.y);
+      return 1;
     };
   }
 

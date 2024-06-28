@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flame/components.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import 'game_object.dart';
@@ -8,6 +9,7 @@ class Game {
   final String name;
   List<GameObject> objects = List<GameObject>.empty(growable: true);
   bool isDirty = false;
+  Vector2 screenSize = Vector2(0, 0);
 
   Game({required this.name});
 

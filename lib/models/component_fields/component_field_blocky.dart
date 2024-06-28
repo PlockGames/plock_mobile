@@ -55,8 +55,8 @@ class ComponentFieldBlockly extends ComponentField {
         drag: true,
         wheel: true,
         scrollbars: Blocky.ScrollbarOptions(
-          horizontal: false,
-          vertical: false,
+          horizontal: true,
+          vertical: true,
         )
       ),
       toolbox: Blocky.ToolboxInfo.fromJson(initialToolbox.toJson()),
