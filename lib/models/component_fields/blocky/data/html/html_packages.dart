@@ -7,6 +7,7 @@ String htmlPackages({String? packages}) {
   <script src="https://unpkg.com/blockly/lua_compressed" defer></script>
   <script src="https://unpkg.com/blockly/php_compressed" defer></script>
   <script src="https://unpkg.com/blockly/python_compressed" defer></script>
+  <script src="./index.js" defer></script>
   ${packages ?? ''}
 ''';
 }

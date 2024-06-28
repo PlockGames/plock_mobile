@@ -1,4 +1,5 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks_manager.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_get_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
@@ -29,6 +30,7 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockWaitJson)
     .addBlock(blockGetScreenWidthJson)
     .addBlock(blockGetScreenHeightJson)
+    .addBlock(blockColourJson)
     // component rect
     .addBlock(blockRectWidthJson)
     .addBlock(blockRectHeightJson)

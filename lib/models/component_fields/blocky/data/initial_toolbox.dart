@@ -1,3 +1,4 @@
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_get_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
@@ -138,9 +139,10 @@ final initialToolbox = Toolbox(categories: [
       name: "colour",
       blocks: [
         //ToolboxBlock(type: "colour_picker").addField("COLOUR", "#ff0000"), // BROKEN ! TO FIX...
-        ToolboxBlock(type: "colour_random"),
-        blockColourRgb,
-        blockColourBlend,
+        //ToolboxBlock(type: "colour_random"),
+        //blockColourRgb,
+        //blockColourBlend,
+        blockColour,
       ]
   ),
   ToolboxCategory(
