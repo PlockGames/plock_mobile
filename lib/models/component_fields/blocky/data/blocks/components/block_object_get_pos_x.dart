@@ -13,7 +13,7 @@ final blockGetObjectPosXJson = CustomBlock.fromJson(
         {
           "type": "input_value",
           "name": "object",
-          "check": "String"
+          "check": "Number"
         }
       ],
       "output": "Number",

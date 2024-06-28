@@ -21,6 +21,7 @@ class GameObject {
   /// Convert the object to a JSON string.
   String toJson() {
     String json = "{";
+    json += "\"id\": $id,";
     json += "\"name\": \"$name\",";
     json += "\"components\": [";
     components.forEach((element) {

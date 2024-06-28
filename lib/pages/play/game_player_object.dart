@@ -38,7 +38,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
 
     // Load the lua state to execute events
     await lua.openLibs();
-    EventManager.registerEvents(lua, game);
+    EventManager.registerEvents(lua, game, gameObject.id);
 
     // Set the object data
     size = Vector2(50, 50);

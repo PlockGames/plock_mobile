@@ -16,7 +16,7 @@ final blockObjectPosYJson = CustomBlock.fromJson(
         {
           "type": "input_value",
           "name": "object",
-          "check": "String",
+          "check": "Number",
           "align": "RIGHT"
         },
         {

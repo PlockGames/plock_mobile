@@ -6,6 +6,8 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_x.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_y.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_move.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_name.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_this.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_height.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_width.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/text/block_text_to_string.dart';
@@ -43,4 +45,6 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockObjectPosYJson)
     .addBlock(blockGetObjectPosXJson)
     .addBlock(blockGetObjectPosYJson)
-    .addBlock(blockObjectMoveJson);
+    .addBlock(blockObjectMoveJson)
+    .addBlock(blockObjectThisJson)
+    .addBlock(blockObjectNameJson);

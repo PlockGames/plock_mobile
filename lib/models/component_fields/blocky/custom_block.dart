@@ -81,13 +81,16 @@ class CustomBlock {
 
   /// Convert a json to a [CustomBlock].
   factory CustomBlock.fromJson(Map<String, dynamic> json) {
+    List<Map<String, String>>? argsJson = json['args0'];
+    List<Arg> args = [];
+    if (argsJson != null) {
+      args = (argsJson as List).map((e) => Arg.fromJson(e)).toList();
+    }
 
     var cb = CustomBlock(
       type: json['type'],
       message: json['message0'],
-      args: (json['args0'] as List)
-          .map((e) => Arg.fromJson(e))
-          .toList(),
+      args: args,
       colour: json['colour'],
       tooltip: json['tooltip'],
       helpUrl: json['helpUrl'],
@@ -167,11 +170,14 @@ class CustomBlock {
     var json = {
       'type': type,
       'message0': message,
-      'args0': args.map((e) => e.toJson()).toList(),
       'colour': colour,
       'tooltip': tooltip,
       'helpUrl': helpUrl,
     };
+
+    if (args.isNotEmpty) {
+      json['args0'] = args.map((e) => e.toJson()).toList();
+    }
 
     if (previousStatement) {
       json['previousStatement'] = 'null';

@@ -13,7 +13,7 @@ final blockObjectMoveJson = CustomBlock.fromJson(
         {
           "type": "input_value",
           "name": "object",
-          "check": "String"
+          "check": "Number"
         },
         {
           "type": "input_value",

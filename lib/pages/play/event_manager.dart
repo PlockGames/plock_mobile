@@ -19,32 +19,35 @@ class EventManager {
   ///
   /// [lua] The lua vm to register the events to.
   /// [game] The game data to execute the events on.
-  static void registerEvents(LuaState lua, Game game) {
+  static void registerEvents(LuaState lua, Game game, int thisObjectId) {
       // System
-      lua.registerAsync("wait", _wait(game));
-      lua.register("getScreenWidth", _getScreenWidth(game));
-      lua.register("getScreenHeight", _getScreenHeight(game));
+      lua.registerAsync("wait", _wait(game, thisObjectId));
+      lua.register("getScreenWidth", _getScreenWidth(game, thisObjectId));
+      lua.register("getScreenHeight", _getScreenHeight(game, thisObjectId));
       // Rect component
-      lua.registerAsync("changeRectWidth", _changeRectWidth(game));
-      lua.registerAsync("changeRectHeight", _changeRectHeight(game));
-      lua.register("getRectWidth", _getRectWidth(game));
-      lua.register("getRectHeight", _getRectHeight(game));
+      lua.registerAsync("changeRectWidth", _changeRectWidth(game, thisObjectId));
+      lua.registerAsync("changeRectHeight", _changeRectHeight(game, thisObjectId));
+      lua.registerAsync("getRectWidth", _getRectWidth(game, thisObjectId));
+      lua.registerAsync("getRectHeight", _getRectHeight(game, thisObjectId));
       // Text component
-      lua.register("changeTextText", _changeTextText(game));
-      lua.register("getTextText", _getTextText(game));
+      lua.registerAsync("changeTextText", _changeTextText(game, thisObjectId));
+      lua.registerAsync("getTextText", _getTextText(game, thisObjectId));
       // Circle component
-      lua.registerAsync("changeCircleRadius", _changeCircleRadius(game));
-      lua.register("getCircleRadius", _getCircleRadius(game));
+      lua.registerAsync("changeCircleRadius", _changeCircleRadius(game, thisObjectId));
+      lua.registerAsync("getCircleRadius", _getCircleRadius(game, thisObjectId));
       // Object
-      lua.register("changeObjectPosX", _changeObjectPosX(game));
-      lua.register("changeObjectPosY", _changeObjectPosY(game));
-      lua.register("getObjectPosX", _getObjectPosX(game));
-      lua.register("getObjectPosY", _getObjectPosY(game));
-      lua.registerAsync("objectMove", _objectMove(game));
+      lua.registerAsync("changeObjectPosX", _changeObjectPosX(game, thisObjectId));
+      lua.registerAsync("changeObjectPosY", _changeObjectPosY(game, thisObjectId));
+      lua.registerAsync("getObjectPosX", _getObjectPosX(game, thisObjectId));
+      lua.registerAsync("getObjectPosY", _getObjectPosY(game, thisObjectId));
+      lua.registerAsync("objectMove", _objectMove(game, thisObjectId));
+      lua.register("thisObject", _thisObject(game, thisObjectId));
+      lua.register("getObjectByName", _getObjectByName(game, thisObjectId));
+
   }
 
   /// Wait for a certain amount of time.
-  static EventAsync _wait(Game game) {
+  static EventAsync _wait(Game game, int thisObjectId) {
     return (lua) async {
       int? time = await lua.checkInteger(1);
       if (time != null) {
@@ -56,33 +59,31 @@ class EventManager {
   }
 
   /// Return the screen width.
-  static Event _getScreenWidth(Game game) {
+  static Event _getScreenWidth(Game game, int thisObjectId) {
     return (lua) {
-      print(game.screenSize.x);
       lua.pushNumber(game.screenSize.x);
       return 1;
     };
   }
 
   /// Return the screen height.
-  static Event _getScreenHeight(Game game) {
+  static Event _getScreenHeight(Game game, int thisObjectId) {
     return (lua) {
-      print(game.screenSize.y);
       lua.pushNumber(game.screenSize.y);
       return 1;
     };
   }
 
   /// Change the width of a rect component.
-  static EventAsync _changeRectWidth(Game game) {
+  static EventAsync _changeRectWidth(Game game, int thisObjectId) {
     return (lua) async {
-      String? objectName = lua.checkString(1);
+      int? objectId = await lua.checkInteger(1);
       int? newWidth = await lua.checkInteger(2);
       lua.pop(2);
-      if (objectName != null && newWidth != null) {
+      if (objectId != null && newWidth != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
           rect.fields["width"]!.value = newWidth;
@@ -97,15 +98,15 @@ class EventManager {
   }
 
   /// Change the height of a rect component.
-  static EventAsync _changeRectHeight(Game game) {
+  static EventAsync _changeRectHeight(Game game, int thisObjectId) {
     return (lua) async {
-      String? objectName = lua.checkString(1);
+      int? objectId = await lua.checkInteger(1);
       int? newHeight = await lua.checkInteger(2);
       lua.pop(2);
-      if (objectName != null && newHeight != null) {
+      if (objectId != null && newHeight != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
           rect.fields["height"]!.value = newHeight;
@@ -120,15 +121,15 @@ class EventManager {
   }
 
   /// Change the text of a text component.
-  static Event _changeTextText(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _changeTextText(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       String? newText = lua.checkString(2);
       lua.pop(2);
-      if (objectName != null && newText != null) {
+      if (objectId != null && newText != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentText text = object.components.firstWhere((element) =>
           element.type == "ComponentText") as ComponentText;
           text.fields["text"]!.value = newText;
@@ -143,15 +144,15 @@ class EventManager {
   }
 
   /// Change the x position of an object.
-  static Event _changeObjectPosX(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _changeObjectPosX(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       double? newPosX = lua.checkNumber(2);
       lua.pop(2);
-      if (objectName != null && newPosX != null) {
+      if (objectId != null && newPosX != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           object.position.x = newPosX;
           game.isDirty = true;
         } catch (e) {
@@ -164,15 +165,15 @@ class EventManager {
   }
 
   /// Change the y position of an object.
-  static Event _changeObjectPosY(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _changeObjectPosY(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       double? newPosY = lua.checkNumber(2);
       lua.pop(2);
-      if (objectName != null && newPosY != null) {
+      if (objectId != null && newPosY != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           object.position.y = newPosY;
           game.isDirty = true;
         } catch (e) {
@@ -185,17 +186,17 @@ class EventManager {
   }
 
   /// Move an object to a certain position.
-  static EventAsync _objectMove(Game game) {
+  static EventAsync _objectMove(Game game, int thisObjectId) {
     return (lua) async {
-      String? objectName = lua.checkString(1);
+      int? objectId = await lua.checkInteger(1);
       double? targetX = lua.checkNumber(2);
       double? targetY = lua.checkNumber(3);
       double? speed = lua.checkNumber(4);
       lua.pop(4);
-      if (objectName != null && targetX != null && targetY != null && speed != null) {
+      if (objectId != null && targetX != null && targetY != null && speed != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           await _objectMoveAsync(game, object, targetX, targetY, speed);
           game.isDirty = true;
         } catch (e) {
@@ -233,15 +234,15 @@ class EventManager {
   }
 
   /// Change the radius of a circle component.
-  static EventAsync _changeCircleRadius(Game game) {
+  static EventAsync _changeCircleRadius(Game game, int thisObjectId) {
     return (lua) async {
-      String? objectName = lua.checkString(1);
+      int? objectId = await lua.checkInteger(1);
       int? newRadius = await lua.checkInteger(2);
       lua.pop(2);
-      if (objectName != null && newRadius != null) {
+      if (objectId != null && newRadius != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentCircle circle = object.components.firstWhere((element) =>
           element.type == "ComponentCircle") as ComponentCircle;
           circle.fields["radius"]!.value = newRadius;
@@ -256,14 +257,14 @@ class EventManager {
   }
 
   /// Get the width of a rect component.
-  static Event _getRectWidth(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getRectWidth(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
           lua.pushInteger(rect.fields["width"]!.value);
@@ -278,14 +279,14 @@ class EventManager {
   }
 
   /// Get the height of a rect component.
-  static Event _getRectHeight(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getRectHeight(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
           lua.pushInteger(rect.fields["height"]!.value);
@@ -300,14 +301,14 @@ class EventManager {
   }
 
   /// Get the text of a text component.
-  static Event _getTextText(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getTextText(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentText text = object.components.firstWhere((element) =>
           element.type == "ComponentText") as ComponentText;
           lua.pushString(text.fields["text"]!.value);
@@ -322,14 +323,14 @@ class EventManager {
   }
 
   /// Get the radius of a circle component.
-  static Event _getCircleRadius(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getCircleRadius(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           ComponentCircle circle = object.components.firstWhere((element) =>
           element.type == "ComponentCircle") as ComponentCircle;
           lua.pushInteger(circle.fields["radius"]!.value);
@@ -344,14 +345,14 @@ class EventManager {
   }
 
   /// Get the x position of an object.
-  static Event _getObjectPosX(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getObjectPosX(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           lua.pushNumber(object.position.x);
           return 1;
         } catch (e) {
@@ -364,16 +365,43 @@ class EventManager {
   }
 
   /// Get the y position of an object.
-  static Event _getObjectPosY(Game game) {
-    return (lua) {
-      String? objectName = lua.checkString(1);
+  static EventAsync _getObjectPosY(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
       lua.pop(1);
-      if (objectName != null) {
+      if (objectId != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
-          element.name == objectName);
+          element.id == objectId);
           lua.pushNumber(object.position.y);
           return 1;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// return this object id
+  static Event _thisObject(Game game, int thisObjectId) {
+    return (lua) {
+      lua.pushInteger(thisObjectId);
+      return 1;
+    };
+  }
+
+  /// get object by name
+  static Event _getObjectByName(Game game, int thisObjectId) {
+    return (lua) {
+      String? name = lua.checkString(1);
+      if (name != null) {
+        try {
+        GameObject? object = game.objects.firstWhere((element) =>
+        element.name == name);
+        lua.pushInteger(object.id);
+        return 1;
         } catch (e) {
           print("Error: $e");
           return 0;
