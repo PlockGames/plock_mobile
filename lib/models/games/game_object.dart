@@ -4,6 +4,8 @@ import 'component_type.dart';
 
 /// A game object that can be added to a game.
 class GameObject {
+  /// The id of the object.
+  late int id;
 
   /// The name of the object.
   late String name;
@@ -14,7 +16,7 @@ class GameObject {
   /// The position of the object.
   Vector2 position = Vector2(50, 50);
 
-  GameObject({required this.name});
+  GameObject({required this.id, required this.name});
 
   /// Convert the object to a JSON string.
   String toJson() {
@@ -36,7 +38,7 @@ class GameObject {
 
   /// Create a GameObject from a JSON object.
   static GameObject fromJson(Map<String, dynamic> json) {
-    GameObject gameObject = GameObject(name: json['name']);
+    GameObject gameObject = GameObject(id: json['id'], name: json['name']);
     gameObject.position = Vector2.fromJson(json['position']);
     for (var component in json['components']) {
       var componentModel = ComponentList.getByName(component["type"]);

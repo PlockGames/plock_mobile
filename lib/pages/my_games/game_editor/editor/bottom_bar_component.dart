@@ -83,9 +83,8 @@ class BottomBarComponent extends PositionComponent {
     // Create the buttons
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
-          var newObject = ObjectComponent(selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
+          var newObject = addGameObject();
           objectContainer.add(newObject);
-          addGameObject(newObject.gameObject);
     });
 
     deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(60, 0),

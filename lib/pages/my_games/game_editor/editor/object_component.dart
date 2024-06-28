@@ -39,6 +39,7 @@ class ObjectComponent extends PositionComponent
   List<ShapeComponent> selectComponents = [];
 
   ObjectComponent({
+    required id,
     required this.selectObject,
     required this.isObjectSelected,
     required this.updateObject,
@@ -49,7 +50,7 @@ class ObjectComponent extends PositionComponent
     if (gameObject != null) {
       _gameObject = gameObject;
     } else {
-      _gameObject = GameObject(name: "Object");
+      _gameObject = GameObject(id: id, name: "Object");
 
       ComponentRect componentRect = ComponentRect();
       componentRect.setOnUpdate(updateDisplay);

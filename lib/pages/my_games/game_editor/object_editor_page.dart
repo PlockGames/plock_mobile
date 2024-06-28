@@ -62,7 +62,14 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
+
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text("id : ${widget.object.gameObject.id}"),
+                ],
+              ),
               TextField(
                 controller: nameController,
                 onChanged: (value) {
