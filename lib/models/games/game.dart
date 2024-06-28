@@ -32,7 +32,7 @@ class Game {
     Game game = Game(name: json['title']);
     var gameDataResponse = await ApiService.getGameWithData(json['id'].toString());
     String gameData = jsonDecode(gameDataResponse.body)["data"];
-    gameData = gameData.replaceAll('\n', '');
+    gameData = gameData.replaceAll('\n', ' ');
     var dataJson = jsonDecode(gameData);
     var objects = dataJson['objects'];
     for (var object in objects) {

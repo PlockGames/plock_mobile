@@ -3,6 +3,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_x.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_move.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_pos_x.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_height.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_width.dart';
@@ -152,6 +153,7 @@ final initialToolbox = Toolbox(categories: [
         blockObjectPosY,
         blockGetObjectPosX,
         blockGetObjectPosY,
+        blockObjectMove,
       ]
   ),
   ToolboxCategory(

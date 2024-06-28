@@ -5,6 +5,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_x.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_y.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_move.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_height.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_width.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/text/block_text_to_string.dart';
@@ -19,20 +20,26 @@ import 'blocks/logic/block_wait.dart';
 import 'blocks/text/block_text_to_number.dart';
 
 CustomBlocksManager customBlocksManager = CustomBlocksManager()
+    // system
     .addBlock(blockTextToNumberJson)
     .addBlock(blockTextToStringJson)
     .addBlock(blockWaitJson)
     .addBlock(blockGetScreenWidthJson)
     .addBlock(blockGetScreenHeightJson)
+    // component rect
     .addBlock(blockRectWidthJson)
     .addBlock(blockRectHeightJson)
     .addBlock(blockGetRectWidthJson)
     .addBlock(blockGetRectHeightJson)
+    // component text
     .addBlock(blockTextTextJson)
     .addBlock(blockGetTextTextJson)
+    // component circle
+    .addBlock(blockCircleRadiusJson)
+    .addBlock(blockGetCircleRadiusJson)
+    // object
     .addBlock(blockObjectPosXJson)
     .addBlock(blockObjectPosYJson)
     .addBlock(blockGetObjectPosXJson)
     .addBlock(blockGetObjectPosYJson)
-    .addBlock(blockCircleRadiusJson)
-    .addBlock(blockGetCircleRadiusJson);
+    .addBlock(blockObjectMoveJson);

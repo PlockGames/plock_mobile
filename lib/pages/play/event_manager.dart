@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:lua_dardo_async/debug.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
@@ -32,6 +34,7 @@ class EventManager {
       lua.register("changeObjectPosY", _changeObjectPosY(game));
       lua.register("getObjectPosX", _getObjectPosX(game));
       lua.register("getObjectPosY", _getObjectPosY(game));
+      lua.registerAsync("objectMove", _objectMove(game));
   }
 
   static EventAsync _wait(Game game) {
@@ -165,6 +168,46 @@ class EventManager {
       }
       return 0;
     };
+  }
+
+  static EventAsync _objectMove(Game game) {
+    return (lua) async {
+      String? objectName = lua.checkString(1);
+      double? targetX = lua.checkNumber(2);
+      double? targetY = lua.checkNumber(3);
+      double? speed = lua.checkNumber(4);
+      lua.pop(4);
+      if (objectName != null && targetX != null && targetY != null && speed != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.name == objectName);
+          await _objectMoveAsync(game, object, targetX, targetY, speed);
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  static Future<void> _objectMoveAsync(Game game, GameObject gameObject, double targetX, double targetY, double speed) async {
+    while (gameObject.position.x != targetX || gameObject.position.y != targetY) {
+      double dx = targetX - gameObject.position.x;
+      double dy = targetY - gameObject.position.y;
+      double distance = dx * dx + dy * dy;
+      if (distance < speed * speed) {
+        gameObject.position.x = targetX;
+        gameObject.position.y = targetY;
+      } else {
+        double angle = atan2(dy, dx);
+        gameObject.position.x += cos(angle) * speed;
+        gameObject.position.y += sin(angle) * speed;
+      }
+      game.isDirty = true;
+      await Future.delayed(const Duration(milliseconds: 30));
+    }
   }
 
   static EventAsync _changeCircleRadius(Game game) {
