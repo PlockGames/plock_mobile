@@ -4,26 +4,19 @@ import 'block_data/toolbox_block_mutation.dart';
 import 'block_data/toolbox_block_shadow.dart';
 import 'block_data/toolbox_block_value.dart';
 
+/// A block for the toolbox.
 class ToolboxBlock extends ToolboxBlockData {
+  /// The type of the block.
   final String type;
+  /// The fields of the block.
   List<ToolboxBlockData> fields = [];
-  bool isCustom;
 
-  ToolboxBlock({this.type = '', this.isCustom = false});
+  ToolboxBlock({required this.type});
 
-  factory ToolboxBlock.fromJson(Map<String, dynamic> json) {
-    return ToolboxBlock();
-  }
-
+  /// Convert the [ToolboxBlock] to a json.
   Map<String, dynamic> toJson() {
     final xml = getBlockXml();
 
-    if (isCustom) {
-      return {
-        'kind': 'block',
-        'blockxml': "<block type=\"play_sound\"></block>"
-      };
-    } else {
       if (xml.isEmpty) {
         return {
           'kind': 'block',
@@ -34,11 +27,11 @@ class ToolboxBlock extends ToolboxBlockData {
       return {
         'kind': 'block',
         'blockxml': getBlockXml(),
-      };
-    }
+    };
   }
 
-String getBlockXml() {
+  /// Convert the [ToolboxBlock] to a xml.
+  String getBlockXml() {
 
     if (fields.isEmpty) {
       return '';

@@ -8,8 +8,13 @@ import '../../../../models/games/game.dart' as Plock;
 import '../../../../services/api.dart';
 import 'Editor.dart';
 
+/// The editor page.
 class EditorPage extends StatefulWidget {
+
+  /// The game to edit.
   final Plock.Game game;
+
+  /// The callback function to update a game object.
   final Function(GameObject) onGameObjectUpdated;
 
   EditorPage({
@@ -26,7 +31,8 @@ class _EditorPageState extends State<EditorPage> {
 
   _EditorPageState();
 
-  openEditor(BuildContext context) {
+  /// Open the object editor.
+  Function openEditor(BuildContext context) {
     return (ObjectComponent object) {
       Navigator.push(
           context,
@@ -37,20 +43,24 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
-  addGameObject(GameObject gameObject) {
+  /// Callback : Add a game object to the game.
+  void addGameObject(GameObject gameObject) {
     widget.game.objects.add(gameObject);
   }
 
-  removeGameObject(GameObject gameObject) {
+  /// Callback : Remove a game object from the game.
+  void removeGameObject(GameObject gameObject) {
     widget.game.objects.remove(gameObject);
   }
 
-  updateGameObject(GameObject gameObject) {
+  /// Callback : Update a game object in the game.
+  void updateGameObject(GameObject gameObject) {
     widget.game.objects.remove(gameObject);
     widget.game.objects.add(gameObject);
   }
 
-  uploadGame(BuildContext context) {
+  /// Callback : Upload the game to the server and close the editor.
+  Function uploadGame(BuildContext context) {
     return () async {
       var upload = await ApiService.createGame(CreateGameDto(
         title: widget.game.name,

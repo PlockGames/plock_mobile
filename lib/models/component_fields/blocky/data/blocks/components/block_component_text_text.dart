@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Text Text block.
 final blockTextText = ToolboxBlock(type: "text_text");
 
+/// Custom : Text Text block data.
 final blockTextTextJson = CustomBlock.fromJson(
     {
       "type": "text_text",

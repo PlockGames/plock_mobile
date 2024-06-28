@@ -4,10 +4,18 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_svg/flame_svg.dart';
 
+/// A bottom bar button.
+///
+/// Used in the [BottomBarComponent].
 class BottomBarbuttonComponent extends PositionComponent with TapCallbacks {
-  final String svgPath;
-  final tapAction;
 
+  /// The path to the SVG file.
+  final String svgPath;
+
+  /// The action to perform when the button is tapped.
+  final Function? tapAction;
+
+  /// The SVG instance to load SVG files.
   late Svg svgInstance;
 
   BottomBarbuttonComponent(this.svgPath, Vector2 pos, {this.tapAction}) {
@@ -41,7 +49,9 @@ class BottomBarbuttonComponent extends PositionComponent with TapCallbacks {
 
   @override
   bool onTapUp(TapUpEvent info) {
-    tapAction();
+    if (tapAction != null) {
+      tapAction!();
+    }
     return true;
   }
 }

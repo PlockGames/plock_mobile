@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Object Get Pos X block.
 final blockGetObjectPosX = ToolboxBlock(type: "object_get_pos_x");
 
+/// Custom : Object Get Pos X block data.
 final blockGetObjectPosXJson = CustomBlock.fromJson(
     {
       "type": "object_get_pos_x",

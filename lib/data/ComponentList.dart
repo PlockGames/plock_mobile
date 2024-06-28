@@ -4,11 +4,7 @@ import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
 import '../models/games/component_type.dart';
 
-/**
- * ComponentList class
- *
- * This contain all the components that can be used in the game.
- */
+/// Contain all the components that can be used in the game.
 class ComponentList {
   static final Map<String, ComponentType> components = {
     'ComponentRect': ComponentRect(),

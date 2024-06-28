@@ -8,8 +8,13 @@ import 'package:plock_mobile/models/utils/Vector2i.dart';
 import '../../models/games/game.dart' as plock;
 import 'game_player_object.dart';
 
+/// The game player.
 class GamePlayer extends FlameGame {
+
+  /// The game data.
   final plock.Game game;
+
+  /// List of all the game objects.
   List<Component> components = [];
 
   GamePlayer(this.game);
@@ -18,6 +23,7 @@ class GamePlayer extends FlameGame {
   Future<void> onLoad() async {
     game.screenSize = size;
 
+    // Generate all the game objects of the game
     for (var object in game.objects) {
       Component newComponent = GamePlayerObject(gameObject: object, game: game);
       components.add(newComponent);
@@ -28,6 +34,8 @@ class GamePlayer extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+
+    // If game is dirty, update all the components and objects
     if (game.isDirty) {
       game.isDirty = false;
       for (var component in components) {

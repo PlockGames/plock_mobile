@@ -1,16 +1,22 @@
-import 'dart:convert';
-
 import 'package:plock_mobile/models/utils/Vector2.dart';
 import '../../data/ComponentList.dart';
 import 'component_type.dart';
 
+/// A game object that can be added to a game.
 class GameObject {
+
+  /// The name of the object.
   late String name;
+
+  /// The components of the object.
   List<ComponentType> components = List<ComponentType>.empty(growable: true);
-  Vector2 position = Vector2(20, 20);
+
+  /// The position of the object.
+  Vector2 position = Vector2(50, 50);
 
   GameObject({required this.name});
 
+  /// Convert the object to a JSON string.
   String toJson() {
     String json = "{";
     json += "\"name\": \"$name\",";
@@ -28,6 +34,7 @@ class GameObject {
     return json;
   }
 
+  /// Create a GameObject from a JSON object.
   static GameObject fromJson(Map<String, dynamic> json) {
     GameObject gameObject = GameObject(name: json['name']);
     gameObject.position = Vector2.fromJson(json['position']);

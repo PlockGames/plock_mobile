@@ -3,6 +3,7 @@ import 'package:plock_mobile/models/component_fields/blocky/block_data/toolbox_b
 
 import '../../../toolbox_block.dart';
 
+/// Custom : Colour Blend block.
 final blockColourBlend = ToolboxBlock(type: "colour_blend")
     .addValue("COLOUR1", ToolboxBlockShadow(type: "colour_picker", field: ToolboxBlockField(name: "COLOUR", type: "#ff0000")))
     .addValue("COLOUR2", ToolboxBlockShadow(type: "colour_picker", field: ToolboxBlockField(name: "COLOUR", type: "#3333ff")))

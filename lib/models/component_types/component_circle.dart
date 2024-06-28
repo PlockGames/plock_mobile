@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
-import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../games/component_type.dart';
 
+/// A component that display a circle.
 class ComponentCircle extends ComponentType {
   ComponentCircle() {
     fields["radius"] = ComponentFieldNumber(value: 10);

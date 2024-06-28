@@ -1,5 +1,6 @@
 import '../../../toolbox_block.dart';
 
+/// Blockly : Text Get Substring block.
 final blockListsGetSublist = ToolboxBlock(type: "lists_getSublist",)
     .addMutation(at1: true, at2: true)
     .addField("WHERE1", "FROM_START")

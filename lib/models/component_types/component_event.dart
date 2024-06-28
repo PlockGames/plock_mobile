@@ -3,6 +3,7 @@ import 'package:plock_mobile/models/component_fields/component_field_drop_down.d
 
 import '../games/component_type.dart';
 
+/// A component that represent an event.
 class ComponentEvent extends ComponentType {
 
   ComponentEvent() {

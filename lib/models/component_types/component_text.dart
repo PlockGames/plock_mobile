@@ -1,14 +1,15 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame/text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
 
+/// A component that display a text.
 class ComponentText extends ComponentType {
+
   ComponentText() {
     fields["text"] = ComponentFieldText(value: "Text");
   }

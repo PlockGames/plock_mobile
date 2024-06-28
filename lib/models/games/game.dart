@@ -5,14 +5,24 @@ import 'package:plock_mobile/services/api.dart';
 
 import 'game_object.dart';
 
+/// A game.
 class Game {
+
+  /// The name of the game.
   final String name;
+
+  /// The objects in the game.
   List<GameObject> objects = List<GameObject>.empty(growable: true);
+
+  /// If the game is dirty.
   bool isDirty = false;
+
+  /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
 
   Game({required this.name});
 
+  /// Convert the game to a JSON string.
   String toJson() {
     String json = "{";
     json += "\"name\": \"$name\",";
@@ -28,6 +38,7 @@ class Game {
     return json;
   }
 
+  /// Create a Game from a JSON object.
   static jsonToGame(Map<String, dynamic> json) async {
     Game game = Game(name: json['title']);
     var gameDataResponse = await ApiService.getGameWithData(json['id'].toString());

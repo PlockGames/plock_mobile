@@ -12,9 +12,15 @@ import '../../models/games/game_object.dart';
 typedef EventAsync = Future<int> Function(LuaState lua);
 typedef Event = int Function(LuaState lua);
 
+/// Register all the events that can be executed by the lua vm.
 class EventManager {
 
+  /// Register all the game events available.
+  ///
+  /// [lua] The lua vm to register the events to.
+  /// [game] The game data to execute the events on.
   static void registerEvents(LuaState lua, Game game) {
+      // System
       lua.registerAsync("wait", _wait(game));
       lua.register("getScreenWidth", _getScreenWidth(game));
       lua.register("getScreenHeight", _getScreenHeight(game));
@@ -37,6 +43,7 @@ class EventManager {
       lua.registerAsync("objectMove", _objectMove(game));
   }
 
+  /// Wait for a certain amount of time.
   static EventAsync _wait(Game game) {
     return (lua) async {
       int? time = await lua.checkInteger(1);
@@ -48,6 +55,7 @@ class EventManager {
     };
   }
 
+  /// Return the screen width.
   static Event _getScreenWidth(Game game) {
     return (lua) {
       print(game.screenSize.x);
@@ -56,6 +64,7 @@ class EventManager {
     };
   }
 
+  /// Return the screen height.
   static Event _getScreenHeight(Game game) {
     return (lua) {
       print(game.screenSize.y);
@@ -64,6 +73,7 @@ class EventManager {
     };
   }
 
+  /// Change the width of a rect component.
   static EventAsync _changeRectWidth(Game game) {
     return (lua) async {
       String? objectName = lua.checkString(1);
@@ -86,6 +96,7 @@ class EventManager {
     };
   }
 
+  /// Change the height of a rect component.
   static EventAsync _changeRectHeight(Game game) {
     return (lua) async {
       String? objectName = lua.checkString(1);
@@ -108,6 +119,7 @@ class EventManager {
     };
   }
 
+  /// Change the text of a text component.
   static Event _changeTextText(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -130,6 +142,7 @@ class EventManager {
     };
   }
 
+  /// Change the x position of an object.
   static Event _changeObjectPosX(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -150,6 +163,7 @@ class EventManager {
     };
   }
 
+  /// Change the y position of an object.
   static Event _changeObjectPosY(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -170,6 +184,7 @@ class EventManager {
     };
   }
 
+  /// Move an object to a certain position.
   static EventAsync _objectMove(Game game) {
     return (lua) async {
       String? objectName = lua.checkString(1);
@@ -192,6 +207,13 @@ class EventManager {
     };
   }
 
+  /// Move the object asynchronously. so the game can continue while the object is moving.
+  ///
+  /// [game] The game data to execute the events on.
+  /// [gameObject] The object to move.
+  /// [targetX] The target x position.
+  /// [targetY] The target y position.
+  /// [speed] The speed to move the object.
   static Future<void> _objectMoveAsync(Game game, GameObject gameObject, double targetX, double targetY, double speed) async {
     while (gameObject.position.x != targetX || gameObject.position.y != targetY) {
       double dx = targetX - gameObject.position.x;
@@ -210,6 +232,7 @@ class EventManager {
     }
   }
 
+  /// Change the radius of a circle component.
   static EventAsync _changeCircleRadius(Game game) {
     return (lua) async {
       String? objectName = lua.checkString(1);
@@ -232,6 +255,7 @@ class EventManager {
     };
   }
 
+  /// Get the width of a rect component.
   static Event _getRectWidth(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -253,6 +277,7 @@ class EventManager {
     };
   }
 
+  /// Get the height of a rect component.
   static Event _getRectHeight(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -274,6 +299,7 @@ class EventManager {
     };
   }
 
+  /// Get the text of a text component.
   static Event _getTextText(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -295,6 +321,7 @@ class EventManager {
     };
   }
 
+  /// Get the radius of a circle component.
   static Event _getCircleRadius(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -316,6 +343,7 @@ class EventManager {
     };
   }
 
+  /// Get the x position of an object.
   static Event _getObjectPosX(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);
@@ -335,6 +363,7 @@ class EventManager {
     };
   }
 
+  /// Get the y position of an object.
   static Event _getObjectPosY(Game game) {
     return (lua) {
       String? objectName = lua.checkString(1);

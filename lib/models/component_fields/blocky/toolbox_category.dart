@@ -1,5 +1,8 @@
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 
+/// A category of blocks for blockly.
+///
+/// Used in blockly toolbox.
 class ToolboxCategory {
   final String name;
   final List<ToolboxBlock>? blocks;
@@ -8,15 +11,7 @@ class ToolboxCategory {
 
   ToolboxCategory({required this.name, this.blocks, this.color = 0, this.custom});
 
-  factory ToolboxCategory.fromJson(Map<String, dynamic> json) {
-    return ToolboxCategory(
-      name: json['name'],
-      blocks: (json['blocks'] as List)
-          .map((e) => ToolboxBlock.fromJson(e))
-          .toList(),
-    );
-  }
-
+  /// Convert the [ToolboxCategory] to a json.
   Map<String, dynamic> toJson() {
     Map<String, dynamic> result = {
       'kind': 'category',

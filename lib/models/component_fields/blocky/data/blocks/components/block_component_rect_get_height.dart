@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Rect Get Height block.
 final blockGetRectHeight = ToolboxBlock(type: "rect_get_height");
 
+/// Custom : Rect Get Height block data.
 final blockGetRectHeightJson = CustomBlock.fromJson(
     {
       "type": "rect_get_height",

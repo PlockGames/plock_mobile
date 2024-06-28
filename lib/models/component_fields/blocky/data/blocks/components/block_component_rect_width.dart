@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Rect Width block.
 final blockRectWidth = ToolboxBlock(type: "rect_width");
 
+/// Custom : Rect Width block data.
 final blockRectWidthJson = CustomBlock.fromJson(
 {
   "type": "rect_width",

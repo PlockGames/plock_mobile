@@ -9,18 +9,23 @@ import 'package:plock_mobile/pages/play/event_manager.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
+/// A flame object that represents a game object in te game engine.
 class GamePlayerObject extends PositionComponent with TapCallbacks {
 
+  /// The game object linked to this Flame object.
   late GameObject gameObject;
+
+  /// The game data.
   late Game game;
 
+  /// List of all the components that can be displayed.
   List<Component> displayComponents = [];
+
+  /// List of all the events components.
   List<ComponentType> eventComponents = [];
-  List<double> timers = [];
+
+  /// The lua vm to execute events.
   LuaState lua = LuaState.newState();
-
-
-  String name = 'Object';
 
   GamePlayerObject({
     required this.gameObject,
@@ -31,15 +36,19 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   Future<void> onLoad() async {
     super.onLoad();
 
+    // Load the lua state to execute events
     await lua.openLibs();
     EventManager.registerEvents(lua, game);
 
-
+    // Set the object data
     size = Vector2(50, 50);
     position = Vector2(gameObject.position.x, gameObject.position.y);
+
+    // Update the components
     updateDisplay();
     updateEvents();
 
+    // Execute the start events
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_START') {
         executeEvent(component.fields['event']!.value);
@@ -47,12 +56,15 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     }
   }
 
+  /// Update the display components.
   void updateDisplay() {
+    // Empty the display component list
     for (var component in displayComponents) {
       remove(component);
     }
     displayComponents = [];
 
+    // Fill the display component list with updated components
     for (var component in gameObject.components) {
       Component? displayComponent = component.getGameDisplayComponent();
       if (displayComponent != null) {
@@ -62,6 +74,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     }
   }
 
+  /// Update the event components list.
   void updateEvents() {
     eventComponents = [];
     for (var component in gameObject.components) {
@@ -71,6 +84,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     }
   }
 
+  /// Update the object data.
   void updateObjectData() {
     position = Vector2(gameObject.position.x, gameObject.position.y);
   }
@@ -83,12 +97,6 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   @override
   void update(double dt) {
     super.update(dt);
-
-    for (var timer in timers) {
-      timer -= dt;
-      if (timer <= 0) {
-      }
-    }
 
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
@@ -108,28 +116,8 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
     return true;
   }
 
-  String gameToLua() {
-    String result = "game = {";
-    for (var object in game.objects) {
-      result += object.name + " = {";
-
-      for (var component in object.components) {
-        if (component.type == 'ComponentEvent') {
-          continue;
-        }
-        result += component.type + " = {";
-        for (var field in component.fields.keys) {
-          result += "$field = ${component.fields[field]!.value},";
-        }
-        result += "},";
-      }
-      result += "};";
-    }
-    result += "};";
-    return result;
-  }
-
-  executeEvent(String event) {
+  /// Execute an event.
+  void executeEvent(String event) {
     lua.loadString(event);
     lua.call(0, 0);
   }

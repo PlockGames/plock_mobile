@@ -1,7 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/block_data/toolbox_block_data.dart';
 
+/// A field in a block.
 class ToolboxBlockField extends ToolboxBlockData {
+  /// Name of the field
   final String name;
+  /// Type of the field
   final String type;
 
   ToolboxBlockField({required this.name, required this.type});

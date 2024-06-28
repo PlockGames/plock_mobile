@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Get Screen Height block.
 final blockGetScreenHeight = ToolboxBlock(type: "screen_get_height");
 
+/// Custom : Get Screen Height block data.
 final blockGetScreenHeightJson = CustomBlock.fromJson(
     {
       "type": "screen_get_height",

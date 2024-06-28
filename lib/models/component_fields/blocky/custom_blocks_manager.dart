@@ -2,16 +2,21 @@ import 'dart:convert';
 
 import 'custom_block.dart';
 
+/// Manage custom blocks for blockly
 class CustomBlocksManager {
+
+  /// The list of blocks.
   List<CustomBlock> blocks = [];
 
   CustomBlocksManager();
 
+  /// Add a block to the manager.
   CustomBlocksManager addBlock(CustomBlock block) {
     blocks.add(block);
     return this;
   }
 
+  /// Convert the blocks into a javascript injection.
   String toJs() {
     String js = "";
     for (var block in blocks) {

@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Circle Get Radius block.
 final blockGetCircleRadius = ToolboxBlock(type: "circle_get_radius");
 
+/// Custom : Circle Get Radius block data.
 final blockGetCircleRadiusJson = CustomBlock.fromJson(
     {
       "type": "circle_get_radius",

@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../models/games/component_type.dart';
 
+/// The page to edit a component.
 class EditComponentPage extends StatefulWidget {
+
+  /// The component to edit.
   final ComponentType component;
 
   const EditComponentPage({super.key, required this.component});

@@ -1,3 +1,5 @@
+
+/// The arguments of the block for blockly.
 class Arg {
     final String type;
     final String? name;
@@ -31,21 +33,38 @@ class Arg {
     }
 }
 
+/// A custom block for blockly.
 class CustomBlock {
 
+  /// The type.
   final String type;
+  /// The displayed message.
   final String message;
+  /// A list of the different arguments.
   final List<Arg> args;
+  /// The colour.
   final int colour;
+  /// The tooltip of the block.
   final String tooltip;
+  /// The url of the documentation of the block.
   final String helpUrl;
+  /// Is there a top connection ?
   bool previousStatement = false;
+  /// Is there a bottom connection ?
   bool nextStatement = false;
+  /// Is the a left connection ?
+  ///
+  /// If null, there is no connection. contain the type returned otherwise.
   String? output;
+  /// The converted to lua code of the block.
   String functionLua = '';
+  /// The converted to dart code of the block.
   String functionDart = '';
+  /// The converted to javascript code of the block.
   String functionJs = '';
+  /// The converted to python code of the block.
   String functionPython = '';
+  /// The converted to php code of the block.
   String functionPhp = '';
 
   CustomBlock(
@@ -60,6 +79,7 @@ class CustomBlock {
       this.nextStatement=false
       });
 
+  /// Convert a json to a [CustomBlock].
   factory CustomBlock.fromJson(Map<String, dynamic> json) {
 
     var cb = CustomBlock(
@@ -87,51 +107,62 @@ class CustomBlock {
     return cb;
   }
 
+  /// Set the lua function of the block.
   CustomBlock setFunctionLua(String function) {
     this.functionLua = function;
     return this;
   }
 
+  /// Get the lua function of the block.
   String getFunctionLua() {
     return this.functionLua;
   }
 
+  /// Set the dart function of the block.
   CustomBlock setFunctionDart(String function) {
     this.functionDart = function;
     return this;
   }
 
+  /// Get the dart function of the block.
   CustomBlock setFunctionJs(String function) {
     this.functionJs = function;
     return this;
   }
 
+  /// Get the javascript function of the block.
   String getFunctionJs() {
     return this.functionJs;
   }
 
+  /// Get the dart function of the block.
   String getFunctionDart() {
     return this.functionDart;
   }
 
+  /// Set the python function of the block.
   CustomBlock setFunctionPython(String function) {
     this.functionPython = function;
     return this;
   }
 
+  /// Get the python function of the block.
   String getFunctionPython() {
     return this.functionPython;
   }
 
+  /// Set the php function of the block.
   CustomBlock setFunctionPhp(String function) {
     this.functionPhp = function;
     return this;
   }
 
+  /// Get the php function of the block.
   String getFunctionPhp() {
     return this.functionPhp;
   }
 
+  /// Convert the [CustomBlock] to a json.
   Map<String, dynamic> toJson() {
     var json = {
       'type': type,

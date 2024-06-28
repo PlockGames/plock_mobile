@@ -7,6 +7,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../games/component_type.dart';
 
+/// A component that display a rectangle.
 class ComponentRect extends ComponentType {
   ComponentRect() {
     fields["width"] = ComponentFieldNumber(value: 50);

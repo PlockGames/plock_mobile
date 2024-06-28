@@ -1,6 +1,7 @@
 import 'package:flutter_blockly/flutter_blockly.dart';
 import "html/html.dart" as html;
 
+/// A Blockly editor.
 class PlBlocklyEditor extends BlocklyEditor {
 
   PlBlocklyEditor({

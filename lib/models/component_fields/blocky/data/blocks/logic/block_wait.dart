@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Wait block.
 final blockWait = ToolboxBlock(type: "wait");
 
+/// Custom : Wait block data.
 final blockWaitJson = CustomBlock.fromJson(
     {
       "type": "wait",

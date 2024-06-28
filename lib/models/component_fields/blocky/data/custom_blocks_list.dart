@@ -19,6 +19,7 @@ import 'blocks/components/block_object_pos_y.dart';
 import 'blocks/logic/block_wait.dart';
 import 'blocks/text/block_text_to_number.dart';
 
+/// A list of all the custom blocks for blockly.
 CustomBlocksManager customBlocksManager = CustomBlocksManager()
     // system
     .addBlock(blockTextToNumberJson)

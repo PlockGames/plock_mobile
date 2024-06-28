@@ -2,6 +2,7 @@ import '../../../block_data/toolbox_block_field.dart';
 import '../../../block_data/toolbox_block_shadow.dart';
 import '../../../toolbox_block.dart';
 
+/// Blockly : Text Index Of block.
 final blockTextIndexOf = ToolboxBlock(type: "text_indexOf")
     .addField("END", "FIRST")
     .addValue("VALUE", ToolboxBlock(type: "variables_get").addField("VAR", "text"))

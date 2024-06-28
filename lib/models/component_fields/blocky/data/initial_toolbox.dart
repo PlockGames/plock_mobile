@@ -51,6 +51,9 @@ import 'blocks/text/block_text_prompt_ext.dart';
 import 'blocks/text/block_text_to_string.dart';
 import 'blocks/text/block_text_trim.dart';
 
+/// The initial toolbox of the blockly.
+///
+/// A list of all the blocks that can be used in the blockly.
 final initialToolbox = Toolbox(categories: [
   ToolboxCategory(
       name: "logic",

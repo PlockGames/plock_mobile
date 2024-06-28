@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : int to String block
 final blockTextToString = ToolboxBlock(type: "int_to_string");
 
+/// Custom : int to String block data
 final blockTextToStringJson = CustomBlock.fromJson(
     {
       "type": "int_to_string",

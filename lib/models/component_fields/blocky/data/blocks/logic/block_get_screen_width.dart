@@ -1,8 +1,10 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
+/// Custom : Screen Get Width block.
 final blockGetScreenWidth = ToolboxBlock(type: "screen_get_width");
 
+/// Custom : Screen Get Width block data.
 final blockGetScreenWidthJson = CustomBlock.fromJson(
     {
       "type": "screen_get_width",

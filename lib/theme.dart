@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// The theme of the application.
 final ThemeData plockTheme = ThemeData(
   useMaterial3: true,
   colorScheme: const ColorScheme.dark(),

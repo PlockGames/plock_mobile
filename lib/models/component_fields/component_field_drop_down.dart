@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+/// A field that contain a dropdown value.
 class ComponentFieldDropDown extends ComponentField {
-String _value;
-Map<String, String> _options;
-DropDownField? field;
 
-ComponentFieldDropDown({
+  /// The value of the field.
+  String _value;
+
+  /// The options of the dropdown.
+  Map<String, String> _options;
+
+  /// The dropdown widget.
+  DropDownField? field;
+
+  ComponentFieldDropDown({
     required String value,
     required Map<String, String> options,
     onUpdate,
@@ -19,7 +26,7 @@ ComponentFieldDropDown({
 
   @override
   Widget getField(String name) {
-    field ??= DropDownField(name: name, initialValue: _value, options: _options, onUpdate: onUpdate, updateValue: updateValue);
+    field ??= DropDownField(initialValue: _value, options: _options, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }
 
@@ -46,15 +53,23 @@ ComponentFieldDropDown({
   }
 }
 
+/// The dropdown widget.
 class DropDownField extends StatefulWidget {
-  final String name;
+
+  /// The options of the dropdown.
   final Map<String, String> options;
+
+  /// The current value of the dropdown.
   String _value = "";
-  var onUpdate;
-  var updateValue;
 
-  DropDownField({required this.name, required initialValue, required this.options, this.onUpdate, this.updateValue}) : _value = initialValue;
+  /// The callback executed when the value is updated.
+  Function? onUpdate;
+  /// The callback to update the value.
+  Function? updateValue;
 
+  DropDownField({required initialValue, required this.options, this.onUpdate, this.updateValue}) : _value = initialValue;
+
+  /// The value of the field.
   String get value => _value;
 
   @override
@@ -84,8 +99,12 @@ class _DropDownFieldState extends State<DropDownField> {
                   setState(() {
                     widget._value = value.toString();
                   });
-                  widget.updateValue(value.toString());
-                  widget.onUpdate();
+                  if (widget.updateValue != null) {
+                    widget.updateValue!(value.toString());
+                  }
+                  if (widget.onUpdate != null) {
+                    widget.onUpdate!();
+                  }
                 },
               )
           )

@@ -1,6 +1,8 @@
 import 'package:plock_mobile/models/component_fields/blocky/block_data/toolbox_block_data.dart';
 
+/// A mutation in a block.
 class ToolboxBlockMutation extends ToolboxBlockData {
+  // list of all the differents mutators
   final bool? divisor_input;
   final String? op;
   final bool? at;

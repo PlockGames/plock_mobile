@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/initial_toolbox.dart';
@@ -9,7 +7,10 @@ import 'package:flutter_blockly/flutter_blockly.dart' as Blocky;
 import 'blocky/data/custom_blocks_list.dart';
 import 'blocky/data/pl_blockly_editor_widget.dart';
 
+/// A field that contain a Blockly (lua code) value.
 class ComponentFieldBlockly extends ComponentField {
+
+  /// The initial state of blockly.
   static const Map<String, dynamic> initialJson = {
     'blocks': {
       'languageVersion': 0,
@@ -23,7 +24,11 @@ class ComponentFieldBlockly extends ComponentField {
       ],
     },
   };
+
+  /// The value of the field.
   String _value_lua = "";
+
+  /// The saved json of the blockly.
   Map<String, dynamic> _value = initialJson;
 
   ComponentFieldBlockly({value}) {

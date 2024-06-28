@@ -3,6 +3,7 @@ import 'package:flutter_blockly/flutter_blockly.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/pl_blockly_editor.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+/// A widget that contains a Blockly editor.
 class PlBlocklyEditorWidget extends StatefulWidget {
   /// [BlocklyOptions interface](https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface)
   final BlocklyOptions? workspaceConfiguration;
@@ -22,10 +23,10 @@ class PlBlocklyEditorWidget extends StatefulWidget {
   /// It is called on dispose editor
   final Function? onDispose;
 
-  // Blocky packages
+  /// Blocky packages
   final String? packages;
 
-  // Blocky scripts
+  /// Blocky scripts
   final String? scripts;
 
   final String? blocks;

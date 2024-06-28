@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import '../../../models/games/component_type.dart';
 import 'edit_component_page.dart';
 
+/// The page to edit an object.
 class ObjectEditorPage extends StatefulWidget {
+
+  /// The object to edit.
   late ObjectComponent object;
 
   ObjectEditorPage({super.key, required this.object});
@@ -22,6 +24,9 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     super.initState();
   }
 
+  /// Add a [component] to the object.
+  ///
+  /// The [component] is added to the object and the display is updated.
   void addComponent(ComponentType component) {
     setState(() {
       ComponentType instance = component.instance();
@@ -31,6 +36,9 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     });
   }
 
+  /// Remove a [component] from the object.
+  ///
+  /// The [component] is removed from the object and the display is updated.
   void removeComponent(ComponentType component) {
     setState(() {
       widget.object.gameObject.components.remove(component);
