@@ -28,6 +28,11 @@ class ComponentField {
     return "";
   }
 
+  /// update value from a json value
+  void updateFromJson(dynamic jsonVal) {
+
+  }
+
   /// Set the value of the field.
   set value(dynamic value) {}
 

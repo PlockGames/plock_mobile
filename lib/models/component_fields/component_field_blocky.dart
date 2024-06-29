@@ -123,4 +123,9 @@ class ComponentFieldBlockly extends ComponentField {
   String toJson() {
     return "\"$_value_lua\"";
   }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value_lua = jsonVal as String;
+  }
 }

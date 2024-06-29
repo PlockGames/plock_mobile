@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 
@@ -15,6 +17,9 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
   /// Callback : When the drag is cancelled.
   final Function onDragCancelCallback;
 
+  /// The color of the rect.
+  Color color;
+
 
   ComponentFlameRect({
     required this.onDragStartCallback,
@@ -22,9 +27,12 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
+    required this.color,
     super.position,
-    super.size
-  });
+    super.size,
+  }) {
+    this.paint = Paint()..color = color;
+  }
 
   @override
   bool onTapUp(TapUpEvent info) {

@@ -50,4 +50,9 @@ class ComponentFieldText extends ComponentField {
   String toJson() {
     return "\"$_value\"";
   }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = jsonVal as String;
+  }
 }

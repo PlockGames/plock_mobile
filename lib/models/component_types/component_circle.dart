@@ -5,12 +5,14 @@ import 'package:plock_mobile/models/component_fields/component_field_number.dart
 import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
 
 /// A component that display a circle.
 class ComponentCircle extends ComponentType {
   ComponentCircle() {
     fields["radius"] = ComponentFieldNumber(value: 10);
+    fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
   @override
@@ -37,10 +39,12 @@ class ComponentCircle extends ComponentType {
       onDragCancelCallback
       ) {
     double radius = fields["radius"]!.value.toDouble();
+    Color color = fields["color"]!.value;
 
     CircleComponent display = ComponentFlameCircle(
       radius: radius,
       position: Vector2(0, 0),
+      color: color,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
@@ -68,6 +72,7 @@ class ComponentCircle extends ComponentType {
     return CircleComponent(
       radius: radius,
       position: Vector2(0, 0),
+      paint: Paint()..color = fields["color"]!.value
     );
   }
 }

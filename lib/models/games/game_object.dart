@@ -45,7 +45,7 @@ class GameObject {
       var componentModel = ComponentList.getByName(component["type"]);
       var comp = componentModel.instance();
       comp.fields.forEach((key, value) {
-        comp.fields[key].value = component[key];
+        value.updateFromJson(component[key]);
       });
       gameObject.components.add(comp);
     }

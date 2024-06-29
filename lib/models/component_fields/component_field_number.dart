@@ -56,4 +56,9 @@ class ComponentFieldNumber extends ComponentField {
     return _value.toString();
   }
 
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = jsonVal as int;
+  }
+
 }

@@ -5,6 +5,7 @@ import 'package:plock_mobile/models/component_fields/component_field_number.dart
 import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
 
 /// A component that display a rectangle.
@@ -12,6 +13,7 @@ class ComponentRect extends ComponentType {
   ComponentRect() {
     fields["width"] = ComponentFieldNumber(value: 50);
     fields["height"] = ComponentFieldNumber(value: 50);
+    fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
   @override
@@ -45,6 +47,7 @@ class ComponentRect extends ComponentType {
     RectangleComponent display = ComponentFlameRect(
       size: size,
       position: Vector2(0, 0),
+      color: fields["color"]!.value,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
@@ -74,6 +77,7 @@ class ComponentRect extends ComponentType {
 
     return RectangleComponent(
       size: size,
+      paint: Paint()..color = fields["color"]!.value,
       position: Vector2(0, 0),
     );
   }

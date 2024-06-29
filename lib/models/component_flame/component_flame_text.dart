@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/text.dart';
 
 /// A flame component used in the editor to represent a text component.
 class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks {
@@ -22,9 +25,16 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
+    required Color color,
     super.position,
     super.text
-  });
+  }) {
+    this.textRenderer = TextPaint(
+      style: TextStyle(
+        color: color,
+      ),
+    );
+  }
 
   @override
   bool onTapUp(TapUpEvent info) {

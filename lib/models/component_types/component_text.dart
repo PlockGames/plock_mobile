@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../component_fields/component_field_color.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
 
@@ -12,6 +14,7 @@ class ComponentText extends ComponentType {
 
   ComponentText() {
     fields["text"] = ComponentFieldText(value: "Text");
+    fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
   @override
@@ -42,6 +45,7 @@ class ComponentText extends ComponentType {
     TextComponent display = ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
+      color: fields["color"]!.value,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
@@ -66,9 +70,16 @@ class ComponentText extends ComponentType {
   Component? getGameDisplayComponent() {
     String text = fields["text"]!.value.toString();
 
+    TextStyle style = TextStyle(
+      color: fields["color"]!.value,
+    );
+
     return TextComponent(
       text: text,
       position: Vector2(0, 0),
+      textRenderer: TextPaint(
+        style: style
+      ),
     );
   }
 }

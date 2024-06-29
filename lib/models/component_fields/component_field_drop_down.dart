@@ -51,6 +51,11 @@ class ComponentFieldDropDown extends ComponentField {
   String toJson() {
     return "\"$_value\"";
   }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = jsonVal as String;
+  }
 }
 
 /// The dropdown widget.

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 
@@ -22,9 +24,12 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
+    required Color color,
     super.position,
     super.radius
-  });
+  }) {
+    this.paint = Paint()..color = color;
+  }
 
   @override
   bool onTapUp(TapUpEvent info) {
