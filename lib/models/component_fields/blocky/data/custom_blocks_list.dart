@@ -13,6 +13,8 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/bl
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_get_screen_width.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/text/block_text_to_string.dart';
 
+import 'blocks/colour/block_colour_picker.dart';
+import 'blocks/colour/block_colour_rgb.dart';
 import 'blocks/components/block_component_rect_get_height.dart';
 import 'blocks/components/block_component_rect_get_width.dart';
 import 'blocks/components/block_component_rect_height.dart';
@@ -30,7 +32,8 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockWaitJson)
     .addBlock(blockGetScreenWidthJson)
     .addBlock(blockGetScreenHeightJson)
-    .addBlock(blockColourJson)
+    .addBlock(blockColourRgbJson)
+    .addBlock(blockColourPickerJson)
     // component rect
     .addBlock(blockRectWidthJson)
     .addBlock(blockRectHeightJson)

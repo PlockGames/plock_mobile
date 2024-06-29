@@ -58,6 +58,25 @@ class EventManager {
     };
   }
 
+  static EventAsync _rgbToColor(Game game, int thisObjectId) {
+    return (lua) async {
+      int? red = await lua.checkInteger(1);
+      int? green = await lua.checkInteger(2);
+      int? blue = await lua.checkInteger(3);
+      lua.pop(3);
+      if (red != null && green != null && blue != null) {
+        int r = red.clamp(0, 255);
+        int g = green.clamp(0, 255);
+        int b = blue.clamp(0, 255);
+        String color = "#${r.toRadixString(16).padLeft(2, '0')}${g.toRadixString(16).padLeft(2, '0')}${b.toRadixString(16).padLeft(2, '0')}";
+        print(color);
+        lua.pushString(color);
+        return 1;
+      }
+      return 0;
+    };
+  }
+
   /// Return the screen width.
   static Event _getScreenWidth(Game game, int thisObjectId) {
     return (lua) {

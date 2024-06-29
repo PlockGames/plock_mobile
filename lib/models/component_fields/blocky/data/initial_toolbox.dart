@@ -138,11 +138,10 @@ final initialToolbox = Toolbox(categories: [
   ToolboxCategory(
       name: "colour",
       blocks: [
-        //ToolboxBlock(type: "colour_picker").addField("COLOUR", "#ff0000"), // BROKEN ! TO FIX...
+        ToolboxBlock(type: "colour_picker").addField("COLOUR", "#ff0000"),
         //ToolboxBlock(type: "colour_random"),
-        //blockColourRgb,
+        blockColourRgb,
         //blockColourBlend,
-        blockColour,
       ]
   ),
   ToolboxCategory(
