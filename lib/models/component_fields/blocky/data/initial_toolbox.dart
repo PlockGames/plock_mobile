@@ -1,6 +1,9 @@
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_color.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_get_colour.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_get_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_radius.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_x.dart';
@@ -17,6 +20,7 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dar
 import '../toolbox_block.dart';
 import 'blocks/colour/block_colour_blend.dart';
 import 'blocks/colour/block_colour_rgb.dart';
+import 'blocks/components/block_component_rect_color.dart';
 import 'blocks/components/block_component_rect_get_height.dart';
 import 'blocks/components/block_component_rect_get_width.dart';
 import 'blocks/components/block_component_rect_height.dart';
@@ -147,14 +151,21 @@ final initialToolbox = Toolbox(categories: [
   ToolboxCategory(
       name: "components",
       blocks: [
+        // Rect
         blockRectWidth,
         blockRectHeight,
+        blockRectColour,
         blockGetRectWidth,
         blockGetRectHeight,
+        // Text
         blockTextText,
+        blockTextColour,
         blockGetTextText,
+        // Circle
         blockCircleRadius,
+        blockCircleColour,
         blockGetCircleRadius,
+        blockGetCircleColour,
       ]
   ),
   ToolboxCategory(

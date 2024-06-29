@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:lua_dardo_async/debug.dart';
 import 'package:lua_dardo_async/lua.dart';
@@ -27,14 +28,20 @@ class EventManager {
       // Rect component
       lua.registerAsync("changeRectWidth", _changeRectWidth(game, thisObjectId));
       lua.registerAsync("changeRectHeight", _changeRectHeight(game, thisObjectId));
+      lua.registerAsync("changeRectColor", _changeRectColor(game, thisObjectId));
       lua.registerAsync("getRectWidth", _getRectWidth(game, thisObjectId));
       lua.registerAsync("getRectHeight", _getRectHeight(game, thisObjectId));
+      lua.registerAsync("getRectColour", _getRectColour(game, thisObjectId));
       // Text component
       lua.registerAsync("changeTextText", _changeTextText(game, thisObjectId));
+      lua.registerAsync("changeTextColor", _changeTextColor(game, thisObjectId));
       lua.registerAsync("getTextText", _getTextText(game, thisObjectId));
+      lua.registerAsync("getTextColour", _getTextColour(game, thisObjectId));
       // Circle component
       lua.registerAsync("changeCircleRadius", _changeCircleRadius(game, thisObjectId));
+      lua.registerAsync("changeCircleColour", _changeCircleColour(game, thisObjectId));
       lua.registerAsync("getCircleRadius", _getCircleRadius(game, thisObjectId));
+      lua.registerAsync("getCircleColour", _getCircleColour(game, thisObjectId));
       // Object
       lua.registerAsync("changeObjectPosX", _changeObjectPosX(game, thisObjectId));
       lua.registerAsync("changeObjectPosY", _changeObjectPosY(game, thisObjectId));
@@ -44,6 +51,163 @@ class EventManager {
       lua.register("thisObject", _thisObject(game, thisObjectId));
       lua.register("getObjectByName", _getObjectByName(game, thisObjectId));
 
+  }
+
+  /// Get circle colour
+  static EventAsync _getCircleColour(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      lua.pop(1);
+      if (objectId != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentCircle circle = object.components.firstWhere((element) =>
+          element.type == "ComponentCircle") as ComponentCircle;
+          Color color = circle.fields["color"]!.value;
+          String hex = "#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}";
+          print(hex);
+          lua.pushString(hex);
+          return 1;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Get rect colour
+  static EventAsync _getRectColour(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      lua.pop(1);
+      if (objectId != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentRect rect = object.components.firstWhere((element) =>
+          element.type == "ComponentRect") as ComponentRect;
+          Color color = rect.fields["color"]!.value;
+          String hex = "#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}";
+          lua.pushString(hex);
+          return 1;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Get text colour
+  static EventAsync _getTextColour(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      lua.pop(1);
+      if (objectId != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentText text = object.components.firstWhere((element) =>
+          element.type == "ComponentText") as ComponentText;
+          Color color = text.fields["color"]!.value;
+          String hex = "#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}";
+          lua.pushString(hex);
+          return 1;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Change circle compoonent color
+  static EventAsync _changeCircleColour(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? newColor = lua.checkString(2);
+      lua.pop(2);
+      if (objectId != null && newColor != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentCircle circle = object.components.firstWhere((element) =>
+          element.type == "ComponentCircle") as ComponentCircle;
+          newColor = newColor.replaceAll("#", "");
+          if (newColor.length == 6) {
+            newColor = "FF$newColor";
+          }
+          int b = newColor.length == 8 ? int.parse(newColor.substring(6, 8), radix: 16) : 255;
+          circle.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Change rect component color
+  static EventAsync _changeRectColor(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? newColor = lua.checkString(2);
+      lua.pop(2);
+      if (objectId != null && newColor != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentRect rect = object.components.firstWhere((element) =>
+          element.type == "ComponentRect") as ComponentRect;
+          newColor = newColor.replaceAll("#", "");
+          if (newColor.length == 6) {
+            newColor = "FF$newColor";
+          }
+          int b = newColor.length == 8 ? int.parse(newColor.substring(6, 8), radix: 16) : 255;
+          rect.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Change text component color
+  static EventAsync _changeTextColor(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? newColor = lua.checkString(2);
+      lua.pop(2);
+      if (objectId != null && newColor != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentText text = object.components.firstWhere((element) =>
+          element.type == "ComponentText") as ComponentText;
+          newColor = newColor.replaceAll("#", "");
+          if (newColor.length == 6) {
+            newColor = "FF$newColor";
+          }
+          int b = newColor.length == 8 ? int.parse(newColor.substring(6, 8), radix: 16) : 255;
+          text.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
   }
 
   /// Wait for a certain amount of time.

@@ -1,7 +1,9 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks_manager.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_get_radius.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_radius.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_object_get_pos_x.dart';
@@ -15,6 +17,8 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/text/blo
 
 import 'blocks/colour/block_colour_picker.dart';
 import 'blocks/colour/block_colour_rgb.dart';
+import 'blocks/components/block_component_circle_get_colour.dart';
+import 'blocks/components/block_component_rect_color.dart';
 import 'blocks/components/block_component_rect_get_height.dart';
 import 'blocks/components/block_component_rect_get_width.dart';
 import 'blocks/components/block_component_rect_height.dart';
@@ -37,14 +41,18 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     // component rect
     .addBlock(blockRectWidthJson)
     .addBlock(blockRectHeightJson)
+    .addBlock(blockRectColourJson)
     .addBlock(blockGetRectWidthJson)
     .addBlock(blockGetRectHeightJson)
     // component text
     .addBlock(blockTextTextJson)
+    .addBlock(blockTextColourJson)
     .addBlock(blockGetTextTextJson)
     // component circle
     .addBlock(blockCircleRadiusJson)
+    .addBlock(blockCircleColourJson)
     .addBlock(blockGetCircleRadiusJson)
+    .addBlock(blockGetCircleColourJson)
     // object
     .addBlock(blockObjectPosXJson)
     .addBlock(blockObjectPosYJson)
