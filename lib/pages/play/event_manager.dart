@@ -5,6 +5,8 @@ import 'package:lua_dardo_async/debug.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
+import 'package:plock_mobile/models/component_types/component_event.dart';
+import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 import '../../models/component_types/component_rect.dart';
 import '../../models/component_types/component_text.dart';
@@ -30,7 +32,7 @@ class EventManager {
       // Rect component
       lua.registerAsync("changeRectWidth", _changeRectWidth(game, thisObjectId));
       lua.registerAsync("changeRectHeight", _changeRectHeight(game, thisObjectId));
-      lua.registerAsync("changeRectColor", _changeRectColor(game, thisObjectId));
+      lua.registerAsync("changeRectColour", _changeRectColour(game, thisObjectId));
       lua.registerAsync("getRectWidth", _getRectWidth(game, thisObjectId));
       lua.registerAsync("getRectHeight", _getRectHeight(game, thisObjectId));
       lua.registerAsync("getRectColour", _getRectColour(game, thisObjectId));
@@ -44,6 +46,9 @@ class EventManager {
       lua.registerAsync("changeCircleColour", _changeCircleColour(game, thisObjectId));
       lua.registerAsync("getCircleRadius", _getCircleRadius(game, thisObjectId));
       lua.registerAsync("getCircleColour", _getCircleColour(game, thisObjectId));
+      // Event component
+      lua.registerAsync("changeEventEvent", _changeEventEvent(game, thisObjectId));
+      lua.registerAsync("changeEventTrigger", _changeEventTrigger(game, thisObjectId));
       // Object
       lua.registerAsync("changeObjectPosX", _changeObjectPosX(game, thisObjectId));
       lua.registerAsync("changeObjectPosY", _changeObjectPosY(game, thisObjectId));
@@ -57,6 +62,52 @@ class EventManager {
       lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
       lua.registerAsync("addComponentToObject", _addComponentToObject(game, thisObjectId));
 
+  }
+
+  /// Change event trigger
+  static EventAsync _changeEventTrigger(Game game, int thisObjectId) {
+    return (lua) async {
+      String? newTrigger = lua.checkString(1);
+      int? objectId = await lua.checkInteger(2);
+      lua.pop(2);
+      if (objectId != null && newTrigger != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentEvent event = object.components.firstWhere((element) =>
+          element.type == "ComponentEvent") as ComponentEvent;
+          event.fields["trigger"]!.value = newTrigger;
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Change event event
+  static EventAsync _changeEventEvent(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? newEvent = lua.checkString(2);
+      lua.pop(2);
+      if (objectId != null && newEvent != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentEvent event = object.components.firstWhere((element) =>
+          element.type == "ComponentEvent") as ComponentEvent;
+          event.fields["event"]!.value = newEvent;
+          game.isDirty = true;
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
   }
 
   /// Add component to an object
@@ -196,7 +247,6 @@ class EventManager {
           if (newColor.length == 6) {
             newColor = "FF$newColor";
           }
-          int b = newColor.length == 8 ? int.parse(newColor.substring(6, 8), radix: 16) : 255;
           circle.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
           game.isDirty = true;
         } catch (e) {
@@ -209,7 +259,7 @@ class EventManager {
   }
 
   /// Change rect component color
-  static EventAsync _changeRectColor(Game game, int thisObjectId) {
+  static EventAsync _changeRectColour(Game game, int thisObjectId) {
     return (lua) async {
       int? objectId = await lua.checkInteger(1);
       String? newColor = lua.checkString(2);

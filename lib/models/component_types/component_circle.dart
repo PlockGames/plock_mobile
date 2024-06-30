@@ -68,11 +68,12 @@ class ComponentCircle extends ComponentType {
   @override
   Component? getGameDisplayComponent() {
     double radius = fields["radius"]!.value.toDouble();
+    Color color = fields["color"]!.value;
 
     return CircleComponent(
       radius: radius,
       position: Vector2(0, 0),
-      paint: Paint()..color = fields["color"]!.value
+      paint: Paint()..color = color
     );
   }
 }

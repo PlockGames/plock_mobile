@@ -1,35 +1,31 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
-/// Custom : Object Pos X block.
-final blockObjectAddComponent = ToolboxBlock(type: "object_add_component");
+/// Custom : Component Event Trigger
+final blockEventTrigger = ToolboxBlock(type: "event_trigger");
 
-/// Custom : Object Pos X block data.
-final blockObjectAddComponentJson = CustomBlock.fromJson(
+/// Custom : Component Event Trigger block data.
+final blockEventTriggerJson = CustomBlock.fromJson(
     {
-      "type": "object_add_component",
-      "message0": "add component %1 %2 to object %3",
+      "type": "event_trigger",
+      "message0": "Change event trigger %1 %2 to object %3",
       "args0": [
         {
           "type": "field_dropdown",
-          "name": "component",
+          "name": "trigger",
           "options": [
             [
-              "rectangle",
-              "ComponentRect"
+              "on start",
+              "ON_START"
             ],
             [
-              "circle",
-              "ComponentCircle"
+              "on update",
+              "ON_UPDATE"
             ],
             [
-              "text",
-              "ComponentText"
+              "on_tap",
+              "ON_TAP"
             ],
-            [
-              "event",
-              "ComponentEvent"
-            ]
           ]
         },
         {
@@ -49,9 +45,9 @@ final blockObjectAddComponentJson = CustomBlock.fromJson(
       "helpUrl": ""
     }
 ).setFunctionLua('''
-  var component = block.getFieldValue('component');
+  var trigger = block.getFieldValue('trigger');
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var result = 'addComponentToObject(\\\\"' + component + '\\\\", ' + object + ');';
+  var result = 'changeEventTrigger(\\\\"' + trigger + '\\\\", ' + object + ');';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

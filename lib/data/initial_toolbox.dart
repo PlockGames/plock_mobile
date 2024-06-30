@@ -1,4 +1,6 @@
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour_rgb.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/bloc_component_event_trigger.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_event_event.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_get_height.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_get_width.dart';
@@ -168,6 +170,9 @@ final initialToolbox = Toolbox(categories: [
         blockCircleColour,
         blockGetCircleRadius,
         blockGetCircleColour,
+        // Event
+        blockEventEvent,
+        blockEventTrigger,
       ]
   ),
   ToolboxCategory(

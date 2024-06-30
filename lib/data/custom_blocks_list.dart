@@ -1,5 +1,7 @@
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks_manager.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/colour/block_colour.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/bloc_component_event_trigger.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_event_event.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/bloc_object_add_component.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/bloc_object_spawn.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_color.dart';
@@ -57,6 +59,9 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockCircleColourJson)
     .addBlock(blockGetCircleRadiusJson)
     .addBlock(blockGetCircleColourJson)
+    // component event
+    .addBlock(blockEventEventJson)
+    .addBlock(blockEventTriggerJson)
     // object
     .addBlock(blockObjectPosXJson)
     .addBlock(blockObjectPosYJson)

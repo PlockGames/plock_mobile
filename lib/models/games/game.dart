@@ -39,7 +39,9 @@ class Game {
 
     GameObject newObject = GameObject(id: objectCount, name: name);
     objects.add(newObject);
-    gamePlayer!.add(GamePlayerObject(gameObject: newObject, game: this));
+    GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, game: this);
+    gamePlayer!.add(newGamePlayerObject);
+    gamePlayer!.components.add(newGamePlayerObject);
     objectCount++;
     isDirty = true;
     return newObject.id;

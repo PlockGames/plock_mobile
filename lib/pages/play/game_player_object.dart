@@ -35,7 +35,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-
+    print("loading !");
     // Load the lua state to execute events
     await lua.openLibs();
     EventManager.registerEvents(lua, game, gameObject.id);
@@ -109,6 +109,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   Future<bool> onTapUp(TapUpEvent info) async {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_TAP') {
+        print("ON_TAP");
         executeEvent(component.fields['event']!.value);
       }
     }
@@ -116,9 +117,9 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   }
 
   /// Execute an event.
-  void executeEvent(String event) {
+  Future<void> executeEvent(String event) async {
     lua.loadString(event);
-    lua.call(0, 0);
+    await lua.call(0, 0);
   }
 
 }
