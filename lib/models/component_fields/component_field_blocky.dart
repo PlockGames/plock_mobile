@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/component_fields/blocky/data/initial_toolbox.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:flutter_blockly/flutter_blockly.dart' as Blocky;
 
-import 'blocky/data/custom_blocks_list.dart';
+import '../../data/custom_blocks_list.dart';
+import '../../data/initial_toolbox.dart';
 import 'blocky/data/pl_blockly_editor_widget.dart';
 
 /// A field that contain a Blockly (lua code) value.

@@ -5,15 +5,18 @@ class Arg {
     final String? name;
     final String? check;
     final String? align;
+    final List<List<String>>? options;
 
-    Arg({required this.type, this.name, this.check, this.align});
+    Arg({required this.type, this.name, this.check, this.align, this.options});
 
     factory Arg.fromJson(Map<String, dynamic> json) {
+        print(json['options']);
         return Arg(
             type: json['type'],
             name: json['name'],
             check: json['check'],
             align: json['align'],
+            options: json['options'],
         );
     }
 
@@ -21,6 +24,15 @@ class Arg {
       if (type == "input_dummy") {
         return {
           'type': type,
+        };
+      }
+
+      if (type == "field_dropdown") {
+        print(options);
+        return {
+          'type': type,
+          'name': name,
+          'options': options,
         };
       }
 
@@ -81,7 +93,7 @@ class CustomBlock {
 
   /// Convert a json to a [CustomBlock].
   factory CustomBlock.fromJson(Map<String, dynamic> json) {
-    List<Map<String, String>>? argsJson = json['args0'];
+    List<Map<String, dynamic>>? argsJson = json['args0'];
     List<Arg> args = [];
     if (argsJson != null) {
       args = (argsJson as List).map((e) => Arg.fromJson(e)).toList();

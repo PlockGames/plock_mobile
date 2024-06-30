@@ -37,7 +37,6 @@ class PlayPageState extends State<PlayPage> {
       decoded = jsonDecode(lastResponse.body);
       allGames.addAll(decoded);
     }
-
     List<plock.Game> allGameWithData = <plock.Game>[];
     for (var game in allGames) {
       var gameData = await ApiService.getGameWithData(game['id'].toString());

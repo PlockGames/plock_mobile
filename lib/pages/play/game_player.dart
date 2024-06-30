@@ -22,6 +22,7 @@ class GamePlayer extends FlameGame {
   @override
   Future<void> onLoad() async {
     game.screenSize = size;
+    game.gamePlayer = this;
 
     // Generate all the game objects of the game
     for (var object in game.objects) {

@@ -13,7 +13,7 @@ class ComponentList {
     'ComponentEvent': ComponentEvent(),
   };
 
-  static get() {
+  static Map<String, ComponentType> get() {
     return components;
   }
 

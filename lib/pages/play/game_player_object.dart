@@ -107,7 +107,6 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
 
   @override
   Future<bool> onTapUp(TapUpEvent info) async {
-    print("on tap");
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_TAP') {
         executeEvent(component.fields['event']!.value);

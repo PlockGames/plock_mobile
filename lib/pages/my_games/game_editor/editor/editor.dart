@@ -26,9 +26,6 @@ class Editor extends FlameGame {
   /// The game data.
   final Plock.Game game;
 
-  /// the count of the objects
-  int objectCount = 0;
-
   /// The text component to display the name of the selected object.
   late TextComponent selectedObjectName;
 
@@ -59,9 +56,9 @@ class Editor extends FlameGame {
 
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
-    final object = ObjectComponent(id: objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
+    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
     add(object);
-    objectCount++;
+    game.objectCount++;
     addGameObject(object.gameObject);
     return object;
   }
@@ -102,8 +99,8 @@ class Editor extends FlameGame {
 
     // Generate the object components of the game
     game.objects.forEach((element) {
-      add(ObjectComponent(id: objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
-      objectCount++;
+      add(ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
+      game.objectCount++;
     });
   }
 

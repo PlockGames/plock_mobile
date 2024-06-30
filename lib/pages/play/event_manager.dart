@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:lua_dardo_async/debug.dart';
 import 'package:lua_dardo_async/lua.dart';
+import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
 
 import '../../models/component_types/component_rect.dart';
@@ -25,6 +26,7 @@ class EventManager {
       lua.registerAsync("wait", _wait(game, thisObjectId));
       lua.register("getScreenWidth", _getScreenWidth(game, thisObjectId));
       lua.register("getScreenHeight", _getScreenHeight(game, thisObjectId));
+      lua.registerAsync("rgbToColor", _rgbToColor(game, thisObjectId));
       // Rect component
       lua.registerAsync("changeRectWidth", _changeRectWidth(game, thisObjectId));
       lua.registerAsync("changeRectHeight", _changeRectHeight(game, thisObjectId));
@@ -50,7 +52,59 @@ class EventManager {
       lua.registerAsync("objectMove", _objectMove(game, thisObjectId));
       lua.register("thisObject", _thisObject(game, thisObjectId));
       lua.register("getObjectByName", _getObjectByName(game, thisObjectId));
+      lua.register("lastObject", _lastObject(game, thisObjectId));
+      lua.register("spawnObject", _spawnObject(game, thisObjectId));
+      lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
+      lua.registerAsync("addComponentToObject", _addComponentToObject(game, thisObjectId));
 
+  }
+
+  /// Add component to an object
+  static EventAsync _addComponentToObject(Game game, int thisObjectId) {
+    return (lua) async {
+      String? componentType = lua.checkString(1);
+      int? objectId = await lua.checkInteger(2);
+      lua.pop(2);
+      if (objectId != null && componentType != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          for (var component in ComponentList.get().entries) {
+            if (component.key == componentType) {
+              object.components.add(component.value.instance());
+              game.isDirty = true;
+              break;
+            }
+          }
+        } catch (e) {
+          print("Error: $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Spawn an object
+  static Event _spawnObject(Game game, int thisObjectId) {
+    return (lua) {
+      String? name = lua.checkString(1);
+      if (name != null) {
+        game.spawnObject(name);
+      }
+      return 0;
+    };
+  }
+
+  /// Destroy an object
+  static EventAsync _destroyObject(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      if (objectId != null) {
+        game.destroyObject(objectId);
+      }
+      return 0;
+    };
   }
 
   /// Get circle colour
@@ -571,6 +625,14 @@ class EventManager {
   static Event _thisObject(Game game, int thisObjectId) {
     return (lua) {
       lua.pushInteger(thisObjectId);
+      return 1;
+    };
+  }
+
+  /// return the last spawned object
+  static Event _lastObject(Game game, int thisObjectId) {
+    return (lua) {
+      lua.pushInteger(game.objects.last.id);
       return 1;
     };
   }
