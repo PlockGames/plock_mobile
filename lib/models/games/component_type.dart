@@ -37,8 +37,17 @@ class ComponentType {
   }
 
   /// Return the flame component to display the component in the game.
-  Component? getGameDisplayComponent() {
+  Component? getGameDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback) {
     return null;
+  }
+
+  void updateDisplay(Component? component) {
+
   }
 
   /// Set a function executed when the component is updated.

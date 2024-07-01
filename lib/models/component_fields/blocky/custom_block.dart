@@ -10,7 +10,6 @@ class Arg {
     Arg({required this.type, this.name, this.check, this.align, this.options});
 
     factory Arg.fromJson(Map<String, dynamic> json) {
-        print(json['options']);
         return Arg(
             type: json['type'],
             name: json['name'],
@@ -28,7 +27,6 @@ class Arg {
       }
 
       if (type == "field_dropdown") {
-        print(options);
         return {
           'type': type,
           'name': name,

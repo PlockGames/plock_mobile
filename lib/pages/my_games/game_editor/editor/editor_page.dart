@@ -81,7 +81,6 @@ class _EditorPageState extends State<EditorPage> {
             ComponentEvent event = component;
             event.fields['event']!.value = event.fields['event']!.value.replaceAll('\n', ' ');
             event.fields['event']!.value = event.fields['event']!.value.replaceAll('\\"', '"');
-            print(event.fields['event']!.value);
           }
         }
       }

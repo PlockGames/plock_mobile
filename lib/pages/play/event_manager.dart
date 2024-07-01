@@ -185,7 +185,6 @@ class EventManager {
         try {
           GameObject object = game.objects.firstWhere((element) =>
           element.id == objectId);
-          print(eventName);
           ComponentEvent event = object.components.firstWhere((element) {
             if (element.type == "ComponentEvent" && (element as ComponentEvent).fields["name"]!.value == eventName) {
               return true;
@@ -264,7 +263,6 @@ class EventManager {
           element.type == "ComponentCircle") as ComponentCircle;
           Color color = circle.fields["color"]!.value;
           String hex = "#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}";
-          print(hex);
           lua.pushString(hex);
           return 1;
         } catch (e) {

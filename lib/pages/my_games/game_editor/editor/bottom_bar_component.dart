@@ -13,9 +13,6 @@ class BottomBarComponent extends PositionComponent {
   /// The size of the screen.
   final Vector2 screenSize;
 
-  /// The container of all the objects.
-  final Component objectContainer;
-
   /// All the bottom bar callbacks
   final BottomBarCallbacks bottomBarCallbacks;
 
@@ -35,19 +32,8 @@ class BottomBarComponent extends PositionComponent {
 
   BottomBarComponent({
     required this.screenSize,
-    required this.objectContainer,
     required this.bottomBarCallbacks,
   });
-
-  /// Get the selected object.
-  selectedObject() {
-    for (final component in objectContainer.children) {
-      if (bottomBarCallbacks.isObjectSelected(component as ObjectComponent)) {
-        return component;
-      }
-    }
-    return null;
-  }
 
   @override
   Future<void> onLoad() async {
@@ -67,17 +53,16 @@ class BottomBarComponent extends PositionComponent {
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
           var newObject = bottomBarCallbacks.addGameObject();
-          objectContainer.add(newObject);
     });
 
     deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(60, 0),
         tapAction: () {
-          objectContainer.remove(selectedObject());
+          bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
     });
 
     editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(120, 0),
         tapAction: () {
-          bottomBarCallbacks.openEditor(selectedObject());
+          bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject());
     });
 
     uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
@@ -99,7 +84,7 @@ class BottomBarComponent extends PositionComponent {
 
     // Update the buttons depending on the selected object
     if (deleteBtn != null && editBtn != null) {
-      if (selectedObject() == null) {
+      if (bottomBarCallbacks.getSelectedObject() == null) {
         if (children.contains(deleteBtn)) {
           children.remove(deleteBtn);
         }

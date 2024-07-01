@@ -52,6 +52,15 @@ class Editor extends FlameGame {
     return object;
   }
 
+  void removeGameObjectCallback(ObjectComponent object) {
+    editorCallbacks.removeGameObject(object.gameObject);
+    remove(object);
+  }
+
+  ObjectComponent? getSelectedObject() {
+    return selectedObject;
+  }
+
   @override
   Color backgroundColor() {
     return const Color(0xFF858585);
@@ -60,23 +69,21 @@ class Editor extends FlameGame {
   @override
   void onLoad() {
     super.onLoad();
-    final objectContainer = PositionComponent();
 
     // Create the bottom bar
     final BottomBarCallbacks bottomBarCallbacks = BottomBarCallbacks(
         selectObject: selectObject,
-        isObjectSelected: isObjectSelected,
         openEditor: editorCallbacks.openEditor,
         addGameObject: addGameObjectCallback,
         updateObject: updateObject,
-        removeGameObject: editorCallbacks.removeGameObject,
+        removeGameObject: removeGameObjectCallback,
+        getSelectedObject: getSelectedObject,
         uploadGame: editorCallbacks.uploadGame,
         goBack: editorCallbacks.goBack
     );
 
     final bottomBar = BottomBarComponent(
         screenSize: size,
-        objectContainer: objectContainer,
         bottomBarCallbacks: bottomBarCallbacks
     );
 
@@ -87,7 +94,6 @@ class Editor extends FlameGame {
       ..position = Vector2(10, size.y - 90);
 
     //Add the components to the editor
-    add(objectContainer);
     add(bottomBar);
     add(selectedObjectName);
 

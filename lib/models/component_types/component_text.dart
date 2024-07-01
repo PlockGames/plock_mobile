@@ -67,19 +67,37 @@ class ComponentText extends ComponentType {
   }
 
   @override
-  Component? getGameDisplayComponent() {
+  Component? getGameDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback,) {
     String text = fields["text"]!.value.toString();
 
-    TextStyle style = TextStyle(
-      color: fields["color"]!.value,
-    );
 
-    return TextComponent(
+    return ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
-      textRenderer: TextPaint(
-        style: style
-      ),
+      color: fields["color"]!.value,
+      onTapeUpCallback: onTapeUpCallback,
+      onDragCancelCallback: onDragCancelCallback,
+      onDragEndCallback: onDragEndCallback,
+      onDragStartCallback: onDragStartCallback,
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
+  }
+
+  @override
+  void updateDisplay(Component? component) {
+    if (component is ComponentFlameText) {
+      component.text = fields["text"]!.value;
+      component.textRenderer = TextPaint(
+        style: TextStyle(
+          color: fields["color"]!.value,
+        ),
+      );
+    }
   }
 }

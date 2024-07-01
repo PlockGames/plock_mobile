@@ -69,16 +69,32 @@ class ComponentRect extends ComponentType {
   }
 
   @override
-  Component? getGameDisplayComponent() {
+  Component? getGameDisplayComponent( onTapeUpCallback, onDragStartCallback, onDragUpdateCallback, onDragEndCallback, onDragCancelCallback) {
     Vector2 size = Vector2(
       fields["width"]!.value.toDouble(),
       fields["height"]!.value.toDouble(),
     );
 
-    return RectangleComponent(
+    return ComponentFlameRect(
       size: size,
-      paint: Paint()..color = fields["color"]!.value,
+      color: fields["color"]!.value,
       position: Vector2(-size.x / 2, -size.y / 2),
+      onTapeUpCallback: onTapeUpCallback,
+      onDragCancelCallback: onDragCancelCallback,
+      onDragEndCallback: onDragEndCallback,
+      onDragStartCallback: onDragStartCallback,
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
   }
+
+  @override
+  void updateDisplay(Component? component) {
+    if (component is ComponentFlameRect) {
+      component.width = fields["width"]!.value.toDouble();
+      component.height = fields["height"]!.value.toDouble();
+      component.paint = Paint()..color = fields["color"]!.value;
+    }
+  }
+
 }

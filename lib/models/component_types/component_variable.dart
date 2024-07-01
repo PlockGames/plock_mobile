@@ -44,7 +44,12 @@ class ComponentVariable extends ComponentType {
   }
 
   @override
-  Component? getGameDisplayComponent() {
+  Component? getGameDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback) {
     return null;
   }
 }

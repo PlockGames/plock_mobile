@@ -66,14 +66,34 @@ class ComponentCircle extends ComponentType {
   }
 
   @override
-  Component? getGameDisplayComponent() {
+  Component? getGameDisplayComponent(
+      onTapeUpCallback,
+      onDragStartCallback,
+      onDragUpdateCallback,
+      onDragEndCallback,
+      onDragCancelCallback){
     double radius = fields["radius"]!.value.toDouble();
     Color color = fields["color"]!.value;
 
-    return CircleComponent(
+    return ComponentFlameCircle(
       radius: radius,
       position: Vector2(-radius, -radius),
-      paint: Paint()..color = color
+      color: color,
+      onTapeUpCallback: onTapeUpCallback,
+      onDragCancelCallback: onDragCancelCallback,
+      onDragEndCallback: onDragEndCallback,
+      onDragStartCallback: onDragStartCallback,
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
   }
+
+  @override
+  void updateDisplay(Component? component) {
+    if (component is ComponentFlameCircle) {
+      component.radius = fields["radius"]!.value.toDouble();
+      component.paint = Paint()..color = fields["color"]!.value;
+    }
+  }
+
 }

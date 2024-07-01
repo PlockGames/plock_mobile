@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:plock_mobile/models/games/component_flame.dart';
+import 'package:plock_mobile/models/games/component_type.dart';
 
 /// A flame component used in the editor to represent a circle component.
-class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallbacks {
+class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
 
   /// Callback : When the user tap up on the component.
   final Function onTapeUpCallback;
@@ -17,6 +19,9 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
   /// Callback : When the drag is cancelled.
   final Function onDragCancelCallback;
 
+  /// The linked component, only with game player
+  final ComponentType? componentType;
+
 
   ComponentFlameCircle({
     required this.onDragStartCallback,
@@ -26,13 +31,15 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
     required this.onDragUpdateCallback,
     required Color color,
     super.position,
-    super.radius
+    super.radius,
+    this.componentType
   }) {
     this.paint = Paint()..color = color;
   }
 
   @override
   bool onTapUp(TapUpEvent info) {
+    print('tap');
     return onTapeUpCallback(info);
   }
 
@@ -57,6 +64,11 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
   void onDragCancel(DragCancelEvent event) {
     super.onDragCancel(event);
     onDragCancelCallback(event);
+  }
+
+  @override
+  ComponentType? getComponentType() {
+    return componentType;
   }
 
 }
