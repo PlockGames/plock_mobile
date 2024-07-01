@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 /// The bottom bar of the editor.
@@ -15,20 +16,8 @@ class BottomBarComponent extends PositionComponent {
   /// The container of all the objects.
   final Component objectContainer;
 
-  /// The function to select an object.
-  final Function selectObject;
-  /// The function to check if an object is selected.
-  final Function isObjectSelected;
-  /// The function to open the object editor.
-  final Function openEditor;
-  /// The function to add a game object to the game.
-  final Function addGameObject;
-  /// The function to update an object.
-  final Function updateObject;
-  /// The function to delete a game object from the game.
-  final Function deleteGameObject;
-  /// The function to upload the game.
-  final Function uploadGame;
+  /// All the bottom bar callbacks
+  final BottomBarCallbacks bottomBarCallbacks;
 
   /// The button to add an object.
   late BottomBarbuttonComponent addBtn;
@@ -47,19 +36,13 @@ class BottomBarComponent extends PositionComponent {
   BottomBarComponent({
     required this.screenSize,
     required this.objectContainer,
-    required this.selectObject,
-    required this.isObjectSelected,
-    required this.openEditor,
-    required this.addGameObject,
-    required this.updateObject,
-    required this.deleteGameObject,
-    required this.uploadGame,
+    required this.bottomBarCallbacks,
   });
 
   /// Get the selected object.
   selectedObject() {
     for (final component in objectContainer.children) {
-      if (isObjectSelected(component)) {
+      if (bottomBarCallbacks.isObjectSelected(component as ObjectComponent)) {
         return component;
       }
     }
@@ -83,7 +66,7 @@ class BottomBarComponent extends PositionComponent {
     // Create the buttons
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
-          var newObject = addGameObject();
+          var newObject = bottomBarCallbacks.addGameObject();
           objectContainer.add(newObject);
     });
 
@@ -94,12 +77,12 @@ class BottomBarComponent extends PositionComponent {
 
     editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(120, 0),
         tapAction: () {
-      openEditor(selectedObject());
+          bottomBarCallbacks.openEditor(selectedObject());
     });
 
     uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
         tapAction: () {
-        uploadGame();
+          bottomBarCallbacks.uploadGame();
     });
 
     // Add the components to the bottom bar

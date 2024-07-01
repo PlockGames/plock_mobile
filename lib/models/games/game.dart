@@ -32,6 +32,18 @@ class Game {
 
   Game({required this.name});
 
+  Game instance() {
+    Game instance = Game(name: name);
+    instance.screenSize = screenSize;
+    instance.objectCount = objectCount;
+
+    for (var object in objects) {
+      instance.objects.add(object.instance());
+    }
+
+    return instance;
+  }
+
   int spawnObject(String name) {
     if (gamePlayer == null) {
       throw Exception("Game player not set. Do not use outside of game player!");

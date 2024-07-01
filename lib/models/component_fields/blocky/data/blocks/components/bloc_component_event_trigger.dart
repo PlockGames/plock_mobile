@@ -8,8 +8,13 @@ final blockEventTrigger = ToolboxBlock(type: "event_trigger");
 final blockEventTriggerJson = CustomBlock.fromJson(
     {
       "type": "event_trigger",
-      "message0": "Change event trigger %1 %2 to object %3",
+      "message0": "Change event %1 trigger %2 %3 to object %4",
       "args0": [
+        {
+          "type": "input_value",
+          "name": "name",
+          "check": "String"
+        },
         {
           "type": "field_dropdown",
           "name": "trigger",
@@ -45,9 +50,10 @@ final blockEventTriggerJson = CustomBlock.fromJson(
       "helpUrl": ""
     }
 ).setFunctionLua('''
+  var name = generator.valueToCode(block, 'name', lua.Order.ATOMIC);
   var trigger = block.getFieldValue('trigger');
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var result = 'changeEventTrigger(\\\\"' + trigger + '\\\\", ' + object + ');';
+  var result = 'changeEventTrigger(\\\\"' + name + '\\\\", \\\\"' + trigger + '\\\\", ' + object + ');';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

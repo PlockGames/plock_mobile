@@ -8,8 +8,13 @@ final blockEventEvent = ToolboxBlock(type: "event_event");
 final blockEventEventJson = CustomBlock.fromJson(
     {
       "type": "event_event",
-      "message0": "Set event of object %1 %2",
+      "message0": "Set event %1 of object %2 %3",
       "args0": [
+        {
+          "type": "input_value",
+          "name": "name",
+          "check": "String"
+        },
         {
           "type": "input_value",
           "name": "object",
@@ -27,11 +32,13 @@ final blockEventEventJson = CustomBlock.fromJson(
       "helpUrl": ""
     }
 ).setFunctionLua('''
+  var name = generator.valueToCode(block, 'name', lua.Order.ATOMIC);
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
   var event = generator.statementToCode(block, 'event');
   var result = 'object = ' + object + ';';
   result += 'event = \\\\"' + event + '\\\\";';
-  result += 'changeEventEvent(object,event);';
+  result += 'name = \\\\"' + name + '\\\\";';
+  result += 'changeEventEvent(name, object,event);';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

@@ -10,6 +10,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_add_event.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_get_pos_y.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_name.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_this.dart';
@@ -73,4 +74,5 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockObjectLastJson)
     .addBlock(blockObjectSpawnJson)
     .addBlock(blockObjectDestroyJson)
-    .addBlock(blockObjectAddComponentJson);
+    .addBlock(blockObjectAddComponentJson)
+    .addBlock(blockObjectAddEventJson);

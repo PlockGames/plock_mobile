@@ -1,6 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
@@ -11,17 +13,8 @@ class Editor extends FlameGame {
   /// The currently selected object.
   ObjectComponent? selectedObject;
 
-  // Callback to update the game
-  /// The function to open the object editor.
-  final Function openEditor;
-  /// The function to add a game object to the game.
-  final Function addGameObject;
-  /// The function to remove a game object from the game.
-  final Function removeGameObject;
-  /// The function to update a game object in the game.
-  final Function updateGameObject;
-  /// The function to upload the game.
-  final Function uploadGame;
+  /// All the callback coming from the widget editor
+  final EditorCallbacks editorCallbacks;
 
   /// The game data.
   final Plock.Game game;
@@ -30,12 +23,8 @@ class Editor extends FlameGame {
   late TextComponent selectedObjectName;
 
   Editor({
-    required this.openEditor,
     required this.game,
-    required this.addGameObject,
-    required this.removeGameObject,
-    required this.updateGameObject,
-    required this.uploadGame,
+    required this.editorCallbacks,
   });
 
   /// Select an object.
@@ -50,7 +39,7 @@ class Editor extends FlameGame {
 
   /// Update an object.
   updateObject(ObjectComponent object) {
-    updateGameObject(object.gameObject);
+    editorCallbacks.updateGameObject(object.gameObject);
     object.updateDisplay();
   }
 
@@ -59,7 +48,7 @@ class Editor extends FlameGame {
     final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
     add(object);
     game.objectCount++;
-    addGameObject(object.gameObject);
+    editorCallbacks.addGameObject(object.gameObject);
     return object;
   }
 
@@ -74,16 +63,21 @@ class Editor extends FlameGame {
     final objectContainer = PositionComponent();
 
     // Create the bottom bar
+    final BottomBarCallbacks bottomBarCallbacks = BottomBarCallbacks(
+        selectObject: selectObject,
+        isObjectSelected: isObjectSelected,
+        openEditor: editorCallbacks.openEditor,
+        addGameObject: addGameObjectCallback,
+        updateObject: updateObject,
+        removeGameObject: editorCallbacks.removeGameObject,
+        uploadGame: editorCallbacks.uploadGame,
+        goBack: editorCallbacks.goBack
+    );
+
     final bottomBar = BottomBarComponent(
         screenSize: size,
         objectContainer: objectContainer,
-        selectObject: selectObject,
-        isObjectSelected: isObjectSelected,
-        openEditor: openEditor,
-        addGameObject: addGameObjectCallback,
-        updateObject: updateObject,
-        deleteGameObject: removeGameObject,
-        uploadGame: uploadGame
+        bottomBarCallbacks: bottomBarCallbacks
     );
 
     // Create the text component to display the name of the selected object

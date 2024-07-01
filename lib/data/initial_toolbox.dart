@@ -35,6 +35,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_color.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_get_text.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_text_text.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_add_event.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_get_pos_x.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_get_pos_y.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/block_object_last.dart';
@@ -189,6 +190,7 @@ final initialToolbox = Toolbox(categories: [
         blockObjectSpawn,
         blockObjectDestroy,
         blockObjectAddComponent,
+        blockObjectAddEvent,
       ]
   ),
   ToolboxCategory(

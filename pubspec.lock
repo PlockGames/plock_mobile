@@ -183,10 +183,10 @@ packages:
     dependency: "direct main"
     description:
       name: lua_dardo_async
-      sha256: "6193de05cfcf810b36f6fa10a5f3e3420ce75e7174e37a29213c666a7d4538aa"
+      sha256: "13ce4c689ccbb5992e0a064dc9b8c43958f99cff0924218158920a91330b8d09"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.3"
   matcher:
     dependency: transitive
     description:

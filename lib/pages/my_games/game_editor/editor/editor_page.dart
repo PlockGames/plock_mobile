@@ -1,11 +1,13 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_types/component_event.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
+import 'package:plock_mobile/pages/play/game_player.dart';
 
 import '../../../../models/games/game.dart' as Plock;
-import '../../../../services/api.dart';
 import 'Editor.dart';
 
 /// The editor page.
@@ -32,7 +34,7 @@ class _EditorPageState extends State<EditorPage> {
   _EditorPageState();
 
   /// Open the object editor.
-  Function openEditor(BuildContext context) {
+  Function(ObjectComponent object) openEditor(BuildContext context) {
     return (ObjectComponent object) {
       Navigator.push(
           context,
@@ -60,9 +62,9 @@ class _EditorPageState extends State<EditorPage> {
   }
 
   /// Callback : Upload the game to the server and close the editor.
-  Function uploadGame(BuildContext context) {
+  Function() uploadGame(BuildContext context) {
     return () async {
-      var upload = await ApiService.createGame(CreateGameDto(
+      /*var upload = await ApiService.createGame(CreateGameDto(
         title: widget.game.name,
         tags: [],
         creatorId: 1,
@@ -71,23 +73,48 @@ class _EditorPageState extends State<EditorPage> {
         thumbnailUrl: "",
         data: widget.game.toJson(),
       ));
+      Navigator.pop(context);*/
+      Plock.Game tempGame = widget.game.instance();
+      for (var object in tempGame.objects) {
+        for (var component in object.components) {
+          if (component is ComponentEvent) {
+            ComponentEvent event = component;
+            event.fields['event']!.value = event.fields['event']!.value.replaceAll('\n', ' ');
+            event.fields['event']!.value = event.fields['event']!.value.replaceAll('\\"', '"');
+            print(event.fields['event']!.value);
+          }
+        }
+      }
+      Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(
+          game: GamePlayer(game: tempGame, isTest: true, exitGame: goBack(context)))
+      ));
+    };
+  }
+
+  Function() goBack(BuildContext context) {
+    return () {
       Navigator.pop(context);
     };
   }
 
   @override
   Widget build(BuildContext context) {
+    EditorCallbacks callbacks = EditorCallbacks(
+      openEditor: openEditor(context),
+      addGameObject: addGameObject,
+      removeGameObject: removeGameObject,
+      updateGameObject: updateGameObject,
+      uploadGame: uploadGame(context),
+      goBack: goBack(context)
+    );
+
     return Column(
       children: <Widget>[
         Expanded(
           child: GameWidget(
               game: Editor(
-                  openEditor: openEditor(context),
                   game: widget.game,
-                  addGameObject: addGameObject,
-                  removeGameObject: removeGameObject,
-                  updateGameObject: updateGameObject,
-                  uploadGame: uploadGame(context),
+                  editorCallbacks: callbacks,
               ),
           ),
         ),

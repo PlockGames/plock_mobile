@@ -2,52 +2,45 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_block.dart';
 import '../../../toolbox_block.dart';
 
 /// Custom : Object Pos X block.
-final blockObjectAddComponent = ToolboxBlock(type: "object_add_component");
+final blockObjectAddEvent = ToolboxBlock(type: "object_add_event");
 
 /// Custom : Object Pos X block data.
-final blockObjectAddComponentJson = CustomBlock.fromJson(
+final blockObjectAddEventJson = CustomBlock.fromJson(
     {
-      "type": "object_add_component",
-      "message0": "add component %1 %2 to object %3",
+      "type": "object_add_event",
+      "message0": "Add event to %1 object %2 with name %3 %4",
       "args0": [
-        {
-          "type": "field_dropdown",
-          "name": "component",
-          "options": [
-            [
-              "rectangle",
-              "ComponentRect"
-            ],
-            [
-              "circle",
-              "ComponentCircle"
-            ],
-            [
-              "text",
-              "ComponentText"
-            ]
-          ]
-        },
         {
           "type": "input_dummy"
         },
         {
           "type": "input_value",
           "name": "object",
-          "check": "Number"
+          "check": "Number",
+          "align": "RIGHT"
+        },
+        {
+          "type": "input_dummy"
+        },
+        {
+          "type": "input_value",
+          "name": "name",
+          "check": "String",
+          "align": "RIGHT"
         }
       ],
-      "inputsInline": false,
       "previousStatement": null,
       "nextStatement": null,
       "colour": 230,
-      "tooltip": "Add a component to an object",
+      "tooltip": "Add an event to an object",
       "helpUrl": ""
     }
 ).setFunctionLua('''
-  var component = block.getFieldValue('component');
   var object = generator.valueToCode(block, 'object', lua.Order.ATOMIC);
-  var result = 'addComponentToObject(\\\\"' + component + '\\\\", ' + object + ');';
+  var name = generator.valueToCode(block, 'name', lua.Order.ATOMIC);
+  var result = 'name = \\\\"' + name + '\\\\";';
+  result += 'object = ' + object + ';';
+  result += 'addEventToObject(object,name);';
   return result;
 ''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
     .setFunctionJs('''

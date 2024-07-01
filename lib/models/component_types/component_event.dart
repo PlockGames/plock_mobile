@@ -1,5 +1,6 @@
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
+import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 
 import '../games/component_type.dart';
 
@@ -7,6 +8,7 @@ import '../games/component_type.dart';
 class ComponentEvent extends ComponentType {
 
   ComponentEvent() {
+    fields["name"] = ComponentFieldText(value: "my_event");
     fields["trigger"] = ComponentFieldDropDown(value: "ON_START", options:
     {
       "ON_START": "0n Start",

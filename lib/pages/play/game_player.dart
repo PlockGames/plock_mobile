@@ -1,9 +1,12 @@
-import 'dart:ui';
+
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
-import 'package:plock_mobile/models/utils/Vector2i.dart';
+import 'package:flame/palette.dart';
+import 'package:flame/text.dart';
+import 'package:plock_mobile/models/games/game_object.dart';
+import 'package:plock_mobile/pages/play/exitbutton.dart';
 
 import '../../models/games/game.dart' as plock;
 import 'game_player_object.dart';
@@ -17,12 +20,36 @@ class GamePlayer extends FlameGame {
   /// List of all the game objects.
   List<Component> components = [];
 
-  GamePlayer(this.game);
+  /// is used with the editor to test the game ?
+  ///
+  /// If yes, specials options are activated.
+  bool isTest = false;
+
+  /// Callback to exit the game.
+  ///
+  /// Only use it in test mode !
+  final Function? exitGame;
+
+  GamePlayer({required this.game, this.isTest = false, this.exitGame});
+
+  void exitGameCallback() {
+    for (var object in components) {
+      GamePlayerObject gameObject = (object as GamePlayerObject);
+      gameObject.stopEvents();
+    }
+    exitGame!();
+  }
 
   @override
   Future<void> onLoad() async {
     game.screenSize = size;
     game.gamePlayer = this;
+
+    // Add button to exit the game if in test mode
+    if (isTest && exitGame != null) {
+      final exitButton = ExitButton(exitGame: exitGameCallback);
+      add(exitButton);
+    }
 
     // Generate all the game objects of the game
     for (var object in game.objects) {

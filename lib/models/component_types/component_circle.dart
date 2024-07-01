@@ -43,7 +43,7 @@ class ComponentCircle extends ComponentType {
 
     CircleComponent display = ComponentFlameCircle(
       radius: radius,
-      position: Vector2(0, 0),
+      position: Vector2(-radius, -radius),
       color: color,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
@@ -54,7 +54,7 @@ class ComponentCircle extends ComponentType {
 
     CircleComponent select = CircleComponent(
       radius: radius,
-      position: Vector2(0, 0),
+      position: Vector2(-radius, -radius),
       paint: Paint()
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
@@ -72,7 +72,7 @@ class ComponentCircle extends ComponentType {
 
     return CircleComponent(
       radius: radius,
-      position: Vector2(0, 0),
+      position: Vector2(-radius, -radius),
       paint: Paint()..color = color
     );
   }

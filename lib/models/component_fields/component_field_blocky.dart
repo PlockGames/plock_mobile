@@ -31,11 +31,17 @@ class ComponentFieldBlockly extends ComponentField {
   /// The saved json of the blockly.
   Map<String, dynamic> _value = initialJson;
 
-  ComponentFieldBlockly({value}) {
+  ComponentFieldBlockly({value, value_lua}) {
     if (value != null) {
       _value = value;
     } else {
       _value = initialJson;
+    }
+
+    if (value_lua != null) {
+      _value_lua = value_lua;
+    } else {
+      _value_lua = "";
     }
   }
 
@@ -108,7 +114,7 @@ class ComponentFieldBlockly extends ComponentField {
 
   @override
   ComponentFieldBlockly instance() {
-    return ComponentFieldBlockly(value: _value);
+    return ComponentFieldBlockly(value: _value, value_lua: _value_lua);
   }
 
   @override

@@ -61,25 +61,53 @@ class EventManager {
       lua.register("spawnObject", _spawnObject(game, thisObjectId));
       lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
       lua.registerAsync("addComponentToObject", _addComponentToObject(game, thisObjectId));
+      lua.registerAsync("addEventToObject", _addEventToObject(game, thisObjectId));
+  }
 
+  /// Add event to an object
+  static EventAsync _addEventToObject(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? eventName = lua.checkString(2);
+      lua.pop(2);
+      if (objectId != null && eventName != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentEvent event = ComponentEvent();
+          event.fields["name"]!.value = eventName;
+          object.components.add(event);
+          game.isDirty = true;
+        } catch (e) {
+          print("Error(addEventToObject): $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
   }
 
   /// Change event trigger
   static EventAsync _changeEventTrigger(Game game, int thisObjectId) {
     return (lua) async {
-      String? newTrigger = lua.checkString(1);
-      int? objectId = await lua.checkInteger(2);
-      lua.pop(2);
+      String? eventName = lua.checkString(1);
+      String? newTrigger = lua.checkString(2);
+      int? objectId = await lua.checkInteger(3);
+      lua.pop(3);
       if (objectId != null && newTrigger != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
           element.id == objectId);
-          ComponentEvent event = object.components.firstWhere((element) =>
-          element.type == "ComponentEvent") as ComponentEvent;
+          ComponentEvent event = object.components.firstWhere((element) {
+            if (element.type == "ComponentEvent" && (element as ComponentEvent).fields["name"]!.value == eventName) {
+              return true;
+            }
+            return false;
+          }) as ComponentEvent;
           event.fields["trigger"]!.value = newTrigger;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeEventTrigger): $e");
           return 0;
         }
       }
@@ -90,19 +118,25 @@ class EventManager {
   /// Change event event
   static EventAsync _changeEventEvent(Game game, int thisObjectId) {
     return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? newEvent = lua.checkString(2);
-      lua.pop(2);
+      String? eventName = lua.checkString(1);
+      int? objectId = await lua.checkInteger(2);
+      String? newEvent = lua.checkString(3);
+      lua.pop(3);
       if (objectId != null && newEvent != null) {
         try {
           GameObject object = game.objects.firstWhere((element) =>
           element.id == objectId);
-          ComponentEvent event = object.components.firstWhere((element) =>
-          element.type == "ComponentEvent") as ComponentEvent;
+          print(eventName);
+          ComponentEvent event = object.components.firstWhere((element) {
+            if (element.type == "ComponentEvent" && (element as ComponentEvent).fields["name"]!.value == eventName) {
+              return true;
+            }
+            return false;
+          }) as ComponentEvent;
           event.fields["event"]!.value = newEvent;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeEventEvent): $e");
           return 0;
         }
       }
@@ -128,7 +162,7 @@ class EventManager {
             }
           }
         } catch (e) {
-          print("Error: $e");
+          print("Error(addComponentToObject): $e");
           return 0;
         }
       }
@@ -175,7 +209,7 @@ class EventManager {
           lua.pushString(hex);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getCircleColour): $e");
           return 0;
         }
       }
@@ -199,7 +233,7 @@ class EventManager {
           lua.pushString(hex);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getRectColour): $e");
           return 0;
         }
       }
@@ -223,7 +257,7 @@ class EventManager {
           lua.pushString(hex);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getTextColour): $e");
           return 0;
         }
       }
@@ -250,7 +284,7 @@ class EventManager {
           circle.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeCircleColour): $e");
           return 0;
         }
       }
@@ -278,7 +312,7 @@ class EventManager {
           rect.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeRectColour): $e");
           return 0;
         }
       }
@@ -306,7 +340,7 @@ class EventManager {
           text.fields["color"]!.value = Color(int.parse(newColor, radix: 16));
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeTextColor): $e");
           return 0;
         }
       }
@@ -376,7 +410,7 @@ class EventManager {
           rect.fields["width"]!.value = newWidth;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error (changeRectWidth): $e");
           return 0;
         }
       }
@@ -399,7 +433,7 @@ class EventManager {
           rect.fields["height"]!.value = newHeight;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeRectHeight): $e");
           return 0;
         }
       }
@@ -422,7 +456,7 @@ class EventManager {
           text.fields["text"]!.value = newText;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeTextText): $e");
           return 0;
         }
       }
@@ -443,7 +477,7 @@ class EventManager {
           object.position.x = newPosX;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeObjectPosX): $e");
           return 0;
         }
       }
@@ -464,7 +498,7 @@ class EventManager {
           object.position.y = newPosY;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeObjectPosY): $e");
           return 0;
         }
       }
@@ -487,7 +521,7 @@ class EventManager {
           await _objectMoveAsync(game, object, targetX, targetY, speed);
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(objectMove): $e");
           return 0;
         }
       }
@@ -535,7 +569,7 @@ class EventManager {
           circle.fields["radius"]!.value = newRadius;
           game.isDirty = true;
         } catch (e) {
-          print("Error: $e");
+          print("Error(changeCircleRadius): $e");
           return 0;
         }
       }
@@ -557,7 +591,7 @@ class EventManager {
           lua.pushInteger(rect.fields["width"]!.value);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getRectWidth): $e");
           return 0;
         }
       }
@@ -579,7 +613,7 @@ class EventManager {
           lua.pushInteger(rect.fields["height"]!.value);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getRectHeight): $e");
           return 0;
         }
       }
@@ -601,7 +635,7 @@ class EventManager {
           lua.pushString(text.fields["text"]!.value);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getTextText): $e");
           return 0;
         }
       }
@@ -623,7 +657,7 @@ class EventManager {
           lua.pushInteger(circle.fields["radius"]!.value);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getCircleRadius): $e");
           return 0;
         }
       }
@@ -643,7 +677,7 @@ class EventManager {
           lua.pushNumber(object.position.x);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getObjectPosX): $e");
           return 0;
         }
       }
@@ -663,7 +697,7 @@ class EventManager {
           lua.pushNumber(object.position.y);
           return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getObjectPosY): $e");
           return 0;
         }
       }
@@ -698,7 +732,7 @@ class EventManager {
         lua.pushInteger(object.id);
         return 1;
         } catch (e) {
-          print("Error: $e");
+          print("Error(getObjectByName): $e");
           return 0;
         }
       }

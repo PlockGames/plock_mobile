@@ -24,7 +24,7 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   /// List of all the events components.
   List<ComponentType> eventComponents = [];
 
-  /// The lua vm to execute events.
+  /// Lua state, used to execute events.
   LuaState lua = LuaState.newState();
 
   GamePlayerObject({
@@ -35,14 +35,13 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    print("loading !");
-    // Load the lua state to execute events
-    await lua.openLibs();
-    EventManager.registerEvents(lua, game, gameObject.id);
 
     // Set the object data
     size = Vector2(50, 50);
     position = Vector2(gameObject.position.x, gameObject.position.y);
+
+    await lua.openLibs();
+    EventManager.registerEvents(lua, game, gameObject.id);
 
     // Update the components
     updateDisplay();
@@ -118,8 +117,19 @@ class GamePlayerObject extends PositionComponent with TapCallbacks {
 
   /// Execute an event.
   Future<void> executeEvent(String event) async {
+    // fix until modules works as expected
+    event = event.replaceAll("math.", "");
+    print(event);
     lua.loadString(event);
-    await lua.call(0, 0);
+    lua.call(0, 0);
+  }
+
+  void stopEvents() {
+    try {
+      lua.error();
+    } catch (e) {
+      print("Game interrupted");
+    }
   }
 
 }

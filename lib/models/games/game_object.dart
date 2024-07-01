@@ -18,6 +18,16 @@ class GameObject {
 
   GameObject({required this.id, required this.name});
 
+  /// Return a copy of the object
+  GameObject instance() {
+    GameObject instance = GameObject(id: id, name: name);
+    instance.position = position;
+    for (var component in components) {
+      instance.components.add(component.instance());
+    }
+    return instance;
+  }
+
   /// Convert the object to a JSON string.
   String toJson() {
     String json = "{";

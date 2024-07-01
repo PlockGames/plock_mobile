@@ -54,7 +54,7 @@ class PlayPageState extends State<PlayPage> {
         return Column(
           children: [Expanded(child: PageView(
             scrollDirection: Axis.vertical,
-            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game))).toList(),
+            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList(),
           ))],
         );
       } else {
