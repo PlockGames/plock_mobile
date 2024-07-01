@@ -57,7 +57,7 @@ class ComponentRect extends ComponentType {
 
     RectangleComponent select = RectangleComponent(
       size: size,
-      position: Vector2(-size.x / 2, -size.y / 2),
+      position: Vector2(0, 0),
       paint: Paint()
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke

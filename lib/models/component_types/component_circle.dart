@@ -54,7 +54,7 @@ class ComponentCircle extends ComponentType {
 
     CircleComponent select = CircleComponent(
       radius: radius,
-      position: Vector2(-radius, -radius),
+      position: Vector2(0, 0),
       paint: Paint()
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
