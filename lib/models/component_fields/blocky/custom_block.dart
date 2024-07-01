@@ -64,10 +64,12 @@ class CustomBlock {
   bool previousStatement = false;
   /// Is there a bottom connection ?
   bool nextStatement = false;
-  /// Is the a left connection ?
+  /// Is the block a left connection ?
   ///
-  /// If null, there is no connection. contain the type returned otherwise.
+  /// Type of the output block
   String? output;
+  /// Is the block an output block ?
+  bool isOutput = false;
   /// The converted to lua code of the block.
   String functionLua = '';
   /// The converted to dart code of the block.
@@ -117,6 +119,7 @@ class CustomBlock {
 
     if (json.keys.contains("output")) {
       cb.output = json['output'];
+      cb.isOutput = true;
     }
 
     return cb;
@@ -199,8 +202,8 @@ class CustomBlock {
       json['nextStatement'] = 'null';
     }
 
-    if (output != null) {
-      json['output'] = output!;
+    if (isOutput) {
+      json['output'] = output ?? 'null';
     }
 
     return json;

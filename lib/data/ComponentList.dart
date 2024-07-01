@@ -1,3 +1,5 @@
+import 'package:plock_mobile/models/component_types/component_variable.dart';
+
 import '../models/component_types/component_circle.dart';
 import '../models/component_types/component_rect.dart';
 import '../models/component_types/component_text.dart';
@@ -11,6 +13,7 @@ class ComponentList {
     'ComponentCircle': ComponentCircle(),
     'ComponentText': ComponentText(),
     'ComponentEvent': ComponentEvent(),
+    'ComponentVariable': ComponentVariable(),
   };
 
   static Map<String, ComponentType> get() {

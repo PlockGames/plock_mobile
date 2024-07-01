@@ -6,6 +6,7 @@ import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
+import 'package:plock_mobile/models/component_types/component_variable.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 import '../../models/component_types/component_rect.dart';
@@ -49,6 +50,9 @@ class EventManager {
       // Event component
       lua.registerAsync("changeEventEvent", _changeEventEvent(game, thisObjectId));
       lua.registerAsync("changeEventTrigger", _changeEventTrigger(game, thisObjectId));
+      // Variable component
+      lua.registerAsync("getVariableValue", _getVariableValue(game, thisObjectId));
+      lua.registerAsync("changeVariableValue", _changeVariableValue(game, thisObjectId));
       // Object
       lua.registerAsync("changeObjectPosX", _changeObjectPosX(game, thisObjectId));
       lua.registerAsync("changeObjectPosY", _changeObjectPosY(game, thisObjectId));
@@ -62,6 +66,61 @@ class EventManager {
       lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
       lua.registerAsync("addComponentToObject", _addComponentToObject(game, thisObjectId));
       lua.registerAsync("addEventToObject", _addEventToObject(game, thisObjectId));
+  }
+
+  /// Change the value of a variable
+  static EventAsync _changeVariableValue(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? name = lua.checkString(2);
+      String? value = lua.checkString(3);
+      lua.pop(3);
+      if (objectId != null && name != null && value != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentVariable variable = object.components.firstWhere((element) {
+            if (element.type == "ComponentVariable" && (element as ComponentVariable).fields["name"]!.value == name) {
+              return true;
+            }
+            return false;
+          }) as ComponentVariable;
+          variable.fields["value"]!.value = value;
+          game.isDirty = true;
+        } catch (e) {
+          print("Error(changeVariableValue): $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  /// Get the value of a variable
+  static EventAsync _getVariableValue(Game game, int thisObjectId) {
+    return (lua) async {
+      String? value = lua.checkString(1);
+      int? objectId = await lua.checkInteger(2);
+      lua.pop(2);
+      if (objectId != null && value != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+          ComponentVariable variable = object.components.firstWhere((element) {
+            if (element.type == "ComponentVariable" && (element as ComponentVariable).fields["name"]!.value == value) {
+              return true;
+            }
+            return false;
+          }) as ComponentVariable;
+          lua.pushString(variable.fields["value"]!.value);
+          return 1;
+        } catch (e) {
+          print("Error(getVariableValue): $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
   }
 
   /// Add event to an object

@@ -6,6 +6,8 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_get_width.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_height.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_rect_width.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_variable_get_value.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_variable_value.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/controls/block_controls_for.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/controls/block_controls_repeat_ext.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/lists/block_lists_create_with.dart';
@@ -174,6 +176,9 @@ final initialToolbox = Toolbox(categories: [
         // Event
         blockEventEvent,
         blockEventTrigger,
+        // Variable
+        blockGetVariableValue,
+        blockVariableValue,
       ]
   ),
   ToolboxCategory(
