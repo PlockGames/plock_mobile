@@ -46,7 +46,7 @@ class ComponentRect extends ComponentType {
 
     RectangleComponent display = ComponentFlameRect(
       size: size,
-      position: Vector2(-size.x / 2, -size.y / 2),
+      position: Vector2(0,0),
       color: fields["color"]!.value,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
@@ -78,7 +78,7 @@ class ComponentRect extends ComponentType {
     return ComponentFlameRect(
       size: size,
       color: fields["color"]!.value,
-      position: Vector2(-size.x / 2, -size.y / 2),
+      position: Vector2(0, 0),
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,

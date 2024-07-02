@@ -35,6 +35,7 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
     this.componentType
   }) {
     this.paint = Paint()..color = color;
+    anchor = Anchor.center;
   }
 
   @override
