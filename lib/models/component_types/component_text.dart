@@ -100,4 +100,5 @@ class ComponentText extends ComponentType {
       );
     }
   }
+
 }

@@ -40,7 +40,6 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
 
   @override
   bool onTapUp(TapUpEvent info) {
-    print('tap');
     return onTapeUpCallback(info);
   }
 

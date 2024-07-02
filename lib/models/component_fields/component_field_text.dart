@@ -55,4 +55,5 @@ class ComponentFieldText extends ComponentField {
   void updateFromJson(dynamic jsonVal) {
     _value = jsonVal as String;
   }
+
 }
