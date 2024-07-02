@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+/// A Field that contain a Text value
 class ComponentFieldText extends ComponentField {
-String _value;
+
+  /// The value of the field
+  String _value;
 
   ComponentFieldText({
     required String value,
@@ -23,7 +26,9 @@ String _value;
       controller: TextEditingController(text: _value),
       onChanged: (text) {
         _value = text;
-        onUpdate();
+        if (onUpdate != null) {
+          onUpdate!();
+        }
       },
     );
   }
@@ -45,4 +50,10 @@ String _value;
   String toJson() {
     return "\"$_value\"";
   }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = jsonVal as String;
+  }
+
 }

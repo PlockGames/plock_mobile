@@ -8,6 +8,7 @@ import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 
+/// The page where the games are played.
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
 
@@ -25,6 +26,7 @@ class PlayPageState extends State<PlayPage> {
     super.initState();
   }
 
+  /// Get all the games with their game data.
   Future<List<plock.Game>> getAllGamesWithData() async {
     var lastResponse = await ApiService.getAllGames(1);
     List<dynamic> decoded = jsonDecode(lastResponse.body);
@@ -35,11 +37,11 @@ class PlayPageState extends State<PlayPage> {
       decoded = jsonDecode(lastResponse.body);
       allGames.addAll(decoded);
     }
-
     List<plock.Game> allGameWithData = <plock.Game>[];
     for (var game in allGames) {
       var gameData = await ApiService.getGameWithData(game['id'].toString());
-      plock.Game loadedGame = await plock.Game.jsonToGame(jsonDecode(gameData.body));
+      var json = jsonDecode(gameData.body);
+      plock.Game loadedGame = await plock.Game.jsonToGame(json);
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;
@@ -52,7 +54,7 @@ class PlayPageState extends State<PlayPage> {
         return Column(
           children: [Expanded(child: PageView(
             scrollDirection: Axis.vertical,
-            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game))).toList(),
+            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList(),
           ))],
         );
       } else {

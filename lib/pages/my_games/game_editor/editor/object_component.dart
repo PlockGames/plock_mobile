@@ -8,30 +8,49 @@ import 'package:plock_mobile/models/games/game_object.dart';
 
 import '../../../../models/component_types/component_rect.dart';
 
+/// A flame object that represents a component in the game editor.
 class ObjectComponent extends PositionComponent
     with TapCallbacks, DragCallbacks {
-  final selectObject;
-  final isObjectSelected;
-  final updateObject;
 
+  /// The function to select an object.
+  ///
+  /// Passed on by the constructor.
+  final Function selectObject;
+
+  /// The function to check if an object is selected.
+  ///
+  /// Passed on by the constructor.
+  final Function isObjectSelected;
+
+  /// The function to update an object.
+  ///
+  /// Passed on by the constructor.
+  final Function updateObject;
+
+  /// The game object linked to this Flame object.
+  ///
+  /// Passed on by the constructor.
   late GameObject _gameObject;
 
+  /// List of all the components that can be displayed.
   List<Component> displayComponents = [];
+
+  /// List of display component that are displayed when the object is selected.
   List<ShapeComponent> selectComponents = [];
 
-  String name = 'Object';
-
   ObjectComponent({
+    required id,
     required this.selectObject,
     required this.isObjectSelected,
     required this.updateObject,
     GameObject? gameObject
   })
   {
+    // If no game object is passed, create a new one
     if (gameObject != null) {
       _gameObject = gameObject;
     } else {
-      _gameObject = GameObject(name: name);
+      _gameObject = GameObject(id: id, name: "Object");
 
       ComponentRect componentRect = ComponentRect();
       componentRect.setOnUpdate(updateDisplay);
@@ -39,13 +58,19 @@ class ObjectComponent extends PositionComponent
     }
   }
 
-  get gameObject => _gameObject;
+  GameObject get gameObject => _gameObject;
 
+  /// Remove a [component] from the object.
+  ///
+  /// The [component] is removed from the object and the display is updated.
   void removeComponent(ComponentType component) {
     _gameObject.components.remove(component);
     updateDisplay();
   }
 
+  /// Add a [component] to the object.
+  ///
+  /// The [component] is added to the object and the display is updated.
   void addComponent(ComponentType component) {
     _gameObject.components.add(component);
     updateDisplay();
@@ -54,17 +79,24 @@ class ObjectComponent extends PositionComponent
   @override
   Future<void> onLoad() async {
     super.onLoad();
+
+    // Set the object data
     size = Vector2(0, 0);
     position = Vector2(_gameObject.position.x, _gameObject.position.y);
+
+    // Update the components
     updateDisplay();
   }
 
+  /// Update the display components.
   void updateDisplay() {
+    // Empty the display component list
     for (var component in displayComponents) {
       remove(component);
     }
     displayComponents = [];
 
+    // Fill the display component list with updated components
     for (var component in _gameObject.components) {
       DisplayComponents displayComponent = component.getDisplayComponent(
           onTapUpCallback,
@@ -86,6 +118,8 @@ class ObjectComponent extends PositionComponent
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+
+    // Render components (and select components if object is selected)
     if (isObjectSelected(this)) {
       for (var component in selectComponents) {
         component.paint = Paint()
@@ -123,6 +157,8 @@ class ObjectComponent extends PositionComponent
 
   void onDragUpdateCallback(DragUpdateEvent event) {
     super.onDragUpdate(event);
+
+    // update position if object is dragged
     _gameObject.position.x += event.localDelta.x;
     _gameObject.position.y += event.localDelta.y;
     position.x = _gameObject.position.x;
@@ -131,6 +167,8 @@ class ObjectComponent extends PositionComponent
 
   void onDragEndCallback(DragEndEvent event) {
     super.onDragEnd(event);
+
+    // Update object position when drag ends
     updateObject(this);
   }
 

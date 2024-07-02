@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 
-import '../../../models/component_types/component_rect.dart';
 import '../../../models/games/component_type.dart';
 
+/// The page to add a component to an object.
 class AddComponentPage extends StatefulWidget {
   // A callback function to add a component to the game object
   final void Function(ComponentType) onAddComponent;
 
-  AddComponentPage({super.key, required this.onAddComponent});
+  const AddComponentPage({super.key, required this.onAddComponent});
 
   @override
   _AddComponentPageState createState() => _AddComponentPageState();

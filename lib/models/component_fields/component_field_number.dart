@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+/// A field that contain a (int) number value.
 class ComponentFieldNumber extends ComponentField {
-int _value;
+  /// The value of the field.
+  double _value;
 
   ComponentFieldNumber({
     required value,
@@ -35,10 +37,10 @@ int _value;
         if (text.isEmpty) {
           _value = 0;
         } else {
-          _value = int.parse(text);
+          _value = double.parse(text);
         }
         if (onUpdate != null) {
-          onUpdate();
+          onUpdate!();
         }
       },
     );
@@ -52,6 +54,11 @@ int _value;
   @override
   String toJson() {
     return _value.toString();
+  }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = jsonVal as double;
   }
 
 }
