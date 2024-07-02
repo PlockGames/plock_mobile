@@ -19,6 +19,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/lists/bl
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/lists/block_lists_sort.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/lists/block_lists_split.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/logic/block_wait.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/math/block_delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/math/block_math_arithmetic.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/math/block_math_constrain.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/math/block_math_modulo.dart';
@@ -97,13 +98,14 @@ final initialToolbox = Toolbox(categories: [
   ToolboxCategory(
       name: "math",
       blocks: [
-        blockMathRound,
         ToolboxBlock(type: "math_number").addField("NUM", "0"),
+        blockDeltaTime,
+        blockMathArithmetic,
+        blockMathRound,
         blockMathSingle,
         blockMathTrig,
         ToolboxBlock(type: "math_constant").addField("CONSTANT", "PI"),
         blockMathNumberProperty,
-        blockMathArithmetic,
         ToolboxBlock(type: "math_on_list").addMutation(op: "SUM").addField("OP", "SUM"),
         blockMathModulo,
         blockMathConstrain,

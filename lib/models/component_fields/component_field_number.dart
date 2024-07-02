@@ -5,7 +5,7 @@ import 'package:plock_mobile/models/games/component_field.dart';
 /// A field that contain a (int) number value.
 class ComponentFieldNumber extends ComponentField {
   /// The value of the field.
-  int _value;
+  double _value;
 
   ComponentFieldNumber({
     required value,
@@ -37,7 +37,7 @@ class ComponentFieldNumber extends ComponentField {
         if (text.isEmpty) {
           _value = 0;
         } else {
-          _value = int.parse(text);
+          _value = double.parse(text);
         }
         if (onUpdate != null) {
           onUpdate!();
@@ -58,7 +58,7 @@ class ComponentFieldNumber extends ComponentField {
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as int;
+    _value = jsonVal as double;
   }
 
 }

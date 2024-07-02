@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/component_fields/blocky/data/blocks/componen
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_event_event.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_variable_get_value.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_variable_value.dart';
+import 'package:plock_mobile/models/component_fields/blocky/data/blocks/math/block_delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/bloc_object_add_component.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/objects/bloc_object_spawn.dart';
 import 'package:plock_mobile/models/component_fields/blocky/data/blocks/components/block_component_circle_color.dart';
@@ -47,6 +48,7 @@ CustomBlocksManager customBlocksManager = CustomBlocksManager()
     .addBlock(blockGetScreenHeightJson)
     .addBlock(blockColourRgbJson)
     .addBlock(blockColourPickerJson)
+    .addBlock(blockDeltaTimeJson)
     // component rect
     .addBlock(blockRectWidthJson)
     .addBlock(blockRectHeightJson)

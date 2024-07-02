@@ -11,8 +11,8 @@ import '../games/component_type.dart';
 /// A component that display a rectangle.
 class ComponentRect extends ComponentType {
   ComponentRect() {
-    fields["width"] = ComponentFieldNumber(value: 50);
-    fields["height"] = ComponentFieldNumber(value: 50);
+    fields["width"] = ComponentFieldNumber(value: 50.0);
+    fields["height"] = ComponentFieldNumber(value: 50.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 

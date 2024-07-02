@@ -30,6 +30,7 @@ class EventManager {
       lua.register("getScreenWidth", _getScreenWidth(game, thisObjectId));
       lua.register("getScreenHeight", _getScreenHeight(game, thisObjectId));
       lua.registerAsync("rgbToColor", _rgbToColor(game, thisObjectId));
+      lua.register("deltaTime", _deltaTime(game, thisObjectId));
       // Rect component
       lua.registerAsync("changeRectWidth", _changeRectWidth(game, thisObjectId));
       lua.registerAsync("changeRectHeight", _changeRectHeight(game, thisObjectId));
@@ -66,6 +67,14 @@ class EventManager {
       lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
       lua.registerAsync("addComponentToObject", _addComponentToObject(game, thisObjectId));
       lua.registerAsync("addEventToObject", _addEventToObject(game, thisObjectId));
+  }
+
+  /// Return delta time
+  static Event _deltaTime(Game game, int thisObjectId) {
+    return (lua) {
+      lua.pushNumber(game.deltaTime);
+      return 1;
+    };
   }
 
   /// Change the value of a variable
@@ -456,7 +465,7 @@ class EventManager {
   static EventAsync _changeRectWidth(Game game, int thisObjectId) {
     return (lua) async {
       int? objectId = await lua.checkInteger(1);
-      int? newWidth = await lua.checkInteger(2);
+      double? newWidth = await lua.checkNumber(2);
       lua.pop(2);
       if (objectId != null && newWidth != null) {
         try {
@@ -479,7 +488,7 @@ class EventManager {
   static EventAsync _changeRectHeight(Game game, int thisObjectId) {
     return (lua) async {
       int? objectId = await lua.checkInteger(1);
-      int? newHeight = await lua.checkInteger(2);
+      double? newHeight = await lua.checkNumber(2);
       lua.pop(2);
       if (objectId != null && newHeight != null) {
         try {
@@ -615,7 +624,7 @@ class EventManager {
   static EventAsync _changeCircleRadius(Game game, int thisObjectId) {
     return (lua) async {
       int? objectId = await lua.checkInteger(1);
-      int? newRadius = await lua.checkInteger(2);
+      double? newRadius = await lua.checkNumber(2);
       lua.pop(2);
       if (objectId != null && newRadius != null) {
         try {
@@ -645,7 +654,7 @@ class EventManager {
           element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
-          lua.pushInteger(rect.fields["width"]!.value);
+          lua.pushNumber(rect.fields["width"]!.value);
           return 1;
         } catch (e) {
           print("Error(getRectWidth): $e");
@@ -667,7 +676,7 @@ class EventManager {
           element.id == objectId);
           ComponentRect rect = object.components.firstWhere((element) =>
           element.type == "ComponentRect") as ComponentRect;
-          lua.pushInteger(rect.fields["height"]!.value);
+          lua.pushNumber(rect.fields["height"]!.value);
           return 1;
         } catch (e) {
           print("Error(getRectHeight): $e");
@@ -711,7 +720,7 @@ class EventManager {
           element.id == objectId);
           ComponentCircle circle = object.components.firstWhere((element) =>
           element.type == "ComponentCircle") as ComponentCircle;
-          lua.pushInteger(circle.fields["radius"]!.value);
+          lua.pushNumber(circle.fields["radius"]!.value);
           return 1;
         } catch (e) {
           print("Error(getCircleRadius): $e");

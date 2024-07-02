@@ -74,6 +74,7 @@ class GamePlayer extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+    game.deltaTime = dt;
 
     // If game is dirty, update all the components and objects
     if (game.isDirty) {
