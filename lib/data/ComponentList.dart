@@ -20,10 +20,6 @@ class ComponentList {
     'ComponentVariable': ComponentVariable(),
   };
 
-  static Map<String, ComponentType> get() {
-    'ComponentText': ComponentText()
-  };
-
   static get() {
     return components;
   }
