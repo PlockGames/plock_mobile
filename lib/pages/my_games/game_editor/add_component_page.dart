@@ -9,7 +9,7 @@ class AddComponentPage extends StatefulWidget {
   // A callback function to add a component to the game object
   final void Function(ComponentType) onAddComponent;
 
-  AddComponentPage({super.key, required this.onAddComponent});
+  const AddComponentPage({super.key, required this.onAddComponent});
 
   @override
   _AddComponentPageState createState() => _AddComponentPageState();

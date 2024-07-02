@@ -93,6 +93,8 @@ class ComponentCircle extends ComponentType {
     if (component is ComponentFlameCircle) {
       component.radius = fields["radius"]!.value.toDouble();
       component.paint = Paint()..color = fields["color"]!.value;
+      component.x = -component.radius;
+      component.y = -component.radius;
     }
   }
 
