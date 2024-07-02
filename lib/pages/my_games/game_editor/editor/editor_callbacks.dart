@@ -7,7 +7,7 @@ class EditorCallbacks {
   final Function(GameObject gameObject) addGameObject;
   final Function(GameObject gameObject) removeGameObject;
   final Function(GameObject gameObject) updateGameObject;
-  final Function() uploadGame;
+  final Function() testGame;
   final Function() goBack;
 
   EditorCallbacks({
@@ -15,7 +15,7 @@ class EditorCallbacks {
     required this.addGameObject,
     required this.removeGameObject,
     required this.updateGameObject,
-    required this.uploadGame,
+    required this.testGame,
     required this.goBack,
   });
 }

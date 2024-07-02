@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
+import 'package:plock_mobile/pages/play/exitbutton.dart';
 import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
@@ -78,7 +79,7 @@ class Editor extends FlameGame {
         updateObject: updateObject,
         removeGameObject: removeGameObjectCallback,
         getSelectedObject: getSelectedObject,
-        uploadGame: editorCallbacks.uploadGame,
+        testGame: editorCallbacks.testGame,
         goBack: editorCallbacks.goBack
     );
 
@@ -102,6 +103,10 @@ class Editor extends FlameGame {
       add(ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
       game.objectCount++;
     });
+
+    // Add an exit button
+    var exitButton = ExitButton(exitGame: editorCallbacks.goBack);
+    add(exitButton);
   }
 
   @override

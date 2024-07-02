@@ -6,6 +6,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
+import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
 import 'Editor.dart';
@@ -64,7 +65,7 @@ class _EditorPageState extends State<EditorPage> {
   /// Callback : Upload the game to the server and close the editor.
   Function() uploadGame(BuildContext context) {
     return () async {
-      /*var upload = await ApiService.createGame(CreateGameDto(
+      var upload = await ApiService.createGame(CreateGameDto(
         title: widget.game.name,
         tags: [],
         creatorId: 1,
@@ -73,7 +74,12 @@ class _EditorPageState extends State<EditorPage> {
         thumbnailUrl: "",
         data: widget.game.toJson(),
       ));
-      Navigator.pop(context);*/
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+    };
+  }
+
+  Function() testGame(BuildContext context) {
+    return () async {
       Plock.Game tempGame = widget.game.instance();
       for (var object in tempGame.objects) {
         for (var component in object.components) {
@@ -85,8 +91,8 @@ class _EditorPageState extends State<EditorPage> {
         }
       }
       Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(
-          game: GamePlayer(game: tempGame, isTest: true, exitGame: goBack(context)))
-      ));
+          game: GamePlayer(game: tempGame, isTest: true, exitGame: goBack(context), uploadGame: uploadGame(context))
+      )));
     };
   }
 
@@ -103,7 +109,7 @@ class _EditorPageState extends State<EditorPage> {
       addGameObject: addGameObject,
       removeGameObject: removeGameObject,
       updateGameObject: updateGameObject,
-      uploadGame: uploadGame(context),
+      testGame: testGame(context),
       goBack: goBack(context)
     );
 

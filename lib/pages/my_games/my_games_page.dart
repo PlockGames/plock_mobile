@@ -56,6 +56,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                                 game: project,
                                 onGameObjectUpdated: (updatedGameObject) {},
                               ),
+                              settings: const RouteSettings(name: '/editor'),
                             ),
                           );
                         },
@@ -113,6 +114,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                       game: game,
                       onGameObjectUpdated: (updatedGameObject) {},
                     ),
+                    settings: const RouteSettings(name: '/editor'),
                   ),
                 );
               },

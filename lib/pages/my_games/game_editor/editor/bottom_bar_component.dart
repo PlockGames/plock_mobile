@@ -67,7 +67,7 @@ class BottomBarComponent extends PositionComponent {
 
     uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
         tapAction: () {
-          bottomBarCallbacks.uploadGame();
+          bottomBarCallbacks.testGame();
     });
 
     // Add the components to the bottom bar

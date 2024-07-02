@@ -8,7 +8,7 @@ class BottomBarCallbacks {
   final Function(ObjectComponent object) updateObject;
   final Function(ObjectComponent object) removeGameObject;
   final Function getSelectedObject;
-  final Function() uploadGame;
+  final Function() testGame;
   final Function() goBack;
 
   BottomBarCallbacks({
@@ -18,7 +18,7 @@ class BottomBarCallbacks {
     required this.updateObject,
     required this.removeGameObject,
     required this.getSelectedObject,
-    required this.uploadGame,
+    required this.testGame,
     required this.goBack,
   });
 }

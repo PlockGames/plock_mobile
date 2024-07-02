@@ -7,6 +7,7 @@ import 'package:flame/palette.dart';
 import 'package:flame/text.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
+import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
 import '../../models/games/game.dart' as plock;
 import 'game_player_object.dart';
@@ -30,7 +31,12 @@ class GamePlayer extends FlameGame {
   /// Only use it in test mode !
   final Function? exitGame;
 
-  GamePlayer({required this.game, this.isTest = false, this.exitGame});
+  /// Callback to publish the game.
+  ///
+  /// Only use it in test mode !
+  final Function? uploadGame;
+
+  GamePlayer({required this.game, this.isTest = false, this.exitGame, this.uploadGame});
 
   void exitGameCallback() {
     for (var object in components) {
@@ -49,6 +55,12 @@ class GamePlayer extends FlameGame {
     if (isTest && exitGame != null) {
       final exitButton = ExitButton(exitGame: exitGameCallback);
       add(exitButton);
+    }
+
+    // Add button to publish the game if in test mode
+    if (isTest && uploadGame != null) {
+      final uploadButton = UploadButton(uploadGame: uploadGame!, screenSize: size);
+      add(uploadButton);
     }
 
     // Generate all the game objects of the game

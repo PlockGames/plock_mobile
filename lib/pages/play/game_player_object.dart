@@ -40,7 +40,7 @@ class GamePlayerObject extends PositionComponent {
     super.onLoad();
 
     // Set the object data
-    size = Vector2(50, 50);
+    size = Vector2(0, 0);
     position = Vector2(gameObject.position.x, gameObject.position.y);
 
     await lua.openLibs();
