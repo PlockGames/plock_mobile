@@ -87,6 +87,7 @@ class ComponentFieldBlockly extends ComponentField {
       } else {
         _value = data.json!;
         _value_lua = data.lua;
+        print(data.lua);
       }
     }
 

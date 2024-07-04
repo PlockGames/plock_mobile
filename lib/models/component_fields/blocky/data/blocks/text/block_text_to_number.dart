@@ -25,11 +25,13 @@ final blockTextToNumberJson = CustomBlock.fromJson(
   var text = generator.valueToCode(block, 'text', lua.Order.ATOMIC);
   var result = 'tonumber(' + text + ')';
   return [result, lua.Order.NONE];
-''').setFunctionDart('''return 'print(\\\\"not implemented\\\\")';''')
+''').setFunctionDart('''
+  return ['toNumber(\\\\"0\\\\")', dart.Order.NONE];
+''')
     .setFunctionJs('''
-  return 'console.log(\\\\"not implemented\\\\")';
+  return ['toNumber(\\\\"0\\\\")', javascript.Order.NONE];
 ''').setFunctionPhp('''
-  return 'print(\\\\"not implemented\\\\")';
+  return ['toNumber(\\\\"0\\\\")', php.Order.NONE];
 ''').setFunctionPython('''
-  return 'print(\\\\"not implemented\\\\")';
+  return ['toNumber(\\\\"0\\\\")', python.Order.NONE];
 ''');

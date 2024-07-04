@@ -38,13 +38,23 @@ dependencies:
   flame_svg: ^1.10.0
   webview_flutter: ^4.7.0
   flutter_blockly: ^1.4.2
-  lua_dardo_async: ^0.0.3
+  lua_dardo_async: ^0.0.4
   http: ^1.2.1
   flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  patrol: ^3.9.0
+
+patrol:
+  app_name: Plock
+  android:
+    package_name: com.plock.plock_mobile
+  ios:
+    bundle_id: com.plock.plockMobile
+  macos:
+    bundle_id: com.plock.plockMobile
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -52,6 +62,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  patrol: ^3.9.0
+  patrol_finders: ^2.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -83,7 +95,7 @@ flutter:
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
-  # example:
+  # plock:
   # fonts:
   #   - family: Schyler
   #     fonts:
