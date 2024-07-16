@@ -12,6 +12,10 @@ class EditComponentPage extends StatefulWidget {
 
   @override
   _EditComponentPageState createState() => _EditComponentPageState();
+
+  dynamic getDebugData() {
+    return component.debugData;
+  }
 }
 
 class _EditComponentPageState extends State<EditComponentPage> {

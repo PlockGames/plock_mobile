@@ -57,6 +57,8 @@ class PlayPageState extends State<PlayPage> {
             children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList(),
           ))],
         );
+      } else if (snapshot.data != null && snapshot.data!.isEmpty) {
+        return Center(child: Text('No games found'));
       } else {
         return Center(child: CircularProgressIndicator());
       }

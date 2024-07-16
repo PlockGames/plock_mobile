@@ -117,6 +117,7 @@ class _EditorPageState extends State<EditorPage> {
       children: <Widget>[
         Expanded(
           child: GameWidget(
+              key: Key("editor_game"),
               game: Editor(
                   game: widget.game,
                   editorCallbacks: callbacks,

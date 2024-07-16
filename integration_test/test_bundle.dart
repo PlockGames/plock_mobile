@@ -9,8 +9,10 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'editor/blocks/logic/if_test.dart' as editor__blocks__logic__if_test;
-import 'example_test.dart' as example_test;
+import 'editor/blocks/logic_blocks_test.dart' as editor__blocks__logic_blocks_test;
+import 'editor/blocks/loops_blocks_test.dart' as editor__blocks__loops_blocks_test;
+import 'editor/blocks/math_blocks_test.dart' as editor__blocks__math_blocks_test;
+import 'editor/blocks/text_blocks_test.dart' as editor__blocks__text_blocks_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -67,8 +69,10 @@ Future<void> main() async {
   });
 
   // START: GENERATED TEST GROUPS
-  group('editor.blocks.logic.if_test', editor__blocks__logic__if_test.main);
-  group('example_test', example_test.main);
+  group('editor.blocks.logic_blocks_test', editor__blocks__logic_blocks_test.main);
+  group('editor.blocks.loops_blocks_test', editor__blocks__loops_blocks_test.main);
+  group('editor.blocks.math_blocks_test', editor__blocks__math_blocks_test.main);
+  group('editor.blocks.text_blocks_test', editor__blocks__text_blocks_test.main);
   // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;

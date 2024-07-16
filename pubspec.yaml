@@ -36,11 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   flame: ^1.16.0
   flame_svg: ^1.10.0
-  webview_flutter: ^4.7.0
-  flutter_blockly: ^1.4.2
+  flutter_blockly_plus: ^1.2.4
   lua_dardo_async: ^0.0.4
   http: ^1.2.1
   flutter_colorpicker: ^1.1.0
+  flame_test: ^1.16.2
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +80,16 @@ flutter:
     - assets/svg/delete.svg
     - assets/svg/edit.svg
     - assets/svg/upload.svg
+    - packages/flutter_blockly_plus/assets/blockly.min.js
+    - packages/flutter_blockly_plus/assets/dart_compressed.js
+    - packages/flutter_blockly_plus/assets/lua_compressed.js
+    - packages/flutter_blockly_plus/assets/python_compressed.js
+    - packages/flutter_blockly_plus/assets/php_compressed.js
+    - packages/flutter_blockly_plus/assets/javascript_compressed.js
+    - packages/flutter_blockly_plus/assets/dart_wrapper.js
+    - assets/blockly/blocks/
+    - assets/blockly/extensions/
+    - assets/blockly/plugins/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

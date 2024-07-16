@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blockly_plus/flutter_blockly_plus.dart';
+import 'package:plock_mobile/models/component_fields/blocky/addons_manager.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
-import 'package:flutter_blockly/flutter_blockly.dart' as Blocky;
+import 'package:flutter_blockly_plus/flutter_blockly_plus.dart' as Blocky;
 
-import '../../data/custom_blocks_list.dart';
 import '../../data/initial_toolbox.dart';
-import 'blocky/data/pl_blockly_editor_widget.dart';
 
 /// A field that contain a Blockly (lua code) value.
 class ComponentFieldBlockly extends ComponentField {
@@ -15,12 +15,6 @@ class ComponentFieldBlockly extends ComponentField {
     'blocks': {
       'languageVersion': 0,
       'blocks': [
-        {
-          'type': 'text',
-          'x': 70,
-          'y': 30,
-          'fields': {'TEXT': 'JSON'}
-        }
       ],
     },
   };
@@ -30,6 +24,10 @@ class ComponentFieldBlockly extends ComponentField {
 
   /// The saved json of the blockly.
   Map<String, dynamic> _value = initialJson;
+
+  Map<String, dynamic> debugData_ = {};
+
+
 
   ComponentFieldBlockly({value, value_lua}) {
     if (value != null) {
@@ -77,17 +75,18 @@ class ComponentFieldBlockly extends ComponentField {
     );
 
     void onInject(Blocky.BlocklyData data) {
-      //debugPrint('onInject: ${data.xml}\n${jsonEncode(data.json)}');
     }
 
     void onChange(Blocky.BlocklyData data) {
+      debugData_ = data.toolbox!;
+      print("debug: " + debugData_.toString());
       //debugPrint('onChange: ${data.lua}');
       if (data.json == null) {
         _value = initialJson;
       } else {
         _value = data.json!;
-        _value_lua = data.lua;
-        print(data.lua);
+        _value_lua = data.lua!;
+        //print(data.lua);
       }
     }
 
@@ -99,18 +98,31 @@ class ComponentFieldBlockly extends ComponentField {
       debugPrint('onError: $err');
     }
 
+    Future<List<String>> getAddons() async {
+      var cbm = AddonsManager();
+      var addons = await cbm.getAll();
+      return addons;
+    }
 
-    return Expanded(
-        child: PlBlocklyEditorWidget(
+    final addons = getAddons();
+
+    return FutureBuilder(future: addons, builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        return Expanded(child:
+          BlocklyEditorWidget(
           workspaceConfiguration: workspaceConfiguration,
           initial: _value,
           onInject: onInject,
           onChange: onChange,
           onDispose: onDispose,
           onError: onError,
-          blocks: customBlocksManager.toJs(),
+          addons: snapshot.data,
         )
-    );
+        );
+      } else {
+        return CircularProgressIndicator();
+      }
+    });
   }
 
   @override
@@ -135,4 +147,7 @@ class ComponentFieldBlockly extends ComponentField {
   void updateFromJson(dynamic jsonVal) {
     _value_lua = jsonVal as String;
   }
+
+  @override
+  Map<String, dynamic> get debugData => debugData_;
 }

@@ -38,4 +38,7 @@ class ComponentField {
 
   /// Get the value of the field.
   get value => null;
+
+  /// Get the debug data of the field.
+  Map<String, dynamic> get debugData => {};
 }

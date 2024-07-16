@@ -19,6 +19,11 @@ class ComponentEvent extends ComponentType {
   }
 
   @override
+  Map<String, dynamic> get debugData => {
+    "event": fields["event"]!.debugData,
+  };
+
+  @override
   String get type => 'ComponentEvent';
 
   @override

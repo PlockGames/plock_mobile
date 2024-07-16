@@ -26,6 +26,7 @@ class Editor extends FlameGame {
   Editor({
     required this.game,
     required this.editorCallbacks,
+
   });
 
   /// Select an object.
