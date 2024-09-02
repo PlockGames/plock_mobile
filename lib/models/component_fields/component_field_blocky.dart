@@ -47,7 +47,7 @@ class ComponentFieldBlockly extends ComponentField {
   String get type => 'ComponentFieldBlocky';
 
   @override
-  Widget getField(String name) {
+  Widget getField(String name, bool debug) {
     const Blocky.Theme blockyTheme = Blocky.Theme(
       name: 'classic',
       fontStyle: Blocky.BlocklyFontStyle(
@@ -117,6 +117,7 @@ class ComponentFieldBlockly extends ComponentField {
           onDispose: onDispose,
           onError: onError,
           addons: snapshot.data,
+          debug: true,
         )
         );
       } else {
@@ -131,7 +132,7 @@ class ComponentFieldBlockly extends ComponentField {
   }
 
   @override
-  String get value => _value_lua;
+  List get value => [_value_lua, _value];
 
   @override
   set value(dynamic value) {

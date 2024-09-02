@@ -18,7 +18,7 @@ class ComponentFieldText extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name) {
+  Widget getField(String name, bool debug) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,

@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   flame: ^1.16.0
   flame_svg: ^1.10.0
-  flutter_blockly_plus: ^1.2.4
+  flutter_blockly_plus: ^1.4.1
   lua_dardo_async: ^0.0.4
   http: ^1.2.1
   flutter_colorpicker: ^1.1.0
@@ -45,7 +45,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  patrol: ^3.9.0
+  flutter_lints: ^4.0.0
+  integration_test:
+    sdk: flutter
 
 patrol:
   app_name: Plock

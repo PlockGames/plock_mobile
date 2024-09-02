@@ -8,7 +8,10 @@ class EditComponentPage extends StatefulWidget {
   /// The component to edit.
   final ComponentType component;
 
-  const EditComponentPage({super.key, required this.component});
+  /// Is component in debug mode ?
+  final bool debug;
+
+  const EditComponentPage({super.key, required this.component, this.debug = false});
 
   @override
   _EditComponentPageState createState() => _EditComponentPageState();
@@ -35,7 +38,7 @@ class _EditComponentPageState extends State<EditComponentPage> {
         child: Column(
             children: [
               for (var pair in widget.component.fields.entries)
-                pair.value.getField(pair.key)
+                pair.value.getField(pair.key, widget.debug)
             ],
           ),
       ),

@@ -177,7 +177,6 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object_get),
         ToolboxBlock(data: block_object_set),
         ToolboxBlock(data: block_object_spawn)
-        
       ]
   ),
   ToolboxCategory(

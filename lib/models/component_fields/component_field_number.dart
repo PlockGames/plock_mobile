@@ -26,7 +26,7 @@ class ComponentFieldNumber extends ComponentField {
   }
 
   @override
-  Widget getField(String name) {
+  Widget getField(String name, bool debug) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,
