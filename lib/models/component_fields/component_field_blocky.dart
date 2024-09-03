@@ -117,7 +117,7 @@ class ComponentFieldBlockly extends ComponentField {
           onDispose: onDispose,
           onError: onError,
           addons: snapshot.data,
-          debug: true,
+          debug: false,
         )
         );
       } else {

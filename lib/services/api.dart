@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Service to interact with the API (plock backend)
 class ApiService {
-  // TODO: change to env variable
-  static String url = "http://141.94.223.12:3000";
+
+  static String? url = dotenv.env['API_URL'];
 
   /// Return a list of all the games.
   ///
