@@ -76,7 +76,7 @@ void main() {
 
   });
 
-  group('Test Component Field Number', () {
+  group('Test Component Field Text', () {
 
     test('Should create a default component field text', () {
       ComponentFieldText componentFieldText = ComponentFieldText(value: 'test');
