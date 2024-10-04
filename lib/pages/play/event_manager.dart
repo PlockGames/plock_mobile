@@ -1,13 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:lua_dardo_async/debug.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
 import 'package:plock_mobile/models/component_types/component_variable.dart';
-import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 import '../../models/component_types/component_rect.dart';
 import '../../models/component_types/component_text.dart';

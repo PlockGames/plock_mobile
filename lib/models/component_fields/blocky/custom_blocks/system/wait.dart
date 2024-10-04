@@ -1,4 +1,4 @@
 const block_wait = {
   "kind": "block",
-  "type": "wait",
+  "type": "screen_wait",
 };

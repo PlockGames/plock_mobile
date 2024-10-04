@@ -3,7 +3,7 @@ const type_dt = 'delta_time';
 Blockly.defineBlocksWithJsonArray([
     {
         "type": type_dt,
-        "message0": "wait %1",
+        "message0": "delta time %1",
         "args0": [
             {
                 "type": "input_dummy",
