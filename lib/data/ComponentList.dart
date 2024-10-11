@@ -4,6 +4,8 @@ import '../models/component_types/component_circle.dart';
 import '../models/component_types/component_rect.dart';
 import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
+import '../models/component_types/component_gravity.dart';
+
 import '../models/games/component_type.dart';
 
 /**
@@ -18,6 +20,7 @@ class ComponentList {
     'ComponentText': ComponentText(),
     'ComponentEvent': ComponentEvent(),
     'ComponentVariable': ComponentVariable(),
+    'ComponentGravity': ComponentGravity(),
   };
 
   static get() {
