@@ -93,65 +93,62 @@ class PlayPageState extends State<PlayPage> {
     return StreamBuilder<List<plock.Game>>(
       stream: getAllGamesWithData().asStream(),
       builder: (context, snapshot) {
-        return Stack(
-          children: [
-            if (snapshot.data != null && snapshot.data!.isNotEmpty)
-              Stack( // Use Stack to overlay the favorite button on the PageView
+        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+          return Stack(
+            children: [
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      Expanded(
-                        child: PageView(
-                          scrollDirection: Axis.vertical,
-                          children: snapshot.data!
-                              .map((game) => GameWidget(game: GamePlayer(game: game)))
-                              .toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Add the Positioned favorite button inside the Stack
-                  Positioned(
-                    bottom: 100, // Adjust this value for vertical position
-                    right: 10,   // Adjust this value for horizontal position
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.favorite,
-                        color: isFavorite ? Colors.red : Colors.grey,
-                        size: 40.0, // Smaller icon size
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isFavorite = !isFavorite; // Toggle the favorite state
-                        });
-                      },
+                  Expanded(
+                    child: PageView(
+                      scrollDirection: Axis.vertical,
+                      children: snapshot.data!
+                          .map((game) => Stack(
+                        children: [
+                          GameWidget(game: GamePlayer(game: game)),
+
+                          // Positioned like button
+                          Positioned(
+                            bottom: 100, // Adjust this value for vertical position
+                            right: 10,   // Adjust this value for horizontal position
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.favorite,
+                                color: isFavorite ? Colors.red : Colors.grey,
+                                size: 40.0, // Smaller icon size
+                              ),
+                              onPressed: () {
+                                if (isFavorite) {
+                                  // If already liked, send an unlike request
+                                  unlikeGame(game.id).then((_) {
+                                    // Mettre à jour l'état après unlike
+                                    setState(() {
+                                      isFavorite = false;
+                                    });
+                                  });
+                                } else {
+                                  // If not liked, send a like request
+                                  likeGame(game.id).then((_) {
+                                    // Mettre à jour l'état après like
+                                    setState(() {
+                                      isFavorite = true;
+                                    });
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ))
+                          .toList(),
                     ),
                   ),
                 ],
-              )
-            else
-              Center(child: CircularProgressIndicator()),
-            // Positioned like button (bottom right, smaller size)
-            Positioned(
-              bottom: 100, // Adjust this value for vertical position
-              right: 10,   // Adjust this value for horizontal position
-              child: IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: isFavorite ? Colors.red : Colors.grey,
-                  size: 40.0, // Smaller icon size
-                ),
-                onPressed: () {
-                  setState(() {
-                    isFavorite = !isFavorite; // Toggle the favorite state
-                  });
-                },
               ),
-
-            ),
-          ],
-
-        );
+            ],
+          );
+        }else {
+          return Center(child: CircularProgressIndicator());
+        }
       },
     );
   }
