@@ -6,31 +6,36 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ApiService {
 
   static String? url = dotenv.env['API_URL'];
+  static String? apiKey = dotenv.env['API_KEY'];
 
   /// Return a list of all the games.
   ///
   /// If [page] is not null, it will return the games of that page only.
   static Future<http.Response> getAllGames(int? page) async {
     if (page != null) {
-      return await http.get(Uri.parse("$url/games?page=$page"));
+      http.Response res = await http.get(Uri.parse("$url/game?page=$page&perPage=3"), headers: {
+        "Authorization": "Bearer $apiKey",
+      });
+      return res;
     }
-    return await http.get(Uri.parse("$url/games"));
+    http.Response res = await http.get(Uri.parse("$url/game"), headers: {
+      "Authorization": "Bearer $apiKey",
+    });
+    return res;
   }
 
   /// Return a list of the game with the given [id].
   static Future<http.Response> getGame(String id) async {
-    return await http.get(Uri.parse("$url/games/$id"));
-  }
-
-  /// Return the game with the given [id] and its game data.
-  static Future<http.Response> getGameWithData(String id) async {
-    return await http.get(Uri.parse("$url/games/full/$id"));
+    return await http.get(Uri.parse("$url/game/$id"), headers: {
+      "Authorization": "Bearer $apiKey"
+    });
   }
 
   /// Create a new game with the given [data].
   static Future<http.Response> createGame(CreateGameDto data) async {
-    return await http.post(Uri.parse("$url/games"), body: data.toJson(), headers: {
+    return await http.post(Uri.parse("$url/game"), body: data.toJson(), headers: {
       "Content-Type": "application/json",
+      "Authorization": "Bearer $apiKey"
     });
   }
 }
@@ -38,20 +43,18 @@ class ApiService {
 class CreateGameDto {
   final String title;
   final List<String> tags;
-  final int creatorId;
   final String playTime;
   final String gameType;
   final String thumbnailUrl;
-  final String data;
+  final String contentGame;
 
   CreateGameDto({
     required this.title,
     required this.tags,
-    required this.creatorId,
     required this.playTime,
     required this.gameType,
     required this.thumbnailUrl,
-    required this.data,
+    required this.contentGame,
   });
 
   /// Convert the object to a json string.
@@ -60,11 +63,10 @@ class CreateGameDto {
     var res = json.convert({
       "title": title,
       "tags": tags,
-      "creatorId": creatorId,
       "playTime": playTime,
       "gameType": gameType,
       "thumbnailUrl": thumbnailUrl,
-      "data": data,
+      "contentGame": jsonDecode(contentGame),
     });
     return res;
   }
