@@ -26,6 +26,7 @@ class PlayPageState extends State<PlayPage> {
     super.initState();
   }
 
+
   /// Get all the games with their game data.
   Future<List<plock.Game>> getAllGamesWithData() async {
     var lastResponse = await ApiService.getAllGames(1);
@@ -49,19 +50,33 @@ class PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<plock.Game>>(stream: getAllGamesWithData().asStream(), builder: (context, snapshot) {
-      if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-        return Column(
-          children: [Expanded(child: PageView(
-            scrollDirection: Axis.vertical,
-            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList(),
-          ))],
-        );
-      } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-        return Center(child: Text('No games found'));
-      } else {
-        return Center(child: CircularProgressIndicator());
-      }
-    });
+    return StreamBuilder<List<plock.Game>>(
+      stream: getAllGamesWithData().asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+          return Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  scrollDirection: Axis.vertical,
+                  children: snapshot.data!.map((game) {
+                    // Print the game ID to the terminal
+                    print('Game ID: ${game.id}');  // Prints to the terminal
+
+                    // Return the GameWidget
+                    return GameWidget(game: GamePlayer(game: game));
+                  }).toList(),
+                ),
+              ),
+            ],
+          );
+        } else if (snapshot.data != null && snapshot.data!.isEmpty) {
+          return Center(child: Text('No games found'));
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
+
 }
