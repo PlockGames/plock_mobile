@@ -65,6 +65,7 @@ Blockly.defineBlocksWithJsonArray([
         "extensions": ["ext_component_setter"]
     }
 ]);
+
 function setComponentValue(block, generator, order) {
     const component = block.getFieldValue('component');
     const value = block.getFieldValue('value');

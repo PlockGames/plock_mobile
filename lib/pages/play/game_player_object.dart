@@ -51,7 +51,7 @@ class GamePlayerObject extends PositionComponent {
     // Execute the start events
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_START') {
-        executeEvent(component.fields['event']!.value);
+        executeEvent(component.fields['event']!.value[0]);
       }
     }
   }

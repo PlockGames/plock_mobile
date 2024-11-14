@@ -44,7 +44,7 @@ Blockly.defineBlocksWithJsonArray([
         ],
         "output": "Number",
         "colour": 230,
-        "tooltip": "Get field of the rect component of an object",
+        "tooltip": "Get field of a rect component of an object",
         "inputsInline": true,
         "helpUrl": "",
         "extensions": ["ext_component_getter"]

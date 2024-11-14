@@ -16,7 +16,7 @@ class ComponentImage extends ComponentType {
   String get type => 'ComponentVariable';
 
   @override
-  String get name => 'Variable';
+  String get name => 'Image';
 
   @override
   ComponentType instance() {
