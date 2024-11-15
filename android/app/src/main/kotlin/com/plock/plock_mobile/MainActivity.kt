@@ -1,4 +1,4 @@
-package com.example.plock_mobile
+package com.plock.plock_mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
