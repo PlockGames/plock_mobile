@@ -120,7 +120,7 @@ class GamePlayerObject extends PositionComponent {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
 
-        executeEvent(component.fields['event']!.value);
+        executeEvent(component.fields['event']!.value[0]);
       }
     }
   }

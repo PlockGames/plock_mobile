@@ -54,5 +54,5 @@ php.phpGenerator.forBlock[type_og] = function (block, generator) {
 python.pythonGenerator.forBlock[type_og] = function (block, generator) {
     const value = block.getFieldValue('value');
     const object = python.pythonGenerator.valueToCode(block, 'object', python.Order.ATOMIC) || 0;
-    return `getObjectValue(${object}, '${value}')`;
+    return [`getObjectValue(${object}, '${value}')`, python.Order.ATOMIC];
 };

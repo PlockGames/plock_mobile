@@ -306,8 +306,10 @@ class EventManager {
           GameObject object = game.objects.firstWhere((element) => element.id == objectId);
           if (property.toLowerCase() == "x") {
             object.position.x = value;
+            game.isDirty = true;
           } else if (property.toLowerCase() == "y") {
             object.position.y = value;
+            game.isDirty = true;
           }
           return 0;
         } catch (e) {
