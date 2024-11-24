@@ -41,7 +41,10 @@ class PlayPageState extends State<PlayPage> {
     for (var game in allGames) {
       var gameData = await http.get(Uri.parse(game['gameUrl']));
       var json = jsonDecode(gameData.body);
-      plock.Game loadedGame = await plock.Game.jsonToGame(json);
+      plock.Game? loadedGame = await plock.Game.jsonToGame(json);
+      if (loadedGame == null) {
+        continue;
+      }
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;

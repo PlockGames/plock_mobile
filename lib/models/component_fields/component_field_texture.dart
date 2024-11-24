@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
-/// A Field that contain a Text value
+/// A Field that contain a Texture value
 class ComponentFieldTexture extends ComponentField {
 
   /// The value of the field
-  String? _value;
+  XFile? _value;
 
   ComponentFieldTexture({
-    required String? value,
+    required XFile? value,
     onUpdate,
   }) : _value = value {
     this.onUpdate = onUpdate;
@@ -22,7 +22,7 @@ class ComponentFieldTexture extends ComponentField {
 
   @override
   Widget getField(String name, bool debug) {
-    return TextureField();
+    return TextureField(value: _value, onUpdate: onUpdate, updateValue: updateValue);
   }
 
   @override
@@ -30,8 +30,12 @@ class ComponentFieldTexture extends ComponentField {
     return ComponentFieldTexture(value: _value, onUpdate: onUpdate);
   }
 
+  void updateValue(XFile? newValue) {
+    _value = newValue;
+  }
+
   @override
-  String? get value => _value;
+  XFile? get value => _value;
 
   @override
   set value(dynamic value) {
@@ -45,12 +49,18 @@ class ComponentFieldTexture extends ComponentField {
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as String;
+    _value = jsonVal as XFile;
   }
 
 }
 
 class TextureField extends StatefulWidget {
+  XFile? value;
+  Function? onUpdate;
+  Function? updateValue;
+
+  TextureField({super.key, this.value, this.onUpdate, this.updateValue});
+
   @override
   State<StatefulWidget> createState() {
     return _TextureFieldState();
@@ -59,22 +69,25 @@ class TextureField extends StatefulWidget {
 }
 
 class _TextureFieldState extends State<TextureField> {
-  XFile? _image;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          TextButton(onPressed: () async {
-            final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-            setState(() {
-              _image = image;
-            });
-          },child: Text("Pick Image")),
-          _image == null ? Text("No image selected") : Image.file(File(_image!.path)),
-        ],
-      ),
+    return Column(
+      children: [
+        TextButton(onPressed: () async {
+          final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+          setState(() {
+            widget.value = image;
+          });
+          if (widget.onUpdate != null) {
+            widget.onUpdate!();
+          }
+          if (widget.updateValue != null) {
+            widget.updateValue!(image);
+          }
+        },child: const Text("Pick Image")),
+        widget.value == null ? const Text("No image selected") : Image.file(File(widget.value!.path)),
+      ],
     );
   }
 }

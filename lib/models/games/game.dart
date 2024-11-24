@@ -100,14 +100,19 @@ class Game {
 
   /// Create a Game from a JSON object.
   static jsonToGame(Map<String, dynamic> json) async {
-    Game game = Game(name: json['name']);
-    game.objectCount = json['objectCount'];
-    var objects = json['objects'];
-    for (var object in objects) {
-      game.objects.add(GameObject.fromJson(object));
-    }
-    print(game);
 
-    return game;
+    try {
+      Game game = Game(name: json['name']);
+      game.objectCount = json['objectCount'];
+      var objects = json['objects'];
+      for (var object in objects) {
+        game.objects.add(GameObject.fromJson(object));
+      }
+
+      return game;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }
