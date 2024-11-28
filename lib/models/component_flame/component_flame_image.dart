@@ -55,7 +55,10 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
       var img = await decodeImageFromList(await image!.readAsBytes());
       sprite = Sprite(img);
     }
-    scale = initScale;
+    double sizeX = sprite?.image.width.toDouble() ?? 0;
+    double sizeY = sprite?.image.height.toDouble() ?? 0;
+    size.x = initScale.x * sizeX;
+    size.y = initScale.y * sizeY;
   }
 
   @override

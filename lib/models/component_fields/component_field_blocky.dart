@@ -79,14 +79,12 @@ class ComponentFieldBlockly extends ComponentField {
 
     void onChange(Blocky.BlocklyData data) {
       debugData_ = data.toolbox!;
-      print("debug: " + debugData_.toString());
-      //debugPrint('onChange: ${data.lua}');
+      //print("debug: " + _value.toString());
       if (data.json == null) {
         _value = initialJson;
       } else {
         _value = data.json!;
         _value_lua = data.lua!;
-        //print(data.lua);
       }
     }
 

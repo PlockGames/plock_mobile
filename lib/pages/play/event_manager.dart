@@ -194,14 +194,21 @@ class EventManager {
 
               if (componentType.fields.values.elementAt(i) is ComponentFieldNumber) {
                 componentType.fields.values.elementAt(i).value = double.parse(value!);
+                game.isDirty = true;
               } else if (componentType.fields.values.elementAt(i) is ComponentFieldText) {
                 componentType.fields.values.elementAt(i).value = value!;
+                game.isDirty = true;
               } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
-                componentType.fields.values.elementAt(i).value = Color(int.parse(value!.substring(1), radix: 16));
+                value = "ff${value!.substring(4)}";
+                Color color = Color(int.parse(value, radix: 16));
+                componentType.fields.values.elementAt(i).value = color;
+                game.isDirty = true;
               } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
                 componentType.fields.values.elementAt(i).value = value!;
+                game.isDirty = true;
               } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
                 componentType.fields.values.elementAt(i).value[0] = value!;
+                game.isDirty = true;
               } else {
                 return 0;
               }

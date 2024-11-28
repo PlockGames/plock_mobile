@@ -12,6 +12,30 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "width",
                         "WIDTH",
+                    ],
+                    [
+                        "height",
+                        "HEIGHT",
+                    ],
+                    [
+                        "radius",
+                        "RADIUS",
+                    ],
+                    [
+                        "text",
+                        "TEXT",
+                    ],
+                    [
+                        "variable",
+                        "VARIABLE",
+                    ],
+                    [
+                        "trigger",
+                        "TRIGGER",
+                    ],
+                    [
+                        "color",
+                        "COLOR",
                     ]
                 ]
             },
@@ -53,7 +77,6 @@ Blockly.defineBlocksWithJsonArray([
             {
                 "type": "input_value",
                 "name": "newValue",
-                "check": ["Number", "String"]
             }
         ],
         "previousStatement": null,
@@ -65,7 +88,6 @@ Blockly.defineBlocksWithJsonArray([
         "extensions": ["ext_component_setter"]
     }
 ]);
-
 function setComponentValue(block, generator, order) {
     const component = block.getFieldValue('component');
     const value = block.getFieldValue('value');

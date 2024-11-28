@@ -52,6 +52,7 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_picker.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_random.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_rgb.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_event_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object.dart';
@@ -172,6 +173,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object),
         ToolboxBlock(data: block_component_get),
         ToolboxBlock(data: block_component_set),
+        ToolboxBlock(data: object_event_set),
         ToolboxBlock(data: block_object_add_component),
         ToolboxBlock(data: block_object_destroy),
         ToolboxBlock(data: block_object_get),

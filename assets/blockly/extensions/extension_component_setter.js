@@ -46,11 +46,6 @@ const valuesSetTypeList = {
             "trigger",
             "TRIGGER",
             actionSetText
-        ],
-        [
-            "event",
-            "EVENT",
-            actionSetStatement
         ]
     ],
     "ComponentVariable": [
@@ -84,11 +79,6 @@ function actionRemoveAll(thisBlock, types) {
     }
     return false;
 }
-function actionSetStatement(thisBlock) {
-    if (actionRemoveAll(thisBlock, ['Statement'])) {
-        const input = thisBlock.appendStatementInput('newValue');
-    }
-}
 function actionSetNumber(thisBlock) {
     if (actionRemoveAll(thisBlock, ['Number'])) {
         const input = thisBlock.appendValueInput('newValue');
@@ -119,7 +109,7 @@ function actionSetText(thisBlock) {
         input.setShadowDom(Blockly.Xml.blockToDom(shadow));
     }
 }
-function setNewList(thisBlock, component) {
+function setNewList(thisBlock, component, newValue) {
     const valuesList = valuesSetTypeList[component];
     const input = thisBlock.inputList[0];
     if (input.fieldRow.find((item) => item.name === 'value')) {
@@ -127,10 +117,15 @@ function setNewList(thisBlock, component) {
         input?.removeField('value');
     }
     input?.insertFieldAt(1, new Blockly.FieldDropdown(valuesList), 'value');
+    if (newValue) {
+        input?.fieldRow.find((item) => item.name === 'value')?.setValue(newValue);
+        updateValueInputs(thisBlock, newValue);
+    }
 }
-function updateValueInputs(thisBlock) {
+function updateValueInputs(thisBlock, value) {
     const component = thisBlock.getFieldValue('component');
-    const value = thisBlock.getFieldValue('value');
+    if (!value)
+        value = thisBlock.getFieldValue('value');
     const valuesList = valuesSetTypeList[component];
     const valueList = valuesList.find((item) => item[1] === value);
     if (valueList) {
@@ -144,9 +139,8 @@ Blockly.Extensions.register('ext_component_setter', function () {
         if (changeEvent.blockId !== thisBlock.id)
             return;
         if (changeEvent.type === Blockly.Events.BLOCK_CREATE) {
-            setNewList(thisBlock, changeEvent.json.fields.component);
-            updateValueInputs(thisBlock);
-            console.log(changeEvent);
+            setNewList(thisBlock, changeEvent.json.fields.component, changeEvent.json.fields.value);
+            updateValueInputs(thisBlock, changeEvent.json.fields.value);
         }
         const component = thisBlock.getFieldValue('component');
         var value = '';

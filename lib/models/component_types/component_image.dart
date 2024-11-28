@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -39,6 +40,10 @@ class ComponentImage extends ComponentType {
       onDragCancelCallback
       ) {
 
+    if (fields["texture"]?.value == null) {
+      return DisplayComponents(display: null, select: null);
+    }
+
     ComponentFlameImage display = ComponentFlameImage(
       onDragStartCallback: onDragStartCallback,
       onTapeUpCallback: onTapeUpCallback,
@@ -60,6 +65,19 @@ class ComponentImage extends ComponentType {
       onDragUpdateCallback,
       onDragEndCallback,
       onDragCancelCallback) {
-    return null;
+    if (fields["texture"]?.value == null) {
+      return null;
+    }
+
+    double size = fields["size"]!.value.toDouble();
+    return ComponentFlameImage(
+        onDragStartCallback: onDragStartCallback,
+        onTapeUpCallback: onTapeUpCallback,
+        onDragCancelCallback: onDragCancelCallback,
+        onDragEndCallback: onDragEndCallback,
+        onDragUpdateCallback: onDragUpdateCallback,
+        initScale: Vector2(size, size),
+        image: fields["texture"]!.value
+    );
   }
 }
