@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flame/game.dart';
@@ -20,10 +19,28 @@ class PlayPage extends StatefulWidget {
 
 class PlayPageState extends State<PlayPage> {
   List<GameWidget> games = [];
+  final Map<String, bool> favoriteStatus = {}; // Map to store like status by game ID
 
   @override
   void initState() {
     super.initState();
+    _initializeFavoriteStatus();
+  }
+
+  Future<void> _initializeFavoriteStatus() async {
+    List<plock.Game> allGames = await getAllGamesWithData();
+    for (var game in allGames) {
+      var response = await ApiService.getGameLike(game.id);
+      dynamic decoded = jsonDecode(response.body);
+      bool isLiked = decoded['totalLikes'] > 0;
+      setState(() {
+        favoriteStatus[game.id] = isLiked;
+      });
+      print("-------------is liked ?--------------");
+      print(favoriteStatus);
+      print(game.id);
+      print("-------------is liked ?--------------");
+    }
   }
 
 
@@ -42,10 +59,18 @@ class PlayPageState extends State<PlayPage> {
     for (var game in allGames) {
       var gameData = await http.get(Uri.parse(game['gameUrl']));
       var json = jsonDecode(gameData.body);
-      plock.Game loadedGame = await plock.Game.jsonToGame(json);
+      plock.Game loadedGame = await plock.Game.jsonToGame(game['id'], json);
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;
+  }
+
+  Future<void> likeGame(String gameId) async {
+    await ApiService.addLikeGame(gameId);
+  }
+
+  Future<void> unlikeGame(String gameId) async {
+    await ApiService.deleteGame(gameId);
   }
 
   @override
@@ -60,11 +85,38 @@ class PlayPageState extends State<PlayPage> {
                 child: PageView(
                   scrollDirection: Axis.vertical,
                   children: snapshot.data!.map((game) {
-                    // Print the game ID to the terminal
-                    print('Game ID: ${game.id}');  // Prints to the terminal
-
-                    // Return the GameWidget
-                    return GameWidget(game: GamePlayer(game: game));
+                    bool isFavorite = favoriteStatus[game.id] ?? false;
+                    return Stack(
+                      children: [
+                        GameWidget(game: GamePlayer(game: game)),
+                        Positioned(
+                          bottom: 100, // Adjust for vertical position
+                          right: 10,   // Adjust for horizontal position
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.favorite,
+                              color: isFavorite ? Colors.red : Colors.grey,
+                              size: 40.0,
+                            ),
+                            onPressed: () {
+                              if (isFavorite) {
+                                unlikeGame(game.id).then((_) {
+                                  setState(() {
+                                    favoriteStatus[game.id] = false;
+                                  });
+                                });
+                              } else {
+                                likeGame(game.id).then((_) {
+                                  setState(() {
+                                    favoriteStatus[game.id] = true;
+                                  });
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    );
                   }).toList(),
                 ),
               ),
@@ -73,10 +125,10 @@ class PlayPageState extends State<PlayPage> {
         } else if (snapshot.data != null && snapshot.data!.isEmpty) {
           return Center(child: Text('No games found'));
         } else {
+          print("ooooooo");
           return Center(child: CircularProgressIndicator());
         }
       },
     );
   }
-
 }

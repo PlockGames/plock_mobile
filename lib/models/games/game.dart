@@ -10,8 +10,7 @@ import 'game_object.dart';
 /// A game.
 class Game {
   /// The unique identifier of the game (nullable).
-  final String? id;
-
+  final String id;
   /// The name of the game.
   final String name;
 
@@ -35,7 +34,7 @@ class Game {
   GamePlayer? gamePlayer;
 
   // Constructor now allows `id` to be null.
-  Game({this.id, required this.name});
+  Game({required this.id, required this.name});
 
   Game instance() {
     Game instance = Game(id: id, name: name);
@@ -102,8 +101,11 @@ class Game {
   }
 
   /// Create a Game from a JSON object.
-  static Future<Game> jsonToGame(Map<String, dynamic> json) async {
-    Game game = Game(id: json['id'], name: json['name']);
+  static Future<Game> jsonToGame(String id,Map<String, dynamic> json) async {
+    print(json);
+    print("----------------------------------------------");
+
+    Game game = Game(id: id, name: json['name']);
     game.objectCount = json['objectCount'];
     var objects = json['objects'];
     for (var object in objects) {

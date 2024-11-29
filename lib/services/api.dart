@@ -30,6 +30,53 @@ class ApiService {
       "Authorization": "Bearer $apiKey"
     });
   }
+  /// Retourne le nombre total de likes pour un jeu donné [gameId].
+  static Future<http.Response> getGameLike(String gameId) async {
+    final response = await http.get(
+      Uri.parse("$url/like/count/$gameId"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Accept": "application/json",
+      },
+    );
+    print("gameId: ${gameId}");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
+    return response;
+  }
+
+
+  /// Supprime le like d'un jeu donné par son [id].
+  static Future<http.Response> deleteGame(String gameId) async {
+    final response = await http.delete(
+      Uri.parse("$url/like/$gameId"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+      },
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+  static Future<http.Response> addLikeGame(String gameId) async {
+    final response = await http.post(
+      Uri.parse("$url/like"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "gameId": gameId,
+      }),
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+
+
+
 
   /// Create a new game with the given [data].
   static Future<http.Response> createGame(CreateGameDto data) async {

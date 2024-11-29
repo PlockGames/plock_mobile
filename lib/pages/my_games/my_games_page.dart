@@ -16,8 +16,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
   /// TODO: Replace this with a real list of games
   var projects = <Game>[];
 
-  Game addProject(String name) {
-    Game game = Game(name: name);
+  Game addProject( String name) {
+    Game game = Game(id : "",name: name);
     setState(() {
       projects.add(game);
     });
