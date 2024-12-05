@@ -10,9 +10,8 @@ class RegisterPage extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final phoneController = TextEditingController();
-
-    // Contrôleur pour afficher la date sélectionnée dans le champ
     final dateOfBirthController = TextEditingController();
+    final usernameController = TextEditingController(); // Nouveau contrôleur pour le username
     void _validateAndRegister() {
       String firstName = firstNameController.text.trim();
       String lastName = lastNameController.text.trim();
@@ -20,12 +19,18 @@ class RegisterPage extends StatelessWidget {
       String password = passwordController.text.trim();
       String phone = phoneController.text.trim();
       String dateOfBirth = dateOfBirthController.text.trim();
+      String username = usernameController.text.trim(); // Récupérer la valeur du username
 
       // Validation des erreurs
       String? errorMessage;
 
       // Vérifier que tous les champs obligatoires sont remplis
-      if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || dateOfBirth.isEmpty) {
+      if (firstName.isEmpty ||
+          lastName.isEmpty ||
+          email.isEmpty ||
+          password.isEmpty ||
+          dateOfBirth.isEmpty ||
+          username.isEmpty) { // Vérifier le champ username
         errorMessage = "All mandatory fields must be filled.";
       }
 
@@ -81,6 +86,13 @@ class RegisterPage extends StatelessWidget {
                 controller: lastNameController,
                 decoration: const InputDecoration(
                   labelText: 'Last Name',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
                 ),
               ),
               const SizedBox(height: 10),
