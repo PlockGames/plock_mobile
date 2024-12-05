@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
-import 'package:plock_mobile/pages/my_games/my_profile_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
+import 'package:plock_mobile/pages/login_page.dart';
+import 'package:plock_mobile/pages/register_page.dart';
 
 /// The main function of the application.
 void main() async {
@@ -25,15 +26,18 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
+      initialRoute: '/login', // Démarrer par la page de connexion
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/home': (context) => const MyHomePage(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  bool isScrollEnabled = true;
-
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -45,27 +49,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this, initialIndex: 1);
+    controller = TabController(length: 2, vsync: this, initialIndex: 0);
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            widget.isScrollEnabled = !widget.isScrollEnabled;
-          });
-        },
-        child: Icon(widget.isScrollEnabled ? Icons.lock : Icons.lock_open),
-      ),
       bottomNavigationBar: TabBar(
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
         tabs: const <Widget>[
-          Tab(icon: Icon(Icons.account_circle)),
           Tab(icon: Icon(Icons.play_arrow)),
           Tab(icon: Icon(Icons.create)),
         ],
@@ -73,8 +67,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          const ProfilePage(),
-          PlayPage(),
+          const PlayPage(),
           const MyGamesPage(),
         ],
       ),
