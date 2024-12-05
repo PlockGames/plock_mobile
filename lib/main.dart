@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
+import 'package:plock_mobile/pages/login_page.dart';
+import 'package:plock_mobile/pages/register_page.dart';
 
 /// The main function of the application.
 void main() async {
@@ -24,7 +26,12 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      initialRoute: '/login', // Démarrer par la page de connexion
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/home': (context) => const MyHomePage(),
+      },
     );
   }
 }
