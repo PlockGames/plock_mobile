@@ -109,9 +109,36 @@ class PlayPageState extends State<PlayPage> {
                         Positioned(
                           bottom: 100, // Position verticale
                           right: 10,   // Position horizontale
-                          child: Row(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              // Bouton "cœur"
+                              IconButton(
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: isFavorite ? Colors.red : Colors.grey,
+                                  size: 40.0,
+                                ),
+                                onPressed: () {
+                                  if (isFavorite) {
+                                    unlikeGame(game.id).then((_) {
+                                      setState(() {
+                                        favoriteStatus[game.id] = false;
+                                      });
+                                    });
+                                  } else {
+                                    likeGame(game.id).then((_) {
+                                      setState(() {
+                                        favoriteStatus[game.id] = true;
+                                      });
+                                    });
+                                  }
+                                },
+                              ),
+
+                              // Espacement entre les boutons
+                              SizedBox(height: 10),
+
                               // Bouton de partage
                               IconButton(
                                 icon: Icon(
@@ -191,7 +218,6 @@ class PlayPageState extends State<PlayPage> {
       },
     );
   }
-
 
 }
 
