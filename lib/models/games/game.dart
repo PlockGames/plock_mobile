@@ -102,8 +102,8 @@ class Game {
 
   /// Create a Game from a JSON object.
   static Future<Game> jsonToGame(String id,Map<String, dynamic> json) async {
-    print(json);
-    print("----------------------------------------------");
+    //print(json);
+   // print("----------------------------------------------");
 
     Game game = Game(id: id, name: json['name']);
     game.objectCount = json['objectCount'];
