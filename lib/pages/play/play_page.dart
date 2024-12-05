@@ -124,16 +124,28 @@ class PlayPageState extends State<PlayPage> {
                                     unlikeGame(game.id).then((_) {
                                       setState(() {
                                         favoriteStatus[game.id] = false;
+                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
+                                        countLike[game.id] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
                                       });
                                     });
                                   } else {
                                     likeGame(game.id).then((_) {
                                       setState(() {
                                         favoriteStatus[game.id] = true;
+                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
+                                        countLike[game.id] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
                                       });
                                     });
                                   }
                                 },
+                              ),
+                              SizedBox(height: 8.0), // Space between button and text
+                              Text(
+                                countLike[game.id] ?? '0', // Fournir '0' si countLike[game.id] est null
+                                style: TextStyle(
+                                  color: Colors.white, // Ajuster la couleur du texte
+                                  fontSize: 16.0,
+                                ),
                               ),
 
                               // Espacement entre les boutons
@@ -166,40 +178,7 @@ class PlayPageState extends State<PlayPage> {
                               SizedBox(width: 10), // Espacement entre les boutons
 
                               // Bouton "cœur"
-                              IconButton(
-                                icon: Icon(
-                                  Icons.favorite,
-                                  color: isFavorite ? Colors.red : Colors.grey,
-                                  size: 40.0,
-                                ),
-                                onPressed: () {
-                                  if (isFavorite) {
-                                    unlikeGame(game.id).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.id] = false;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
-                                      });
-                                    });
-                                  } else {
-                                    likeGame(game.id).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.id] = true;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
-                                      });
-                                    });
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 8.0), // Space between button and text
-                              Text(
-                                countLike[game.id] ?? '0', // Fournir '0' si countLike[game.id] est null
-                                style: TextStyle(
-                                  color: Colors.white, // Ajuster la couleur du texte
-                                  fontSize: 16.0,
-                                ),
-                              ),
+
                             ],
                           ),
                         ),
