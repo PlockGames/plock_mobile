@@ -99,12 +99,31 @@ class PlayPageState extends State<PlayPage> {
                     bool isFavorite = favoriteStatus[game.id] ?? false;
                     return Stack(
                       children: [
+                        // Widget principal du jeu
                         GameWidget(game: GamePlayer(game: game)),
+
+                        // Boutons flottants
                         Positioned(
-                          bottom: 100, // Adjust for vertical position
-                          right: 10,   // Adjust for horizontal position
-                          child: Column(
+                          bottom: 100, // Position verticale
+                          right: 10,   // Position horizontale
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              // Bouton de partage
+                              IconButton(
+                                icon: Icon(
+                                  Icons.share,
+                                  color: Colors.grey, // Couleur de l'icône
+                                  size: 40.0,
+                                ),
+                                onPressed: () {
+                                  // Fonctionnalité temporaire
+                                  print("Bouton partage appuyé");
+                                },
+                              ),
+                              SizedBox(width: 10), // Espacement entre les boutons
+
+                              // Bouton "cœur"
                               IconButton(
                                 icon: Icon(
                                   Icons.favorite,
@@ -116,29 +135,16 @@ class PlayPageState extends State<PlayPage> {
                                     unlikeGame(game.id).then((_) {
                                       setState(() {
                                         favoriteStatus[game.id] = false;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
                                       });
                                     });
                                   } else {
                                     likeGame(game.id).then((_) {
                                       setState(() {
                                         favoriteStatus[game.id] = true;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
                                       });
                                     });
                                   }
                                 },
-                              ),
-
-                              SizedBox(height: 8.0), // Space between button and text
-                              Text(
-                                countLike[game.id] ?? '0', // Fournir '0' si countLike[game.id] est null
-                                style: TextStyle(
-                                  color: Colors.white, // Ajuster la couleur du texte
-                                  fontSize: 16.0,
-                                ),
                               ),
                             ],
                           ),
@@ -153,11 +159,12 @@ class PlayPageState extends State<PlayPage> {
         } else if (snapshot.data != null && snapshot.data!.isEmpty) {
           return Center(child: Text('No games found'));
         } else {
-          print("ooooooo");
           return Center(child: CircularProgressIndicator());
         }
       },
     );
   }
+
 }
+
 
