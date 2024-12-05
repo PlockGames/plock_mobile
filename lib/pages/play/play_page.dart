@@ -1,11 +1,14 @@
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:flutter/services.dart'; // Pour Clipboard
+
+String? url = dotenv.env['API_URL'];
 
 /// The page where the games are played.
 class PlayPage extends StatefulWidget {
@@ -113,12 +116,24 @@ class PlayPageState extends State<PlayPage> {
                               IconButton(
                                 icon: Icon(
                                   Icons.share,
-                                  color: Colors.grey, // Couleur de l'icône
+                                  color: Colors.blue, // Couleur de l'icône
                                   size: 40.0,
                                 ),
                                 onPressed: () {
-                                  // Fonctionnalité temporaire
-                                  print("Bouton partage appuyé");
+                                  // Générer le lien de partage
+                                  final shareLink = "$url/games/${game.id}";
+
+                                  // Copier dans le presse-papiers
+                                  Clipboard.setData(ClipboardData(text: shareLink));
+
+                                  // Afficher une notification ou un message
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Lien copié dans le presse-papiers !"),
+                                    ),
+                                  );
+
+                                  print("Lien copié : $shareLink");
                                 },
                               ),
                               SizedBox(width: 10), // Espacement entre les boutons
@@ -176,6 +191,7 @@ class PlayPageState extends State<PlayPage> {
       },
     );
   }
+
 
 }
 
