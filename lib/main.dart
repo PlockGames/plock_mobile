@@ -1,9 +1,8 @@
-// This is the main file of the application.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
+import 'package:plock_mobile/pages/profile/profile_page.dart'; // Import de la page profil
 
 /// The main function of the application.
 void main() async {
@@ -48,7 +47,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        title: const Text('Plock'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              // Navigation vers la page profil
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+        ],
+      ),
       bottomNavigationBar: TabBar(
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
@@ -59,9 +72,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[
-          const PlayPage(),
-          const MyGamesPage(),
+        children: const <Widget>[
+          PlayPage(),
+          MyGamesPage(),
         ],
       ),
     );
