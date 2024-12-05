@@ -1,11 +1,14 @@
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:flutter/services.dart'; // Pour Clipboard
+
+String? url = dotenv.env['API_URL'];
 
 /// The page where the games are played.
 class PlayPage extends StatefulWidget {
@@ -99,12 +102,17 @@ class PlayPageState extends State<PlayPage> {
                     bool isFavorite = favoriteStatus[game.id] ?? false;
                     return Stack(
                       children: [
+                        // Widget principal du jeu
                         GameWidget(game: GamePlayer(game: game)),
+
+                        // Boutons flottants
                         Positioned(
-                          bottom: 100, // Adjust for vertical position
-                          right: 10,   // Adjust for horizontal position
+                          bottom: 100, // Position verticale
+                          right: 10,   // Position horizontale
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              // Bouton "cœur"
                               IconButton(
                                 icon: Icon(
                                   Icons.favorite,
@@ -131,7 +139,6 @@ class PlayPageState extends State<PlayPage> {
                                   }
                                 },
                               ),
-
                               SizedBox(height: 8.0), // Space between button and text
                               Text(
                                 countLike[game.id] ?? '0', // Fournir '0' si countLike[game.id] est null
@@ -140,6 +147,38 @@ class PlayPageState extends State<PlayPage> {
                                   fontSize: 16.0,
                                 ),
                               ),
+
+                              // Espacement entre les boutons
+                              SizedBox(height: 10),
+
+                              // Bouton de partage
+                              IconButton(
+                                icon: Icon(
+                                  Icons.share,
+                                  color: Colors.blue, // Couleur de l'icône
+                                  size: 40.0,
+                                ),
+                                onPressed: () {
+                                  // Générer le lien de partage
+                                  final shareLink = "$url/games/${game.id}";
+
+                                  // Copier dans le presse-papiers
+                                  Clipboard.setData(ClipboardData(text: shareLink));
+
+                                  // Afficher une notification ou un message
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Lien copié dans le presse-papiers !"),
+                                    ),
+                                  );
+
+                                  print("Lien copié : $shareLink");
+                                },
+                              ),
+                              SizedBox(width: 10), // Espacement entre les boutons
+
+                              // Bouton "cœur"
+
                             ],
                           ),
                         ),
@@ -153,11 +192,12 @@ class PlayPageState extends State<PlayPage> {
         } else if (snapshot.data != null && snapshot.data!.isEmpty) {
           return Center(child: Text('No games found'));
         } else {
-          print("ooooooo");
           return Center(child: CircularProgressIndicator());
         }
       },
     );
   }
+
 }
+
 
