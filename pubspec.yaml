@@ -36,15 +36,29 @@ dependencies:
   cupertino_icons: ^1.0.6
   flame: ^1.16.0
   flame_svg: ^1.10.0
-  webview_flutter: ^4.7.0
-  flutter_blockly: ^1.4.2
-  lua_dardo_async: ^0.0.3
+  flutter_blockly_plus: ^1.4.1
+  lua_dardo_async: ^0.0.4
   http: ^1.2.1
   flutter_colorpicker: ^1.1.0
+  flame_test: ^1.16.2
+  flutter_dotenv: ^5.1.0
+  image_picker: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^4.0.0
+  integration_test:
+    sdk: flutter
+
+patrol:
+  app_name: Plock
+  android:
+    package_name: com.plock.plock_mobile
+  ios:
+    bundle_id: com.plock.plockMobile
+  macos:
+    bundle_id: com.plock.plockMobile
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -52,6 +66,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  patrol: ^3.9.0
+  patrol_finders: ^2.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -64,10 +80,21 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/svg/add.svg
     - assets/svg/delete.svg
     - assets/svg/edit.svg
     - assets/svg/upload.svg
+    - packages/flutter_blockly_plus/assets/blockly.min.js
+    - packages/flutter_blockly_plus/assets/dart_compressed.js
+    - packages/flutter_blockly_plus/assets/lua_compressed.js
+    - packages/flutter_blockly_plus/assets/python_compressed.js
+    - packages/flutter_blockly_plus/assets/php_compressed.js
+    - packages/flutter_blockly_plus/assets/javascript_compressed.js
+    - packages/flutter_blockly_plus/assets/dart_wrapper.js
+    - assets/blockly/blocks/
+    - assets/blockly/extensions/
+    - assets/blockly/plugins/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -83,7 +110,7 @@ flutter:
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
-  # example:
+  # plock:
   # fonts:
   #   - family: Schyler
   #     fonts:

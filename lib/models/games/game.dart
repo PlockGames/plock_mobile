@@ -9,7 +9,8 @@ import 'game_object.dart';
 
 /// A game.
 class Game {
-
+  /// The unique identifier of the game (nullable).
+  final String id;
   /// The name of the game.
   final String name;
 
@@ -19,7 +20,7 @@ class Game {
   /// If the game is dirty.
   bool isDirty = false;
 
-  /// Object count, used to assign id
+  /// Object count, used to assign id.
   int objectCount = 0;
 
   /// The size of the screen.
@@ -29,14 +30,14 @@ class Game {
   double deltaTime = 0;
 
   /// The game player.
-  ///
   /// Set at runtime when the game is played, used to spawn and destroy objects.
   GamePlayer? gamePlayer;
 
-  Game({required this.name});
+  // Constructor now allows `id` to be null.
+  Game({required this.id, required this.name});
 
   Game instance() {
-    Game instance = Game(name: name);
+    Game instance = Game(id: id, name: name);
     instance.screenSize = screenSize;
     instance.objectCount = objectCount;
 
@@ -69,7 +70,7 @@ class Game {
 
     GamePlayerObject? object = gamePlayer!.components.firstWhere((element) {
       return (element as GamePlayerObject).gameObject.id == id;
-      }) as GamePlayerObject?;
+    }) as GamePlayerObject?;
     if (object != null) {
       objects.remove(object.gameObject);
       for (var component in object.displayComponents) {
@@ -84,6 +85,7 @@ class Game {
   /// Convert the game to a JSON string.
   String toJson() {
     String json = "{";
+    json += "\"id\": \"$id\","; // This can be null, so ensure you handle it accordingly
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
     json += "\"objects\": [";
@@ -99,17 +101,17 @@ class Game {
   }
 
   /// Create a Game from a JSON object.
-  static jsonToGame(Map<String, dynamic> json) async {
-    Game game = Game(name: json['title']);
-    var gameDataResponse = await ApiService.getGameWithData(json['id'].toString());
-    String gameData = jsonDecode(gameDataResponse.body)["data"];
-    gameData = gameData.replaceAll('\n', ' ');
-    var dataJson = jsonDecode(gameData);
-    game.objectCount = dataJson['objectCount'];
-    var objects = dataJson['objects'];
+  static Future<Game> jsonToGame(String id,Map<String, dynamic> json) async {
+    print(json);
+    print("----------------------------------------------");
+
+    Game game = Game(id: id, name: json['name']);
+    game.objectCount = json['objectCount'];
+    var objects = json['objects'];
     for (var object in objects) {
       game.objects.add(GameObject.fromJson(object));
     }
+    print(game);
 
     return game;
   }

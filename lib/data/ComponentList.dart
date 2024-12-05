@@ -1,3 +1,4 @@
+import 'package:plock_mobile/models/component_types/component_image.dart';
 import 'package:plock_mobile/models/component_types/component_variable.dart';
 
 import '../models/component_types/component_circle.dart';
@@ -18,6 +19,7 @@ class ComponentList {
     'ComponentText': ComponentText(),
     'ComponentEvent': ComponentEvent(),
     'ComponentVariable': ComponentVariable(),
+    'ComponentImage': ComponentImage(),
   };
 
   static get() {

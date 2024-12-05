@@ -3,8 +3,6 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:lua_dardo_async/lua.dart';
-import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
-import 'package:plock_mobile/models/component_types/component_circle.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/pages/play/event_manager.dart';
@@ -153,6 +151,10 @@ class GamePlayerObject extends PositionComponent {
   Future<void> executeEvent(String event) async {
     // fix until modules works as expected
     event = event.replaceAll("math.", "");
+    event = event.replaceAll("table.", "");
+    event = event.replaceAll("string.", "");
+    event = event.replaceAll("#", "len ");
+
     lua.loadString(event);
     await lua.call(0, 0);
   }

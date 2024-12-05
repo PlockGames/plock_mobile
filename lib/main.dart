@@ -1,11 +1,13 @@
 // This is the main file of the application.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
 
 /// The main function of the application.
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 

@@ -59,6 +59,7 @@ class GameObject {
       });
       gameObject.components.add(comp);
     }
+    print(gameObject);
     return gameObject;
   }
 }

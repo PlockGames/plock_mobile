@@ -68,12 +68,12 @@ class _EditorPageState extends State<EditorPage> {
       var upload = await ApiService.createGame(CreateGameDto(
         title: widget.game.name,
         tags: [],
-        creatorId: 1,
         playTime: "0",
         gameType: "test",
-        thumbnailUrl: "",
-        data: widget.game.toJson(),
+        thumbnailUrl: "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+        contentGame: widget.game.toJson(),
       ));
+      print(upload.body);
       Navigator.popUntil(context, ModalRoute.withName('/'));
     };
   }
@@ -117,6 +117,7 @@ class _EditorPageState extends State<EditorPage> {
       children: <Widget>[
         Expanded(
           child: GameWidget(
+              key: Key("editor_game"),
               game: Editor(
                   game: widget.game,
                   editorCallbacks: callbacks,

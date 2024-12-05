@@ -22,7 +22,7 @@ class ComponentFieldColour extends ComponentField {
   String get type => 'ComponentFieldColor';
 
   @override
-  Widget getField(String name) {
+  Widget getField(String name, bool debug) {
     field ??= ColourField(initialValue: _value, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }

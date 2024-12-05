@@ -26,7 +26,7 @@ class ComponentFieldNumber extends ComponentField {
   }
 
   @override
-  Widget getField(String name) {
+  Widget getField(String name, bool debug) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,
@@ -48,7 +48,7 @@ class ComponentFieldNumber extends ComponentField {
 
   @override
   ComponentFieldNumber instance() {
-    return ComponentFieldNumber(value: _value, onUpdate: onUpdate);
+    return ComponentFieldNumber(value: _value.toDouble(), onUpdate: onUpdate);
   }
 
   @override
@@ -58,7 +58,7 @@ class ComponentFieldNumber extends ComponentField {
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as double;
+    _value = jsonVal.toDouble();
   }
 
 }

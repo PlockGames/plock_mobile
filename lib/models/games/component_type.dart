@@ -17,6 +17,9 @@ class ComponentType {
   /// The display name of the component.
   String get name => 'Unknown';
 
+  /// Debug data
+  Map<String, dynamic> get debugData => {};
+
   /// Return a copy of the component.
   ComponentType instance() {
     ComponentType comp = ComponentType();
