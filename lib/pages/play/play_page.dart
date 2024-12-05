@@ -39,12 +39,13 @@ class PlayPageState extends State<PlayPage> {
       dynamic decoded = jsonDecode(response.body);
       bool isLiked = decoded['totalLikes'] > 0;
       setState(() {
-        favoriteStatus[game.id] = isLiked;
+        favoriteStatus[game.id] = jsonResponse['data']['hasLiked'];
         countLike[game.id] = likes.toString();
         print("-------------------------------");
-        print(countLike[game.id]);
+        print(rep);
         print("-------------------------------");
-
+        print(jsonResponse['data']['hasLiked']);
+        print("-------------------------------");
       });
     //  print("-------------is liked ?--------------");
    //   print(favoriteStatus);
