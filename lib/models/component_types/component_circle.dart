@@ -5,6 +5,7 @@ import 'package:plock_mobile/models/component_fields/component_field_number.dart
 import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
 
@@ -89,11 +90,12 @@ class ComponentCircle extends ComponentType {
   }
 
   @override
-  void updateDisplay(Component? component) {
+  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
     if (component is ComponentFlameCircle) {
       component.radius = fields["radius"]!.value.toDouble();
       component.paint = Paint()..color = fields["color"]!.value;
     }
+    return parent;
   }
 
 }

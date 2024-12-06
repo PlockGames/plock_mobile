@@ -1,10 +1,12 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame_forge2d/body_component.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_rect.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
 
@@ -89,7 +91,7 @@ class ComponentRect extends ComponentType {
   }
 
   @override
-  void updateDisplay(Component? component) {
+  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
     if (component is ComponentFlameRect) {
       component.width = fields["width"]!.value.toDouble();
       component.height = fields["height"]!.value.toDouble();
@@ -97,6 +99,7 @@ class ComponentRect extends ComponentType {
       component.x = -component.width / 2;
       component.y = -component.height / 2;
     }
+    return parent;
   }
 
 }

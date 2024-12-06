@@ -7,7 +7,7 @@ import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 
 /// A flame component used in the editor to represent a rect component.
-class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
+class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
 
   /// Callback : When the user tap up on the component.
   final Function onTapeUpCallback;
@@ -27,7 +27,7 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
   Color color;
 
 
-  ComponentFlameRect({
+  ComponentFlameEmpty({
     required this.onDragStartCallback,
     required this.onTapeUpCallback,
     required this.onDragCancelCallback,
@@ -38,10 +38,8 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
     size,
     this.componentType
   }) {
-    this.paint = Paint()..color = color;
     anchor = Anchor.center;
     position = Vector2(0, 0);
-    this.size = size;
   }
 
   @override

@@ -1,11 +1,8 @@
 import 'dart:ui';
+import 'package:flame_forge2d/forge2d_game.dart';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:flame/game.dart';
-import 'package:flame/palette.dart';
-import 'package:flame/text.dart';
-import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
 import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
@@ -13,7 +10,7 @@ import '../../models/games/game.dart' as plock;
 import 'game_player_object.dart';
 
 /// The game player.
-class GamePlayer extends FlameGame {
+class GamePlayer extends Forge2DGame {
 
   /// The game data.
   final plock.Game game;
@@ -65,7 +62,7 @@ class GamePlayer extends FlameGame {
 
     // Generate all the game objects of the game
     for (var object in game.objects) {
-      Component newComponent = GamePlayerObject(gameObject: object, game: game);
+      Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
       components.add(newComponent);
       add(newComponent);
     }

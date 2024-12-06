@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_forge2d/body_component.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
@@ -11,13 +13,13 @@ import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
 /// A flame object that represents a game object in te game engine.
-class GamePlayerObject extends PositionComponent {
+class GamePlayerObject extends BodyComponent {
 
   /// The game object linked to this Flame object.
   late GameObject gameObject;
 
   /// The game data.
-  late Game game;
+  late Game plockGame;
 
   /// List of all the components that can be displayed.
   List<Component> displayComponents = [];
@@ -30,7 +32,7 @@ class GamePlayerObject extends PositionComponent {
 
   GamePlayerObject({
     required this.gameObject,
-    required this.game,
+    required this.plockGame,
   });
 
   @override
@@ -38,11 +40,25 @@ class GamePlayerObject extends PositionComponent {
     super.onLoad();
 
     // Set the object data
-    size = Vector2(0, 0);
-    position = Vector2(gameObject.position.x, gameObject.position.y);
+    renderBody = false;
+
+    bodyDef = BodyDef()
+      ..position = Vector2(gameObject.position.x, gameObject.position.y)
+      ..type = BodyType.static;
+
+    fixtureDefs = [
+      FixtureDef(
+        PolygonShape()
+          ..setAsBoxXY(20, 20),
+        density: 1.0,
+        friction: 0.3,
+      ),
+    ];
+
+
 
     await lua.openLibs();
-    EventManager.registerEvents(lua, game, gameObject.id);
+    EventManager.registerEvents(lua, plockGame, gameObject.id);
 
     // Update the components
     updateDisplay();
@@ -62,13 +78,15 @@ class GamePlayerObject extends PositionComponent {
 
     // Update the components that are already instancied
     for (var component in this.children) {
+      print(component);
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
         if (componentFlame.getComponentType() == null) {
           continue;
         }
         ComponentType componentType = componentFlame.getComponentType()!;
-        componentType.updateDisplay(component);
+        print(componentType.name);
+        this.bodyDef = componentType.updateDisplay(component, this).bodyDef;
         alreadyDisplayed.add(componentFlame.getComponentType()!);
       }
     }
@@ -84,12 +102,23 @@ class GamePlayerObject extends PositionComponent {
             onDragCancel);
           if (comp != null) {
             add(comp);
+            ComponentFlame componentFlame = comp as ComponentFlame;
+            if (componentFlame.getComponentType() == null) {
+              continue;
+            }
+            ComponentType componentType = componentFlame.getComponentType()!;
+            this.bodyDef = componentType.updateDisplay(comp, this).bodyDef;
           }
         }
     }
 
-    // Remove the components that are not in the game object
-    // TODO
+    world.destroyBody(body);
+    print(bodyDef!.type);
+    this.body = world.createBody(bodyDef!);
+    for (var fixtureDef in fixtureDefs!) {
+      body.createFixture(fixtureDef);
+    }
+    print(this.body.bodyType);
 
   }
 
@@ -105,7 +134,7 @@ class GamePlayerObject extends PositionComponent {
 
   /// Update the object data.
   void updateObjectData() {
-    position = Vector2(gameObject.position.x, gameObject.position.y);
+    bodyDef?.position = Vector2(gameObject.position.x, gameObject.position.y);
   }
 
   @override

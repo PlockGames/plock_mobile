@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
+import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 /// A component that can be added to a game object.
 class ComponentType {
@@ -49,8 +50,8 @@ class ComponentType {
     return null;
   }
 
-  void updateDisplay(Component? component) {
-
+  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+    return parent;
   }
 
   /// Set a function executed when the component is updated.

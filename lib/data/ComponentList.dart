@@ -2,6 +2,7 @@ import 'package:plock_mobile/models/component_types/component_image.dart';
 import 'package:plock_mobile/models/component_types/component_variable.dart';
 
 import '../models/component_types/component_circle.dart';
+import '../models/component_types/component_physics.dart';
 import '../models/component_types/component_rect.dart';
 import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
@@ -20,6 +21,7 @@ class ComponentList {
     'ComponentEvent': ComponentEvent(),
     'ComponentVariable': ComponentVariable(),
     'ComponentImage': ComponentImage(),
+    'ComponentPhysics': ComponentPhysics(),
   };
 
   static get() {

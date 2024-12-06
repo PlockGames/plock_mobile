@@ -5,6 +5,7 @@ import 'package:flame/text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
@@ -90,7 +91,7 @@ class ComponentText extends ComponentType {
   }
 
   @override
-  void updateDisplay(Component? component) {
+  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
     if (component is ComponentFlameText) {
       component.text = fields["text"]!.value;
       component.textRenderer = TextPaint(
@@ -99,6 +100,7 @@ class ComponentText extends ComponentType {
         ),
       );
     }
+    return parent;
   }
 
 }
