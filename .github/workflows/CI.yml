@@ -28,6 +28,9 @@ jobs:
     - name: Install Dependencies  
       run: flutter pub get
       
+    - name : Configure .env
+      run: mv .env.example .env
+      
     - name: Flutter test  
       run: flutter test
 
