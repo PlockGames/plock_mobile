@@ -23,14 +23,14 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: stable
-        flutter-version: '3.22.0'
+        flutter-version: '3.24.0'
 
     - name: Install Dependencies  
       run: flutter pub get
       
     - name : Configure .env
       run: mv .env.example .env
-      
+
     - name: Flutter test  
       run: flutter test
 
