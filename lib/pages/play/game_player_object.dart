@@ -70,6 +70,7 @@ class GamePlayerObject extends BodyComponent {
         executeEvent(component.fields['event']!.value[0]);
       }
     }
+
   }
 
   /// Update the display components.
@@ -112,8 +113,10 @@ class GamePlayerObject extends BodyComponent {
         }
     }
 
+    Vector2 oldPos = this.body.position;
     world.destroyBody(body);
     print(bodyDef!.type);
+    bodyDef!.position = oldPos;
     this.body = world.createBody(bodyDef!);
     for (var fixtureDef in fixtureDefs!) {
       body.createFixture(fixtureDef);
@@ -150,6 +153,14 @@ class GamePlayerObject extends BodyComponent {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
 
         executeEvent(component.fields['event']!.value[0]);
+      }
+    }
+
+    for (var contact in body.contacts) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_COLLISION') {
+          executeEvent(component.fields['event']!.value[0]);
+        }
       }
     }
   }
