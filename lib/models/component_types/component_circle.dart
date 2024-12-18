@@ -12,7 +12,7 @@ import '../games/component_type.dart';
 /// A component that display a circle.
 class ComponentCircle extends ComponentType {
   ComponentCircle() {
-    fields["radius"] = ComponentFieldNumber(value: 20.0);
+    fields["radius"] = ComponentFieldNumber(value: 1.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 

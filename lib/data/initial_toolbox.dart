@@ -57,12 +57,15 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/object
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_component.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_force.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_destroy.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_spawn.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/screen_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/touch_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/wait.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
@@ -163,8 +166,10 @@ final initialToolbox = Toolbox(categories: [
       name: "system",
       blocks: [
         ToolboxBlock(data: block_delta_time),
+        ToolboxBlock(data: block_collider),
         ToolboxBlock(data: block_screen_get),
-        ToolboxBlock(data: block_wait)
+        ToolboxBlock(data: block_wait),
+        ToolboxBlock(data: block_touch_get)
       ]
   ),
   ToolboxCategory(
@@ -178,7 +183,8 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object_destroy),
         ToolboxBlock(data: block_object_get),
         ToolboxBlock(data: block_object_set),
-        ToolboxBlock(data: block_object_spawn)
+        ToolboxBlock(data: block_object_spawn),
+        ToolboxBlock(data: block_object_add_force)
       ]
   ),
   ToolboxCategory(

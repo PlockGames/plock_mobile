@@ -14,7 +14,16 @@ class GameObject {
   List<ComponentType> components = List<ComponentType>.empty(growable: true);
 
   /// The position of the object.
-  Vector2 position = Vector2(50, 50);
+  Vector2 position = Vector2(0, 0);
+
+  /// is position dirty
+  bool isPositionDirty = false;
+
+  /// is physics dirty
+  bool isPhysicsDirty = false;
+
+  /// set force
+  Vector2? force;
 
   GameObject({required this.id, required this.name});
 
@@ -59,7 +68,6 @@ class GameObject {
       });
       gameObject.components.add(comp);
     }
-    print(gameObject);
     return gameObject;
   }
 }

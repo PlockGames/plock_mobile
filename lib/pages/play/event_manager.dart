@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flame/components.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
@@ -13,6 +14,8 @@ import '../../models/component_fields/component_field_number.dart';
 import '../../models/games/component_type.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
+import '../../models/utils/Vector2.dart' as PVector2;
+import 'game_player_object.dart';
 
 typedef EventAsync = Future<int> Function(LuaState lua);
 typedef Event = int Function(LuaState lua);
@@ -31,6 +34,7 @@ class EventManager {
       lua.registerAsync("wait", _wait(game, thisObjectId));
       lua.register("getScreenValue", _getScreenSize(game, thisObjectId));
       lua.register("deltaTime", _deltaTime(game, thisObjectId));
+      lua.register("getTouch", _getTouch(game, thisObjectId));
       // Objects
       lua.register("thisObject", _thisObject(game, thisObjectId));
       lua.register("lastObject", _lastObject(game, thisObjectId));
@@ -42,12 +46,33 @@ class EventManager {
       lua.registerAsync("getObjectValue", _getObjectValue(game, thisObjectId));
       lua.registerAsync("setObjectValue", _setObjectValue(game, thisObjectId));
       lua.registerAsync("spawnObject", _spawnObject(game, thisObjectId));
+      lua.registerAsync("addForce", _setAddForce(game, thisObjectId));
+
   }
 
   /// Return delta time
   static Event _deltaTime(Game game, int thisObjectId) {
     return (lua) {
       lua.pushNumber(game.deltaTime);
+      return 1;
+    };
+  }
+
+  /// Return the touch position
+  static Event _getTouch(Game game, int thisObjectId) {
+    return (lua) {
+      String? value = lua.checkString(1);
+      lua.pop(1);
+
+      if (value != null) {
+        if (value == "X") {
+          lua.pushNumber(game.lastTouchPosition.x);
+          return 1;
+        } else if (value == "Y") {
+          lua.pushNumber(game.lastTouchPosition.y);
+          return 1;
+        }
+      }
       return 1;
     };
   }
@@ -313,9 +338,40 @@ class EventManager {
           GameObject object = game.objects.firstWhere((element) => element.id == objectId);
           if (property.toLowerCase() == "x") {
             object.position.x = value;
+            object.isPositionDirty = true;
             game.isDirty = true;
           } else if (property.toLowerCase() == "y") {
             object.position.y = value;
+            object.isPositionDirty = true;
+            game.isDirty = true;
+          }
+          return 0;
+        } catch (e) {
+          print("Error(setObjectValue): $e");
+          return 0;
+        }
+      }
+      return 0;
+    };
+  }
+
+  static Future<int> Function(LuaState lua) _setAddForce(Game game, int thisObjectId) {
+    return (lua) async {
+      int? objectId = await lua.checkInteger(1);
+      String? property = lua.checkString(2);
+      String? value = lua.checkString(3);
+      lua.pop(3);
+
+      if (objectId != null && property != null && value != null) {
+        try {
+          GameObject object = game.objects.firstWhere((element) =>
+          element.id == objectId);
+
+          if (property.toLowerCase() == "x") {
+            object.force = PVector2.Vector2(double.parse(value), 0);
+            game.isDirty = true;
+          } else if (property.toLowerCase() == "y") {
+            object.force = PVector2.Vector2(0, double.parse(value));
             game.isDirty = true;
           }
           return 0;

@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
@@ -9,7 +10,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_compon
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 /// The game editor.
-class Editor extends FlameGame {
+class Editor extends Forge2DGame {
 
   /// The currently selected object.
   ObjectComponent? selectedObject;
@@ -48,7 +49,8 @@ class Editor extends FlameGame {
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
     final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
-    add(object);
+    //add(object);
+    world.add(object);
     game.objectCount++;
     editorCallbacks.addGameObject(object.gameObject);
     return object;
@@ -56,7 +58,8 @@ class Editor extends FlameGame {
 
   void removeGameObjectCallback(ObjectComponent object) {
     editorCallbacks.removeGameObject(object.gameObject);
-    remove(object);
+    world.remove(object);
+    //remove(object);
   }
 
   ObjectComponent? getSelectedObject() {
@@ -71,6 +74,9 @@ class Editor extends FlameGame {
   @override
   void onLoad() {
     super.onLoad();
+
+    camera.viewfinder.zoom = 50;
+    camera.viewfinder.position = Vector2(0, 0);
 
     // Create the bottom bar
     final BottomBarCallbacks bottomBarCallbacks = BottomBarCallbacks(
@@ -101,7 +107,9 @@ class Editor extends FlameGame {
 
     // Generate the object components of the game
     game.objects.forEach((element) {
-      add(ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject));
+      ObjectComponent objectComponent = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject);
+      add(objectComponent);
+      world.add(objectComponent);
       game.objectCount++;
     });
 

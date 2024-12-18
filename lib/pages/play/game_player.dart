@@ -48,6 +48,9 @@ class GamePlayer extends Forge2DGame {
     game.screenSize = size;
     game.gamePlayer = this;
 
+    camera.viewfinder.zoom = 50;
+    camera.viewfinder.position = Vector2(0, 0);
+
     // Add button to exit the game if in test mode
     if (isTest && exitGame != null) {
       final exitButton = ExitButton(exitGame: exitGameCallback);
@@ -65,6 +68,7 @@ class GamePlayer extends Forge2DGame {
       Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
       components.add(newComponent);
       add(newComponent);
+      world.add(newComponent);
     }
   }
 

@@ -73,7 +73,6 @@ class _EditorPageState extends State<EditorPage> {
         thumbnailUrl: "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
         contentGame: widget.game.toJson(),
       ));
-      print(upload.body);
       Navigator.popUntil(context, ModalRoute.withName('/'));
     };
   }

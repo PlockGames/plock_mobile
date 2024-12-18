@@ -28,6 +28,8 @@ class Game {
   /// Store the delta time between two frames.
   double deltaTime = 0;
 
+  Vector2 lastTouchPosition = Vector2(0, 0);
+
   /// The game player.
   ///
   /// Set at runtime when the game is played, used to spawn and destroy objects.

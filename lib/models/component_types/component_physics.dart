@@ -16,8 +16,8 @@ import '../games/component_type.dart';
 /// A component that display a rectangle.
 class ComponentPhysics extends ComponentType {
   ComponentPhysics() {
-    fields["width"] = ComponentFieldNumber(value: 50.0);
-    fields["height"] = ComponentFieldNumber(value: 50.0);
+    fields["width"] = ComponentFieldNumber(value: 1.0);
+    fields["height"] = ComponentFieldNumber(value: 1.0);
     fields["type"] = ComponentFieldDropDown(value: "static", options: {
       "static": "Static",
       "dynamic": "Dynamic",
@@ -66,15 +66,19 @@ class ComponentPhysics extends ComponentType {
       String type = fields["type"]!.value.toString();
       BodyType bodyType = BodyType.static;
 
-      print("Type: $type");
       if (type == "dynamic") {
         bodyType = BodyType.dynamic;
       } else if (type == "kinematic") {
         bodyType = BodyType.kinematic;
       }
 
-      parent.bodyDef!.type = bodyType;
-      parent.renderBody = false;
+      if (parent.bodyDef!.type != bodyType) {
+        parent.bodyDef!.type = bodyType;
+        parent.gameObject.isPhysicsDirty = true;
+      }
+
+      parent.renderBody = true;
+
       return parent;
   }
 }

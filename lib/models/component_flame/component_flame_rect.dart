@@ -39,7 +39,7 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
     this.componentType
   }) {
     this.paint = Paint()..color = color;
-    anchor = Anchor.center;
+    anchor = Anchor.topLeft;
     position = Vector2(0, 0);
     this.size = size;
   }

@@ -77,6 +77,7 @@ Blockly.defineBlocksWithJsonArray([
             {
                 "type": "input_value",
                 "name": "newValue",
+                "check": ["Number", "String"]
             }
         ],
         "previousStatement": null,

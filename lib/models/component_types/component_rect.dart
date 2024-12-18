@@ -13,8 +13,8 @@ import '../games/component_type.dart';
 /// A component that display a rectangle.
 class ComponentRect extends ComponentType {
   ComponentRect() {
-    fields["width"] = ComponentFieldNumber(value: 50.0);
-    fields["height"] = ComponentFieldNumber(value: 50.0);
+    fields["width"] = ComponentFieldNumber(value: 1.0);
+    fields["height"] = ComponentFieldNumber(value: 1.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
@@ -58,12 +58,15 @@ class ComponentRect extends ComponentType {
     );
 
     RectangleComponent select = RectangleComponent(
-      size: size,
+      size: size * 20,
+      scale: Vector2(0.05, 0.05),
       position: Vector2(0, 0),
       paint: Paint()
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0.0,
     );
 
     display.add(select);

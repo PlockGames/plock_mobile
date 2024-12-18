@@ -13,7 +13,7 @@ import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
 /// A flame object that represents a game object in te game engine.
-class GamePlayerObject extends BodyComponent {
+class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// The game object linked to this Flame object.
   late GameObject gameObject;
@@ -30,6 +30,8 @@ class GamePlayerObject extends BodyComponent {
   /// Lua state, used to execute events.
   LuaState lua = LuaState.newState();
 
+  List<Contact> contacts = [];
+
   GamePlayerObject({
     required this.gameObject,
     required this.plockGame,
@@ -42,20 +44,29 @@ class GamePlayerObject extends BodyComponent {
     // Set the object data
     renderBody = false;
 
+    // get object size
+    double width = 0;
+    double height = 0;
+    for (var component in gameObject.components) {
+      if (component.type == 'ComponentPhysics') {
+        width = component.fields['width']!.value;
+        height = component.fields['height']!.value;
+      }
+    }
+
     bodyDef = BodyDef()
       ..position = Vector2(gameObject.position.x, gameObject.position.y)
-      ..type = BodyType.static;
+      ..type = BodyType.static
+      ..userData = this;
 
     fixtureDefs = [
       FixtureDef(
         PolygonShape()
-          ..setAsBoxXY(20, 20),
+          ..setAsBoxXY((width / 2), (height / 2)),
         density: 1.0,
         friction: 0.3,
       ),
     ];
-
-
 
     await lua.openLibs();
     EventManager.registerEvents(lua, plockGame, gameObject.id);
@@ -67,7 +78,7 @@ class GamePlayerObject extends BodyComponent {
     // Execute the start events
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_START') {
-        executeEvent(component.fields['event']!.value[0]);
+        executeEvent(component.fields['event']!.value[0], "");
       }
     }
 
@@ -79,14 +90,12 @@ class GamePlayerObject extends BodyComponent {
 
     // Update the components that are already instancied
     for (var component in this.children) {
-      print(component);
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
         if (componentFlame.getComponentType() == null) {
           continue;
         }
         ComponentType componentType = componentFlame.getComponentType()!;
-        print(componentType.name);
         this.bodyDef = componentType.updateDisplay(component, this).bodyDef;
         alreadyDisplayed.add(componentFlame.getComponentType()!);
       }
@@ -113,15 +122,31 @@ class GamePlayerObject extends BodyComponent {
         }
     }
 
-    Vector2 oldPos = this.body.position;
-    world.destroyBody(body);
-    print(bodyDef!.type);
-    bodyDef!.position = oldPos;
-    this.body = world.createBody(bodyDef!);
-    for (var fixtureDef in fixtureDefs!) {
-      body.createFixture(fixtureDef);
+
+    if (gameObject.isPhysicsDirty) {
+      gameObject.isPhysicsDirty = false;
+      Vector2 oldPos = this.body.position;
+      if (gameObject.isPositionDirty) {
+        oldPos = Vector2(gameObject.position.x, gameObject.position.y);
+        gameObject.isPositionDirty = false;
+      }
+      world.destroyBody(body);
+      bodyDef!.position = oldPos;
+      this.body = world.createBody(bodyDef!);
+      for (var fixtureDef in fixtureDefs!) {
+        body.createFixture(fixtureDef);
+      }
+    } else {
+      if (gameObject.isPositionDirty) {
+        gameObject.isPositionDirty = false;
+        body.transform.setFrom(Transform.from(Vector2(gameObject.position.x, gameObject.position.y), Rot()));
+      }
     }
-    print(this.body.bodyType);
+
+    if (gameObject.force != null) {
+      body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
+      gameObject.force = null;
+    }
 
   }
 
@@ -152,24 +177,26 @@ class GamePlayerObject extends BodyComponent {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
 
-        executeEvent(component.fields['event']!.value[0]);
+        executeEvent(component.fields['event']!.value[0], "");
       }
     }
 
-    for (var contact in body.contacts) {
+    for (var contact in contacts) {
       for (var component in eventComponents) {
         if (component.fields['trigger']!.value == 'ON_COLLISION') {
-          executeEvent(component.fields['event']!.value[0]);
+          executeEvent(component.fields['event']!.value[0], "");
         }
       }
     }
+    contacts = [];
+
   }
 
   bool onTapUp(TapUpEvent info) {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_TAP') {
-
-        executeEvent(component.fields['event']!.value);
+        plockGame.lastTouchPosition = Vector2(info.localPosition.x, info.localPosition.y);
+        executeEvent(component.fields['event']!.value[0], "");
       }
     }
     return true;
@@ -179,6 +206,14 @@ class GamePlayerObject extends BodyComponent {
   }
 
   void onDragUpdate(DragUpdateEvent event) {
+    for (var component in eventComponents) {
+      if (component.fields['trigger']!.value == 'ON_DRAG') {
+        double x = event.canvasStartPosition.x + event.canvasDelta.x;
+        double y = event.canvasStartPosition.y + event.canvasDelta.y;
+        plockGame.lastTouchPosition = Vector2(x, y);
+        executeEvent(component.fields['event']!.value[0], "");
+      }
+    }
   }
 
   void onDragEnd(DragEndEvent event) {
@@ -188,7 +223,10 @@ class GamePlayerObject extends BodyComponent {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event) async {
+  Future<void> executeEvent(String event, String collider) async {
+    // add collider to the event
+   // event = "local collider = \"${collider}\"\n" + event;
+
     // fix until modules works as expected
     event = event.replaceAll("math.", "");
     event = event.replaceAll("table.", "");
@@ -204,6 +242,15 @@ class GamePlayerObject extends BodyComponent {
       lua.error();
     } catch (e) {
       print("Game interrupted");
+    }
+  }
+
+  @override
+  void beginContact(Object other, Contact contact) {
+    super.beginContact(other, contact);
+
+    if (other is GamePlayerObject) {
+      contacts.add(contact);
     }
   }
 

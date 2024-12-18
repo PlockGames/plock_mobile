@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_forge2d/body_component.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
@@ -9,7 +11,7 @@ import 'package:plock_mobile/models/games/game_object.dart';
 import '../../../../models/component_types/component_rect.dart';
 
 /// A flame object that represents a component in the game editor.
-class ObjectComponent extends PositionComponent
+class ObjectComponent extends BodyComponent
     with TapCallbacks, DragCallbacks {
 
   /// The function to select an object.
@@ -80,9 +82,17 @@ class ObjectComponent extends PositionComponent
   Future<void> onLoad() async {
     super.onLoad();
 
-    // Set the object data
-    size = Vector2(0, 0);
-    position = Vector2(_gameObject.position.x, _gameObject.position.y);
+    renderBody = false;
+
+    bodyDef = BodyDef()
+      ..position = Vector2(_gameObject.position.x, _gameObject.position.y)
+      ..type = BodyType.static
+      ..userData = this;
+
+    final shape = PolygonShape()..setAsBoxXY(0, 0);
+    fixtureDefs = [FixtureDef(shape)
+      ..density = 1.0
+      ..friction = 0.3];
 
     // Update the components
     updateDisplay();
