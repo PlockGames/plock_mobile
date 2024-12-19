@@ -99,8 +99,6 @@ class ComponentRect extends ComponentType {
       component.width = fields["width"]!.value.toDouble();
       component.height = fields["height"]!.value.toDouble();
       component.paint = Paint()..color = fields["color"]!.value;
-      component.x = -component.width / 2;
-      component.y = -component.height / 2;
     }
     return parent;
   }
