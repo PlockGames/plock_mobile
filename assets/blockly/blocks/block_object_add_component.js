@@ -56,12 +56,12 @@ javascript.javascriptGenerator.forBlock[type_oac] = function (block, generator) 
         const event = javascript.javascriptGenerator.valueToCode(block, 'event', javascript.Order.ATOMIC) || "'my_event'";
         const input = block.getInputTargetBlock('event');
         if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-            return `addComponent(${object}, "${component}", String(${event}));\n`;
+            return `sendMessage("addComponent", [${object}, "${component}", String(${event})]));\n`;
         }
-        return `addComponent(${object}, "${component}", ${event});\n`;
+        return `sendMessage("addComponent", [${object}, "${component}", ${event}]));\n`;
     }
     catch (e) {
-        return `addComponent(${object}, "${component}", "\'my_event\'");\n`;
+        return `sendMessage("addComponent", [${object}, "${component}", "my_event"]));\n`;
     }
 };
 dart.dartGenerator.forBlock[type_oac] = function (block, generator) {

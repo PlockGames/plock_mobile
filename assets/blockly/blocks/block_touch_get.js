@@ -31,7 +31,7 @@ Blockly.defineBlocksWithJsonArray([
 ]);
 javascript.javascriptGenerator.forBlock[type_tg] = function (block, generator) {
     const value = block.getFieldValue('value');
-    return [`getTouch('${value}')`, javascript.Order.ATOMIC];
+    return [`sendMessage("getTouch", JSON.stringify(['${value}']))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_tg] = function (block, generator) {
     const value = block.getFieldValue('value');

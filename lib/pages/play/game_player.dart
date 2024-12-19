@@ -83,6 +83,7 @@ class GamePlayer extends Forge2DGame {
       for (var component in components) {
         GamePlayerObject object = component as GamePlayerObject;
         object.updateDisplay();
+        object.updatePhysic();
         object.updateEvents();
         object.updateObjectData();
       }

@@ -20,7 +20,7 @@ class ComponentFieldBlockly extends ComponentField {
   };
 
   /// The value of the field.
-  String _value_lua = "";
+  String _value_js = "";
 
   /// The saved json of the blockly.
   Map<String, dynamic> _value = initialJson;
@@ -29,17 +29,17 @@ class ComponentFieldBlockly extends ComponentField {
 
 
 
-  ComponentFieldBlockly({value, value_lua}) {
+  ComponentFieldBlockly({value, value_js}) {
     if (value != null) {
       _value = value;
     } else {
       _value = initialJson;
     }
 
-    if (value_lua != null) {
-      _value_lua = value_lua;
+    if (value_js != null) {
+      _value_js = value_js;
     } else {
-      _value_lua = "";
+      _value_js = "";
     }
   }
 
@@ -84,7 +84,7 @@ class ComponentFieldBlockly extends ComponentField {
         _value = initialJson;
       } else {
         _value = data.json!;
-        _value_lua = data.lua!;
+        _value_js = data.js!;
       }
     }
 
@@ -126,25 +126,25 @@ class ComponentFieldBlockly extends ComponentField {
 
   @override
   ComponentFieldBlockly instance() {
-    return ComponentFieldBlockly(value: _value, value_lua: _value_lua);
+    return ComponentFieldBlockly(value: _value, value_js: _value_js);
   }
 
   @override
-  List get value => [_value_lua, _value];
+  List get value => [_value_js, _value];
 
   @override
   set value(dynamic value) {
-    _value_lua = value;
+    _value_js = value;
   }
 
   @override
   String toJson() {
-    return "\"$_value_lua\"";
+    return "\"$_value_js\"";
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value_lua = jsonVal as String;
+    _value_js = jsonVal as String;
   }
 
   @override

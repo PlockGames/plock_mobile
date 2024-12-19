@@ -32,7 +32,7 @@ javascript.javascriptGenerator.forBlock[type_oeset] = function (block, generator
     const name = javascript.javascriptGenerator.valueToCode(block, 'name', javascript.Order.ATOMIC) || "";
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
     const newValue = javascript.javascriptGenerator.valueToCode(block, 'newValue', javascript.Order.ATOMIC) || 0;
-    return `setComponentValue(${object}, 'ComponentEvent', 'EVENT', toString(${newValue}))\n`;
+    return `sendMessage("setComponentValue", JSON.stringify([${object}, 'ComponentEvent', 'EVENT', toString(${newValue})]))\n`;
 };
 dart.dartGenerator.forBlock[type_oeset] = function (block, generator) {
     const name = dart.dartGenerator.valueToCode(block, 'name', dart.Order.ATOMIC) || "";

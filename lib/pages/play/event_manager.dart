@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
@@ -27,380 +28,279 @@ class EventManager {
   ///
   /// [lua] The lua vm to register the events to.
   /// [game] The game data to execute the events on.
-  static void registerEvents(LuaState lua, Game game, int thisObjectId) {
+  static void registerEvents(JavascriptRuntime js, Game game, int thisObjectId) {
       // Colour
-      lua.registerAsync("rgbToColor", _rgbToColor(game, thisObjectId));
+      js.onMessage("rgbToColor", (args) => _rgbToColor(game, thisObjectId, args));
       // System
-      lua.registerAsync("wait", _wait(game, thisObjectId));
-      lua.register("getScreenValue", _getScreenSize(game, thisObjectId));
-      lua.register("deltaTime", _deltaTime(game, thisObjectId));
-      lua.register("getTouch", _getTouch(game, thisObjectId));
+      js.onMessage("wait", (args) async => await _wait(game, thisObjectId, args));
+      js.onMessage("getScreenValue", (args) => _getScreenSize(game, thisObjectId, args));
+      js.onMessage("deltaTime", (args) => _deltaTime(game, thisObjectId, args));
+      js.onMessage("getTouch", (args) => _getTouch(game, thisObjectId, args));
       // Objects
-      lua.register("thisObject", _thisObject(game, thisObjectId));
-      lua.register("lastObject", _lastObject(game, thisObjectId));
-      lua.register("objectByName", _getObjectByName(game, thisObjectId));
-      lua.registerAsync("getComponentValue", _getComponentValue(game, thisObjectId));
-      lua.registerAsync("setComponentValue", _setComponentValue(game, thisObjectId));
-      lua.registerAsync("addComponent", _addComponent(game, thisObjectId));
-      lua.registerAsync("destroyObject", _destroyObject(game, thisObjectId));
-      lua.registerAsync("getObjectValue", _getObjectValue(game, thisObjectId));
-      lua.registerAsync("setObjectValue", _setObjectValue(game, thisObjectId));
-      lua.registerAsync("spawnObject", _spawnObject(game, thisObjectId));
-      lua.registerAsync("addForce", _setAddForce(game, thisObjectId));
-
+      js.onMessage("thisObject", (args) => _thisObject(game, thisObjectId, args));
+      js.onMessage("lastObject", (args) => _lastObject(game, thisObjectId, args));
+      js.onMessage("objectByName", (args) => _getObjectByName(game, thisObjectId, args));
+      js.onMessage("getComponentValue", (args) => _getComponentValue(game, thisObjectId, args));
+      js.onMessage("setComponentValue", (args) => _setComponentValue(game, thisObjectId, args));
+      js.onMessage("addComponent", (args) => _addComponent(game, thisObjectId, args));
+      js.onMessage("destroyObject", (args) => _destroyObject(game, thisObjectId, args));
+      js.onMessage("getObjectValue", (args) => _getObjectValue(game, thisObjectId, args));
+      js.onMessage("setObjectValue", (args) => _setObjectValue(game, thisObjectId, args));
+      js.onMessage("spawnObject", (args) => _spawnObject(game, thisObjectId, args));
+      js.onMessage("addForce", (args) => _setAddForce(game, thisObjectId, args));
   }
 
   /// Return delta time
-  static Event _deltaTime(Game game, int thisObjectId) {
-    return (lua) {
-      lua.pushNumber(game.deltaTime);
-      return 1;
-    };
+  static double _deltaTime(Game game, int thisObjectId, dynamic args) {
+    return game.deltaTime;
   }
 
   /// Return the touch position
-  static Event _getTouch(Game game, int thisObjectId) {
-    return (lua) {
-      String? value = lua.checkString(1);
-      lua.pop(1);
-
-      if (value != null) {
-        if (value == "X") {
-          lua.pushNumber(game.lastTouchPosition.x);
-          return 1;
-        } else if (value == "Y") {
-          lua.pushNumber(game.lastTouchPosition.y);
-          return 1;
-        }
+  static double _getTouch(Game game, int thisObjectId, dynamic args) {
+      String value = args[0];
+      Vector2? touchPosition = game.gamePlayer?.screenToWorld(game.lastTouchPosition);
+      if (touchPosition == null) {
+        return 0;
       }
-      return 1;
-    };
+
+      if (value == "X") {
+        return touchPosition.x;
+      } else if (value == "Y") {
+        return touchPosition.y;
+      }
+      return 0;
   }
 
   /// Wait for a certain amount of time.
-  static EventAsync _wait(Game game, int thisObjectId) {
-    return (lua) async {
-      int? time = await lua.checkInteger(1);
-      if (time != null) {
-        await Future.delayed(Duration(milliseconds: time));
-        return 0;
-      }
-      return 0;
-    };
+  static Future<void> _wait(Game game, int thisObjectId, dynamic args) async {
+    int time = args[0];
+    await Future.delayed(Duration(milliseconds: time));
   }
 
-  static EventAsync _rgbToColor(Game game, int thisObjectId) {
-    return (lua) async {
-      int? red = await lua.checkInteger(1);
-      int? green = await lua.checkInteger(2);
-      int? blue = await lua.checkInteger(3);
-      lua.pop(3);
-      if (red != null && green != null && blue != null) {
-        int r = red.clamp(0, 255);
-        int g = green.clamp(0, 255);
-        int b = blue.clamp(0, 255);
-        String color = "#${r.toRadixString(16).padLeft(2, '0')}${g.toRadixString(16).padLeft(2, '0')}${b.toRadixString(16).padLeft(2, '0')}";
-        lua.pushString(color);
-        return 1;
-      }
-      return 0;
-    };
+  static String? _rgbToColor(Game game, int thisObjectId, dynamic args) {
+      // args
+      int red = args[0];
+      int green = args[1];
+      int blue = args[2];
+
+      int r = red.clamp(0, 255);
+      int g = green.clamp(0, 255);
+      int b = blue.clamp(0, 255);
+      String color = "#${r.toRadixString(16).padLeft(2, '0')}${g.toRadixString(16).padLeft(2, '0')}${b.toRadixString(16).padLeft(2, '0')}";
+      return color;
   }
 
   /// Return the screen size.
-  static Event _getScreenSize(Game game, int thisObjectId) {
-    return (lua) {
-      String? value = lua.checkString(1);
-      lua.pop(1);
+  static double _getScreenSize(Game game, int thisObjectId, dynamic args) {
+      String value = args[0];
 
-      if (value != null) {
-        if (value == "WIDTH") {
-          lua.pushNumber(game.screenSize.x);
-          return 1;
-        } else if (value == "HEIGHT") {
-          lua.pushNumber(game.screenSize.y);
-          return 1;
-        }
+      if (value == "WIDTH") {
+        return game.screenSize.x;
+      } else if (value == "HEIGHT") {
+        return game.screenSize.y;
       }
-      return 1;
-    };
+      return 0;
   }
 
   /// return this object id
-  static Event _thisObject(Game game, int thisObjectId) {
-    return (lua) {
-      lua.pushInteger(thisObjectId);
-      return 1;
-    };
+  static int _thisObject(Game game, int thisObjectId, dynamic args) {
+    return thisObjectId;
   }
 
   /// return the last spawned object
-  static Event _lastObject(Game game, int thisObjectId) {
-    return (lua) {
-      lua.pushInteger(game.objects.last.id);
-      return 1;
-    };
+  static int _lastObject(Game game, int thisObjectId, dynamic args) {
+    return game.objects.last.id;
   }
 
   /// get object by name
-  static Event _getObjectByName(Game game, int thisObjectId) {
-    return (lua) {
-      String? name = lua.checkString(1);
-      if (name != null) {
-        try {
+  static int _getObjectByName(Game game, int thisObjectId, dynamic args) {
+      String name = args[0];
+      try {
         GameObject? object = game.objects.firstWhere((element) =>
         element.name == name);
-        lua.pushInteger(object.id);
-        return 1;
-        } catch (e) {
-          print("Error(getObjectByName): $e");
-          return 0;
-        }
+        return object.id;
+      } catch (e) {
+        print("Error(getObjectByName): $e");
+        return 0;
       }
-      return 0;
-    };
   }
 
   /// Return the property of a component of an object.
-  static Future<int> Function(LuaState lua) _getComponentValue(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? component = lua.checkString(2);
-      String? property = lua.checkString(3);
-      lua.pop(3);
+  static dynamic _getComponentValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String component = args[1];
+    String property = args[2];
 
-      if (objectId != null && component != null && property != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          var componentType = object.components.firstWhere((element) => element.type == component);
-          for (int i = 0; i < componentType.fields.length; i++) {
-            if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == component);
+      for (int i = 0; i < componentType.fields.length; i++) {
+        if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
 
-              var value = componentType.fields.values.elementAt(i).value;
-              if (value is double) {
-                lua.pushNumber(value);
-              } else if (value is int) {
-                lua.pushInteger(value);
-              } else if (value is String) {
-                lua.pushString(value);
-              } else if (value is Color) {
-                lua.pushString("#${value.value.toRadixString(16).padLeft(8, '0')}");
-              } else {
-                lua.pushNil();
-              }
-              return 1;
-            }
+          var value = componentType.fields.values.elementAt(i).value;
+          if (value is double) {
+            return value;
+          } else if (value is int) {
+            return value;
+          } else if (value is String) {
+            return value;
+          } else if (value is Color) {
+            return "#${value.value.toRadixString(16).padLeft(8, '0')}";
+          } else {
+            return null;
           }
-        } catch (e) {
-          print("Error(getComponentValue): $e");
-          return 0;
         }
       }
-
-      return 0;
-    };
+    } catch (e) {
+      print("Error(getComponentValue): $e");
+      return null;
+    }
   }
 
   /// Set the property of a component of an object.
-  static Future<int> Function(LuaState lua) _setComponentValue(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? component = lua.checkString(2);
-      String? property = lua.checkString(3);
-      String? value = lua.checkString(4);
-      lua.pop(4);
+  static void _setComponentValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String component = args[1];
+    String property = args[2];
+    String value = args[3].toString();
 
-      if (objectId != null && component != null && property != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          var componentType = object.components.firstWhere((element) => element.type == component);
-          for (int i = 0; i < componentType.fields.length; i++) {
-            if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == component);
+      for (int i = 0; i < componentType.fields.length; i++) {
+        if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
 
-              if (componentType.fields.values.elementAt(i) is ComponentFieldNumber) {
-                componentType.fields.values.elementAt(i).value = double.parse(value!);
-                game.isDirty = true;
-              } else if (componentType.fields.values.elementAt(i) is ComponentFieldText) {
-                componentType.fields.values.elementAt(i).value = value!;
-                game.isDirty = true;
-              } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
-                value = "ff${value!.substring(4)}";
-                Color color = Color(int.parse(value, radix: 16));
-                componentType.fields.values.elementAt(i).value = color;
-                game.isDirty = true;
-              } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
-                componentType.fields.values.elementAt(i).value = value!;
-                game.isDirty = true;
-              } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
-                componentType.fields.values.elementAt(i).value[0] = value!;
-                game.isDirty = true;
-              } else {
-                return 0;
-              }
-              return 0;
-            }
+          if (componentType.fields.values.elementAt(i) is ComponentFieldNumber) {
+            componentType.fields.values.elementAt(i).value = double.parse(value);
+            game.isDirty = true;
+          } else if (componentType.fields.values.elementAt(i) is ComponentFieldText) {
+            componentType.fields.values.elementAt(i).value = value;
+            game.isDirty = true;
+          } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
+            value = "ff${value!.substring(4)}";
+            Color color = Color(int.parse(value, radix: 16));
+            componentType.fields.values.elementAt(i).value = color;
+            game.isDirty = true;
+          } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
+            componentType.fields.values.elementAt(i).value = value!;
+            game.isDirty = true;
+          } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
+            componentType.fields.values.elementAt(i).value[0] = value!;
+            game.isDirty = true;
           }
-        } catch (e) {
-          print("Error(setComponentValue): $e");
-          return 0;
         }
       }
-
-      return 0;
-    };
+    } catch (e) {
+      print("Error(setComponentValue): $e");
+    }
   }
 
   /// Add a component to an object.
-  static Future<int> Function(LuaState lua) _addComponent(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? component = lua.checkString(2);
-      String? name = lua.checkString(3);
-      lua.pop(3);
+  static void _addComponent(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String component = args[1];
+    String name = args[2];
 
-      if (objectId != null && component != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          ComponentType componentTypeModel = ComponentList.getByName(component);
-          ComponentType componentType = componentTypeModel.instance();
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      ComponentType componentTypeModel = ComponentList.getByName(component);
+      ComponentType componentType = componentTypeModel.instance();
 
-          if (componentType is ComponentEvent) {
-            componentType.fields['name']!.value = name!;
-          }
-          object.components.add(componentType);
-          return 0;
-        } catch (e) {
-          print("Error(addComponent): $e");
-          return 0;
-        }
+      if (componentType is ComponentEvent) {
+        componentType.fields['name']!.value = name!;
       }
-      return 0;
-    };
+      object.components.add(componentType);
+    } catch (e) {
+      print("Error(addComponent): $e");
+    }
   }
 
   /// Destroy an object.
-  static Future<int> Function(LuaState lua) _destroyObject(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      lua.pop(1);
+  static void _destroyObject(Game game, int thisObjectId, dynamic args) {
+    int? objectId = args[0];
 
-      if (objectId != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          game.objects.remove(object);
-          return 0;
-        } catch (e) {
-          print("Error(destroyObject): $e");
-          return 0;
-        }
-      }
-      return 0;
-    };
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      game.objects.remove(object);
+    } catch (e) {
+      print("Error(destroyObject): $e");
+    }
   }
 
   /// Get the value of an object.
-  static Future<int> Function(LuaState lua) _getObjectValue(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? property = lua.checkString(2);
-      lua.pop(2);
+  static double _getObjectValue(Game game, int thisObjectId, dynamic args) {
+      int objectId = args[0];
+      String property = args[1];
 
-      if (objectId != null && property != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          if (property.toLowerCase() == "x") {
-            lua.pushNumber(object.position.x);
-          } else if (property.toLowerCase() == "y") {
-            lua.pushNumber(object.position.y);
-          } else {
-            return 0;
-          }
-          return 1;
-        } catch (e) {
-          print("Error(getObjectValue): $e");
+      try {
+        GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+        if (property.toLowerCase() == "x") {
+          return object.position.x;
+        } else if (property.toLowerCase() == "y") {
+          return object.position.y;
+        } else {
           return 0;
         }
+      } catch (e) {
+        print("Error(getObjectValue): $e");
+        return 0;
       }
-      return 0;
-    };
   }
 
   /// Set the value of an object.
-  static Future<int> Function(LuaState lua) _setObjectValue(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? property = lua.checkString(2);
-      double? value = await lua.checkNumber(3);
-      lua.pop(3);
+  static void _setObjectValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String property = args[1];
+    double value = args[2].toDouble();
 
-      if (objectId != null && property != null && value != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-          if (property.toLowerCase() == "x") {
-            object.position.x = value;
-            object.isPositionDirty = true;
-            game.isDirty = true;
-          } else if (property.toLowerCase() == "y") {
-            object.position.y = value;
-            object.isPositionDirty = true;
-            game.isDirty = true;
-          }
-          return 0;
-        } catch (e) {
-          print("Error(setObjectValue): $e");
-          return 0;
-        }
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      if (property.toLowerCase() == "x") {
+        object.position.x = value;
+        object.isPositionDirty = true;
+        game.isDirty = true;
+      } else if (property.toLowerCase() == "y") {
+        object.position.y = value;
+        object.isPositionDirty = true;
+        game.isDirty = true;
       }
-      return 0;
-    };
+    } catch (e) {
+      print("Error(setObjectValue): $e");
+    }
   }
 
-  static Future<int> Function(LuaState lua) _setAddForce(Game game, int thisObjectId) {
-    return (lua) async {
-      int? objectId = await lua.checkInteger(1);
-      String? property = lua.checkString(2);
-      String? value = lua.checkString(3);
-      lua.pop(3);
+  static void _setAddForce(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String property = args[1];
+    double value = double.parse(args[2]);
+    try {
+      GameObject object = game.objects.firstWhere((element) =>
+      element.id == objectId);
 
-      if (objectId != null && property != null && value != null) {
-        try {
-          GameObject object = game.objects.firstWhere((element) =>
-          element.id == objectId);
-
-          if (property.toLowerCase() == "x") {
-            object.force = PVector2.Vector2(double.parse(value), 0);
-            game.isDirty = true;
-          } else if (property.toLowerCase() == "y") {
-            object.force = PVector2.Vector2(0, double.parse(value));
-            game.isDirty = true;
-          }
-          return 0;
-        } catch (e) {
-          print("Error(setObjectValue): $e");
-          return 0;
-        }
+      if (property.toLowerCase() == "x") {
+        object.force = PVector2.Vector2(value.toDouble(), 0);
+        game.isDirty = true;
+      } else if (property.toLowerCase() == "y") {
+        object.force = PVector2.Vector2(0, value.toDouble());
+        game.isDirty = true;
       }
-      return 0;
-    };
+    } catch (e) {
+      print("Error(setObjectValue): $e");
+    }
   }
 
   /// Spawn an object.
-  static Future<int> Function(LuaState lua) _spawnObject(Game game, int thisObjectId) {
-    return (lua) async {
-      String? name = lua.checkString(1);
-      lua.pop(1);
+  static void _spawnObject(Game game, int thisObjectId, dynamic args) {
+    String name = args[0];
 
-      if (name != null) {
-        try {
-          game.spawnObject(name);
-          return 0;
-        } catch (e) {
-          print("Error(spawnObject): $e");
-          return 0;
-        }
-      }
-      return 0;
-    };
+    try {
+      game.spawnObject(name);
+    } catch (e) {
+      print("Error(spawnObject): $e");
+    }
+  }
+
+  void test() {
   }
 
 }

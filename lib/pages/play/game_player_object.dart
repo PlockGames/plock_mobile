@@ -4,10 +4,12 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/pages/play/event_manager.dart';
+import 'package:flutter_js/flutter_js.dart';
 
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
@@ -29,6 +31,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// Lua state, used to execute events.
   LuaState lua = LuaState.newState();
+
+  /// js state, used to execute events.
+  JavascriptRuntime js = getJavascriptRuntime();
 
   List<Contact> contacts = [];
 
@@ -68,10 +73,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       ),
     ];
 
-    await lua.openLibs();
-    EventManager.registerEvents(lua, plockGame, gameObject.id);
+    //await lua.openLibs();
+    EventManager.registerEvents(js, plockGame, gameObject.id);
 
     // Update the components
+    gameObject.isPhysicsDirty = false;
     updateDisplay();
     updateEvents();
 
@@ -122,8 +128,15 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
         }
     }
 
+    if (gameObject.force != null) {
+      body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
+      gameObject.force = null;
+    }
 
-    if (gameObject.isPhysicsDirty) {
+  }
+
+  void updatePhysic() {
+    if (gameObject.isPhysicsDirty && body.isAwake) {
       gameObject.isPhysicsDirty = false;
       Vector2 oldPos = this.body.position;
       if (gameObject.isPositionDirty) {
@@ -142,12 +155,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
         body.transform.setFrom(Transform.from(Vector2(gameObject.position.x, gameObject.position.y), Rot()));
       }
     }
-
-    if (gameObject.force != null) {
-      body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
-      gameObject.force = null;
-    }
-
   }
 
   /// Update the event components list.
@@ -225,16 +232,14 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   /// Execute an event.
   Future<void> executeEvent(String event, String collider) async {
     // add collider to the event
-   // event = "local collider = \"${collider}\"\n" + event;
+    event = "let collider = \"${collider}\"\n" + event;
 
-    // fix until modules works as expected
-    event = event.replaceAll("math.", "");
-    event = event.replaceAll("table.", "");
-    event = event.replaceAll("string.", "");
-    event = event.replaceAll("#", "len ");
+    JsEvalResult res = js.evaluate(event);
 
-    lua.loadString(event);
-    await lua.call(0, 0);
+    if (res.rawResult != null) {
+      print(event);
+      print(res);
+    }
   }
 
   void stopEvents() {
@@ -253,5 +258,5 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       contacts.add(contact);
     }
   }
-
 }
+

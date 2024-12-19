@@ -80,5 +80,6 @@ flutter {
 dependencies {
 
     androidTestUtil "androidx.test:orchestrator:1.4.2"
+    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-quickjs:0.3.5"
 
 }

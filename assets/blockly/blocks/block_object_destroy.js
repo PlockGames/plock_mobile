@@ -20,7 +20,7 @@ Blockly.defineBlocksWithJsonArray([
 ]);
 javascript.javascriptGenerator.forBlock[type_od] = function (block, generator) {
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
-    return `destroyObject(${object});\n`;
+    return `sendMessage("destroyObject", JSON.stringify([${object}]));\n`;
 };
 dart.dartGenerator.forBlock[type_od] = function (block, generator) {
     const object = dart.dartGenerator.valueToCode(block, 'object', dart.Order.ATOMIC) || 0;

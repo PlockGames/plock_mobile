@@ -34,7 +34,7 @@ Blockly.defineBlocksWithJsonArray([
 javascript.javascriptGenerator.forBlock[type_og] = function (block, generator) {
     const value = block.getFieldValue('value');
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
-    return [`getObjectValue(${object}, '${value}')`, javascript.Order.ATOMIC];
+    return [`sendMessage("getObjectValue", JSON.stringify([${object}, '${value}']))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_og] = function (block, generator) {
     const value = block.getFieldValue('value');

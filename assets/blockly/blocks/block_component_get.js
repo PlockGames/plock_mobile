@@ -54,7 +54,7 @@ javascript.javascriptGenerator.forBlock[type_cg] = function (block, generator) {
     const component = block.getFieldValue('component');
     const value = block.getFieldValue('value');
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
-    return [`getComponentValue(${object}, '${component}', '${value}')`, javascript.Order.ATOMIC];
+    return [`sendMessage("getComponentValue", JSON.stringify([${object}, '${component}', '${value}']))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_cg] = function (block, generator) {
     const component = block.getFieldValue('component');

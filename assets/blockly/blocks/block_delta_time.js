@@ -16,7 +16,7 @@ Blockly.defineBlocksWithJsonArray([
     }
 ]);
 javascript.javascriptGenerator.forBlock[type_dt] = function (block, generator) {
-    return [`deltaTime()`, javascript.Order.ATOMIC];
+    return [`sendMessage("deltaTime", JSON.stringify([]))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_dt] = function (block, generator) {
     return [`deltaTime()`, dart.Order.ATOMIC];

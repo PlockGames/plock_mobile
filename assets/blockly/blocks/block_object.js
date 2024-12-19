@@ -34,19 +34,19 @@ Blockly.defineBlocksWithJsonArray([
 javascript.javascriptGenerator.forBlock[type_o] = function (block, generator) {
     const object = block.getFieldValue('object');
     if (object === 'THIS_OBJECT') {
-        return ["thisObject()", javascript.Order.ATOMIC];
+        return ["sendMessage(\"thisObject\", JSON.stringify([]))", javascript.Order.ATOMIC];
     }
     else if (object === 'LAST_OBJECT') {
-        return ["lastObject()", javascript.Order.ATOMIC];
+        return ["sendMessage(\"lastObject\", JSON.stringify([]))", javascript.Order.ATOMIC];
     }
     else if (object === 'OBJECT_NAME') {
         try {
             const name = javascript.javascriptGenerator.valueToCode(block, 'name', javascript.Order.ATOMIC) || "'my_object'";
             const input = block.getInputTargetBlock('name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-                return ["objectByName(String(" + name + "))", javascript.Order.ATOMIC];
+                return ["sendMessage(\"objectByName\", JSON.stringify([String(" + name + ")]))", javascript.Order.ATOMIC];
             }
-            return ["objectByName(" + name + ")", javascript.Order.ATOMIC];
+            return ["sendMessage(\"objectByName\", JSON.stringify([" + name + "]))", javascript.Order.ATOMIC];
         }
         catch (e) {
         }
