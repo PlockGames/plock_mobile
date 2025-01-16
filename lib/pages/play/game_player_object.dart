@@ -2,14 +2,11 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter_js/flutter_js.dart';
-import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/pages/play/event_manager.dart';
-import 'package:flutter_js/flutter_js.dart';
 
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
@@ -28,9 +25,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// List of all the events components.
   List<ComponentType> eventComponents = [];
-
-  /// Lua state, used to execute events.
-  LuaState lua = LuaState.newState();
 
   /// js state, used to execute events.
   JavascriptRuntime js = getJavascriptRuntime();
@@ -80,6 +74,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     gameObject.isPhysicsDirty = false;
     updateDisplay();
     updateEvents();
+
+    // init events
+    js.evaluate("let collider = \"\";");
 
     // Execute the start events
     for (var component in eventComponents) {
@@ -152,7 +149,12 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     } else {
       if (gameObject.isPositionDirty) {
         gameObject.isPositionDirty = false;
-        body.transform.setFrom(Transform.from(Vector2(gameObject.position.x, gameObject.position.y), Rot()));
+        body.setTransform(Vector2(gameObject.position.x, gameObject.position.y), 0.0);
+        for (var contact in body.contacts) {
+          Vector2 pos = contact.bodyB.position;
+          contact.bodyB.setTransform(pos, 0.0);
+          contact.bodyB.setAwake(true);
+        }
       }
     }
   }
@@ -232,7 +234,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   /// Execute an event.
   Future<void> executeEvent(String event, String collider) async {
     // add collider to the event
-    event = "let collider = \"${collider}\"\n" + event;
+    event = "collider = \"${collider}\"\n$event";
 
     JsEvalResult res = js.evaluate(event);
 
@@ -244,7 +246,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   void stopEvents() {
     try {
-      lua.error();
+      //js.dispose();
     } catch (e) {
       print("Game interrupted");
     }

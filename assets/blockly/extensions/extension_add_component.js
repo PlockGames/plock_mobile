@@ -3,7 +3,7 @@ Blockly.Extensions.register('ext_add_component', function () {
     var thisBlock = this;
     thisBlock.setOnChange(function (changeEvent) {
         const component = thisBlock.getFieldValue('component');
-        if (component === 'ComponentEvent') {
+        if (component === 'ComponentEvent' || component === 'ComponentVariable') {
             if (thisBlock.getInput('event') === null) {
                 thisBlock.appendValueInput('event').appendField("with name").setCheck(['String', 'Number']);
             }

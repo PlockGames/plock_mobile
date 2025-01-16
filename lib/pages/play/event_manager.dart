@@ -48,6 +48,7 @@ class EventManager {
       js.onMessage("setObjectValue", (args) => _setObjectValue(game, thisObjectId, args));
       js.onMessage("spawnObject", (args) => _spawnObject(game, thisObjectId, args));
       js.onMessage("addForce", (args) => _setAddForce(game, thisObjectId, args));
+      js.onMessage("getVariableValue", (args) => _getVariableValue(game, thisObjectId, args));
   }
 
   /// Return delta time
@@ -300,7 +301,19 @@ class EventManager {
     }
   }
 
-  void test() {
+  /// Return the property of a component of an object.
+  static dynamic _getVariableValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String name = args[1];
+
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
+      return componentType.fields["value"]!.value;
+    } catch (e) {
+      print("Error(getComponentValue): $e");
+      return null;
+    }
   }
 
 }

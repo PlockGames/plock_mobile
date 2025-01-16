@@ -58,10 +58,6 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "event",
                         "ComponentEvent"
-                    ],
-                    [
-                        "variable",
-                        "ComponentVariable"
                     ]
                 ]
             },
@@ -109,8 +105,11 @@ function setComponentValue(block, generator, order) {
     }
 }
 javascript.javascriptGenerator.forBlock[type_cs] = function (block, generator) {
-    const { object, component, value, newValue } = setComponentValue(block, generator, javascript.Order.ATOMIC);
-    return `sendMessage("setComponentValue", JSON.stringify([${object}, '${component}', '${value}', ${newValue}]))\n`;
+    const { object, component, value, newValue, toText } = setComponentValue(block, generator, javascript.Order.ATOMIC);
+    if (toText) {
+        return `sendMessage("setComponentValue", JSON.stringify([${object}, '${component}', '${value}', toString(${newValue})]))\n`;
+    }
+    return `setComponentValue(${object}, '${component}', '${value}', ${newValue})\n`;
 };
 dart.dartGenerator.forBlock[type_cs] = function (block, generator) {
     const { object, component, value, newValue, toText } = setComponentValue(block, generator, dart.Order.ATOMIC);
