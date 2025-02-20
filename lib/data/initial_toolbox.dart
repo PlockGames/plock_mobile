@@ -52,6 +52,7 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_picker.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_random.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_rgb.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/math/to_number.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_event_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
@@ -62,11 +63,14 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/object
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_spawn.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/screen_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/touch_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/wait.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/text/to_string.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
@@ -102,6 +106,7 @@ final initialToolbox = Toolbox(categories: [
       name: "math",
       blocks: [
         ToolboxBlock(data: block_math_number),
+        ToolboxBlock(data: block_to_number),
         ToolboxBlock(data: block_math_arithmetic),
         ToolboxBlock(data: block_math_atan2),
         ToolboxBlock(data: block_math_modulo),
@@ -120,6 +125,7 @@ final initialToolbox = Toolbox(categories: [
       name: "text",
       blocks: [
         ToolboxBlock(data: block_text),
+        ToolboxBlock(data: block_to_string),
         ToolboxBlock(data: block_text_append),
         ToolboxBlock(data: block_text_change_case),
         ToolboxBlock(data: block_text_char_at),
@@ -177,7 +183,9 @@ final initialToolbox = Toolbox(categories: [
       blocks: [
         ToolboxBlock(data: block_object),
         ToolboxBlock(data: block_component_get),
+        ToolboxBlock(data: block_variable_get),
         ToolboxBlock(data: block_component_set),
+        ToolboxBlock(data: block_variable_set),
         ToolboxBlock(data: object_event_set),
         ToolboxBlock(data: block_object_add_component),
         ToolboxBlock(data: block_object_destroy),

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -16,7 +15,6 @@ import '../../models/games/component_type.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 import '../../models/utils/Vector2.dart' as PVector2;
-import 'game_player_object.dart';
 
 typedef EventAsync = Future<int> Function(LuaState lua);
 typedef Event = int Function(LuaState lua);
@@ -49,6 +47,7 @@ class EventManager {
       js.onMessage("spawnObject", (args) => _spawnObject(game, thisObjectId, args));
       js.onMessage("addForce", (args) => _setAddForce(game, thisObjectId, args));
       js.onMessage("getVariableValue", (args) => _getVariableValue(game, thisObjectId, args));
+      js.onMessage("setVariableValue", (args) => _setVariableValue(game, thisObjectId, args));
   }
 
   /// Return delta time
@@ -196,6 +195,23 @@ class EventManager {
     }
   }
 
+  /// Set the property of a component of an object.
+  static void _setVariableValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String name = args[1];
+    String value = args[2].toString();
+
+    print("Set variable value: $objectId, $name, $value");
+
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
+      componentType.fields["value"]!.value = value;
+    } catch (e) {
+      print("Error(setComponentValue): $e");
+    }
+  }
+
   /// Add a component to an object.
   static void _addComponent(Game game, int thisObjectId, dynamic args) {
     int objectId = args[0];
@@ -273,16 +289,17 @@ class EventManager {
   static void _setAddForce(Game game, int thisObjectId, dynamic args) {
     int objectId = args[0];
     String property = args[1];
-    double value = double.parse(args[2]);
+    double value = args[2].toDouble();
+    print("Add force: $objectId, $property, $value");
     try {
       GameObject object = game.objects.firstWhere((element) =>
       element.id == objectId);
 
       if (property.toLowerCase() == "x") {
-        object.force = PVector2.Vector2(value.toDouble(), 0);
+        object.force = PVector2.Vector2(value.toDouble(), object.force?.y ?? 0);
         game.isDirty = true;
       } else if (property.toLowerCase() == "y") {
-        object.force = PVector2.Vector2(0, value.toDouble());
+        object.force = PVector2.Vector2(object.force?.x ?? 0, value.toDouble());
         game.isDirty = true;
       }
     } catch (e) {

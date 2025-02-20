@@ -193,7 +193,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     for (var contact in contacts) {
       for (var component in eventComponents) {
         if (component.fields['trigger']!.value == 'ON_COLLISION') {
-          executeEvent(component.fields['event']!.value[0], "");
+          GamePlayerObject contactObject = contact.bodyB.userData as GamePlayerObject;
+          GameObject contactGameObject = contactObject.gameObject;
+          executeEvent(component.fields['event']!.value[0], contactGameObject.name);
         }
       }
     }
@@ -235,6 +237,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   Future<void> executeEvent(String event, String collider) async {
     // add collider to the event
     event = "collider = \"${collider}\"\n$event";
+
+    print(event);
 
     JsEvalResult res = js.evaluate(event);
 
