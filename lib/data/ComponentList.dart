@@ -6,6 +6,7 @@ import '../models/component_types/component_physics.dart';
 import '../models/component_types/component_rect.dart';
 import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
+import '../models/component_types/component_list.dart' as cp;
 import '../models/games/component_type.dart';
 
 /**
@@ -20,6 +21,7 @@ class ComponentList {
     'ComponentText': ComponentText(),
     'ComponentEvent': ComponentEvent(),
     'ComponentVariable': ComponentVariable(),
+    'ComponentList': cp.ComponentList(),
     'ComponentImage': ComponentImage(),
     'ComponentPhysics': ComponentPhysics(),
   };

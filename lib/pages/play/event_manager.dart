@@ -51,6 +51,8 @@ class EventManager {
       js.onMessage("setForce", (args) => _setSetForce(game, thisObjectId, args));
       js.onMessage("getVariableValue", (args) => _getVariableValue(game, thisObjectId, args));
       js.onMessage("setVariableValue", (args) => _setVariableValue(game, thisObjectId, args));
+      js.onMessage("getListValue", (args) => _getListValue(game, thisObjectId, args));
+      js.onMessage("setListValue", (args) => _setListValue(game, thisObjectId, args));
   }
 
   /// Return delta time
@@ -367,6 +369,38 @@ class EventManager {
     } catch (e) {
       print("Error(getComponentValue): $e");
       return null;
+    }
+  }
+
+  /// Return the list value of an object.
+  static dynamic _getListValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String name = args[1];
+
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
+      return componentType.fields["values"]!.value;
+    } catch (e) {
+      print("Error(getListValue): $e");
+      return null;
+    }
+  }
+
+  /// Set the property of a component of an object.
+  static void _setListValue(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String name = args[1];
+    String value = args[2].toString();
+
+    print("Set list value: $objectId, $name, $value");
+
+    try {
+      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
+      componentType.fields["values"]!.value = value;
+    } catch (e) {
+      print("Error(setListValue): $e");
     }
   }
 

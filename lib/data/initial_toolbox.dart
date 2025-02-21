@@ -56,6 +56,7 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/math/t
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_event_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/list_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_component.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_force.dart';
@@ -189,6 +190,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object),
         ToolboxBlock(data: block_component_get),
         ToolboxBlock(data: block_variable_get),
+        ToolboxBlock(data: block_list_get),
         ToolboxBlock(data: block_component_set),
         ToolboxBlock(data: block_variable_set),
         ToolboxBlock(data: object_event_set),

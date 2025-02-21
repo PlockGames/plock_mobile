@@ -79,11 +79,9 @@ class GamePlayer extends Forge2DGame {
         continue;
       }
 
-      print('parenting object ${object.gameObject.id} to ${object.gameObject.parent!.id}');
       GamePlayerObject? parent;
       try {
         parent = components.firstWhere((element) => (element as GamePlayerObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerObject;
-        print(parent);
       } catch (e) {
         parent = null;
       }
