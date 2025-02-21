@@ -49,6 +49,11 @@ class Game {
       instance.objects.add(object.instance());
     }
 
+    for (var asset in assets) {
+      instance.assets.add(asset.instance());
+    }
+
+
     return instance;
   }
 
@@ -62,6 +67,28 @@ class Game {
     GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
     gamePlayer!.add(newGamePlayerObject);
     gamePlayer!.components.add(newGamePlayerObject);
+    gamePlayer!.world.add(newGamePlayerObject);
+    objectCount++;
+    isDirty = true;
+    return newObject.id;
+  }
+
+  int spawnAsset(String assetName, String name) {
+    if (gamePlayer == null) {
+      throw Exception("Game player not set. Do not use outside of game player!");
+    }
+
+    GameObject asset = assets.firstWhere((element) => element.name == assetName);
+
+    GameObject newObject = asset.instance();
+    newObject.id = objectCount;
+    newObject.name = name;
+
+    objects.add(newObject);
+    GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
+    gamePlayer!.add(newGamePlayerObject);
+    gamePlayer!.components.add(newGamePlayerObject);
+    gamePlayer!.world.add(newGamePlayerObject);
     objectCount++;
     isDirty = true;
     return newObject.id;

@@ -35,7 +35,11 @@ class _EditComponentPageState extends State<EditComponentPage> {
 
     for (var pair in widget.component.fields.entries) {
       if (widget.updateComponent != null) {
+        Function? update = pair.value.onUpdate;
         pair.value.onUpdate = () {
+          if (update != null) {
+            update();
+          }
           widget.updateComponent!();
         };
       }

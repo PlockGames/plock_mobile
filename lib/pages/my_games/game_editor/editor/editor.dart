@@ -78,7 +78,7 @@ class Editor extends Forge2DGame {
 
   ObjectComponent spawnAsset(GameObject gameObject) {
     final gameObjectInstance = gameObject.instance();
-    gameObjectInstance.position = Plock.Vector2(0, 0);
+    gameObjectInstance.id = game.objectCount;
     final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, gameObject: gameObjectInstance);
     world.add(object);
     objects.add(object);

@@ -45,6 +45,7 @@ class EventManager {
       js.onMessage("getObjectValue", (args) => _getObjectValue(game, thisObjectId, args));
       js.onMessage("setObjectValue", (args) => _setObjectValue(game, thisObjectId, args));
       js.onMessage("spawnObject", (args) => _spawnObject(game, thisObjectId, args));
+      js.onMessage("spawnAsset", (args) => _spawnAsset(game, thisObjectId, args));
       js.onMessage("addForce", (args) => _setAddForce(game, thisObjectId, args));
       js.onMessage("getVariableValue", (args) => _getVariableValue(game, thisObjectId, args));
       js.onMessage("setVariableValue", (args) => _setVariableValue(game, thisObjectId, args));
@@ -315,6 +316,18 @@ class EventManager {
       game.spawnObject(name);
     } catch (e) {
       print("Error(spawnObject): $e");
+    }
+  }
+
+  /// Spawn an asset.
+  static void _spawnAsset(Game game, int thisObjectId, dynamic args) {
+    String name = args[0];
+    String asset = args[1];
+
+    try {
+      game.spawnAsset(asset, name);
+    } catch (e) {
+      print("Error(spawnAsset): $e");
     }
   }
 

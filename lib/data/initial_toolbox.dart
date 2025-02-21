@@ -75,6 +75,8 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
 
+import '../models/component_fields/blocky/custom_blocks/objects/asset_spawn.dart';
+
 
 /// The initial toolbox of the blockly.
 ///
@@ -192,6 +194,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object_get),
         ToolboxBlock(data: block_object_set),
         ToolboxBlock(data: block_object_spawn),
+        ToolboxBlock(data: block_asset_spawn),
         ToolboxBlock(data: block_object_add_force)
       ]
   ),
