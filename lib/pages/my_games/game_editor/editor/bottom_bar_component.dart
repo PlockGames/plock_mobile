@@ -5,6 +5,8 @@ import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 
+import '../../../../models/games/game_object.dart';
+
 /// The bottom bar of the editor.
 ///
 /// Contains buttons to add, delete, edit, upload, ...
@@ -71,7 +73,9 @@ class BottomBarComponent extends PositionComponent {
 
     editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 2, 0),
         tapAction: () {
-          bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject());
+          List<dynamic> objects = bottomBarCallbacks.getObjects().map((e) => e.gameObject).toList();
+          List<GameObject> gameObjects = objects.cast<GameObject>();
+          bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject(), gameObjects);
     });
 
     // aligned right

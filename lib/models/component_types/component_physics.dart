@@ -80,7 +80,7 @@ class ComponentPhysics extends ComponentType {
         parent.gameObject.isPhysicsDirty = true;
       }
 
-      parent.renderBody = true;
+      parent.renderBody = false;
 
       return parent;
   }

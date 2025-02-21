@@ -38,13 +38,16 @@ class _EditorPageState extends State<EditorPage> {
   _EditorPageState();
 
   /// Open the object editor.
-  Function(ObjectComponent object) openEditor(BuildContext context) {
-    return (ObjectComponent object) {
+  Function(ObjectComponent object, List<GameObject> objects) openEditor(BuildContext context) {
+
+    return (ObjectComponent object, List<GameObject> objects) {
+
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => ObjectEditorPage(
                     object: object,
+                    objects: objects,
                   )));
     };
   }
@@ -106,7 +109,7 @@ class _EditorPageState extends State<EditorPage> {
 
   Function(List<ObjectComponent>) openObjects(BuildContext context) {
     return (List<ObjectComponent> objects) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context),)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context))));
     };
   }
 

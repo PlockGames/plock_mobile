@@ -67,8 +67,29 @@ class GamePlayer extends Forge2DGame {
     for (var object in game.objects) {
       Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
       components.add(newComponent);
-      add(newComponent);
-      world.add(newComponent);
+    }
+
+    // set parenting for all the objects
+    for (var comp in components) {
+      GamePlayerObject object = comp as GamePlayerObject;
+
+      if (object.gameObject.parent == null) {
+        add(comp);
+        world.add(comp);
+        continue;
+      }
+
+      print('parenting object ${object.gameObject.id} to ${object.gameObject.parent!.id}');
+      GamePlayerObject? parent;
+      try {
+        parent = components.firstWhere((element) => (element as GamePlayerObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerObject;
+        print(parent);
+      } catch (e) {
+        parent = null;
+      }
+      if (parent != null) {
+        parent.add(comp);
+      }
     }
   }
 
@@ -80,12 +101,20 @@ class GamePlayer extends Forge2DGame {
     // If game is dirty, update all the components and objects
     if (game.isDirty) {
       game.isDirty = false;
-      for (var component in components) {
-        GamePlayerObject object = component as GamePlayerObject;
-        object.updateDisplay();
-        object.updatePhysic();
-        object.updateEvents();
-        object.updateObjectData();
+      for (int i = 0; i < components.length; i++) {
+        GamePlayerObject object = components[i] as GamePlayerObject;
+
+        if (!game.objects.contains(object.gameObject)) {
+          components.remove(object);
+          world.remove(object);
+          i--;
+        } else {
+          object.updateDisplay();
+          object.updatePhysic();
+          object.updateEvents();
+          object.updateObjectData();
+        }
+
       }
     }
   }

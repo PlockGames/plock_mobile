@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import '../../../models/games/component_type.dart';
 import 'edit_component_page.dart';
+import 'object_select_parent_page.dart';
 
 /// The page to edit an object.
 class ObjectEditorPage extends StatefulWidget {
 
   /// The object to edit.
-  late ObjectComponent object;
+  final ObjectComponent object;
 
-  ObjectEditorPage({super.key, required this.object});
+  /// All the objects of the game.
+  final List<GameObject> objects;
+
+  ObjectEditorPage({super.key, required this.object, required this.objects});
 
   @override
   State<StatefulWidget> createState() {
@@ -53,6 +58,18 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
       widget.object.gameObject.type = GameObjectType.object;
       widget.object.gameObject.assetId = null;
     });
+  }
+
+  void setParent() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            ObjectSelectParentPage(
+              objects: widget.objects,
+              object: widget.object,
+            ),
+      ),
+    );
   }
 
   @override
@@ -111,6 +128,8 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                     label: Text('Name'),
                   ),
                 ),
+                const SizedBox(height: 10),
+                OutlinedButton(onPressed: setParent, child: Text(widget.object.gameObject.parent != null ? "Parent: ${widget.object.gameObject.parent!.name}" : "Parent: None")),
                 const SizedBox(height: 40),
                 for (var component in widget.object.gameObject.components)
                   Row(

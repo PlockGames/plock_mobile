@@ -3,7 +3,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.
 
 class BottomBarCallbacks {
   final Function(ObjectComponent? object) selectObject;
-  final Function(ObjectComponent object) openEditor;
+  final Function(ObjectComponent object, List<GameObject> objects) openEditor;
   final ObjectComponent Function()  addGameObject;
   final Function(ObjectComponent object) updateObject;
   final Function(ObjectComponent object) removeGameObject;

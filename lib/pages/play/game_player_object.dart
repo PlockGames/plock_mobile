@@ -81,7 +81,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     // Execute the start events
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_START') {
-        executeEvent(component.fields['event']!.value[0], "");
+        executeEvent(component.fields['event']!.value[0], -1, "");
       }
     }
 
@@ -129,6 +129,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     if (gameObject.force != null) {
       body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
       gameObject.force = null;
+    }
+
+    if (gameObject.velocity != null) {
+      body.linearVelocity = Vector2(gameObject.velocity!.x, gameObject.velocity!.y);
+      gameObject.velocity = null;
     }
 
   }
@@ -187,16 +192,17 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_UPDATE') {
 
-        executeEvent(component.fields['event']!.value[0], "");
+        executeEvent(component.fields['event']!.value[0], -1, "");
       }
     }
 
     for (var contact in contacts) {
       for (var component in eventComponents) {
         if (component.fields['trigger']!.value == 'ON_COLLISION') {
-          GamePlayerObject contactObject = contact.bodyB.userData as GamePlayerObject;
-          GameObject contactGameObject = contactObject.gameObject;
-          executeEvent(component.fields['event']!.value[0], contactGameObject.name);
+          GamePlayerObject contactObjectA = contact.bodyB.userData as GamePlayerObject;
+          GamePlayerObject contactObjectB = contact.bodyA.userData as GamePlayerObject;
+          GameObject contactGameObject = contactObjectA.gameObject.id == gameObject.id ? contactObjectB.gameObject : contactObjectA.gameObject;
+          executeEvent(component.fields['event']!.value[0], contactGameObject.id, contactGameObject.name);
         }
       }
     }
@@ -208,7 +214,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     for (var component in eventComponents) {
       if (component.fields['trigger']!.value == 'ON_TAP') {
         plockGame.lastTouchPosition = Vector2(info.localPosition.x, info.localPosition.y);
-        executeEvent(component.fields['event']!.value[0], "");
+        executeEvent(component.fields['event']!.value[0], -1, "");
       }
     }
     return true;
@@ -223,7 +229,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
         double x = event.canvasStartPosition.x + event.canvasDelta.x;
         double y = event.canvasStartPosition.y + event.canvasDelta.y;
         plockGame.lastTouchPosition = Vector2(x, y);
-        executeEvent(component.fields['event']!.value[0], "");
+        executeEvent(component.fields['event']!.value[0], -1, "");
       }
     }
   }
@@ -235,16 +241,16 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event, String collider) async {
+  Future<void> executeEvent(String event, int collider, String colliderName) async {
     // add collider to the event
-    event = "collider = \"${collider}\"\n$event";
+    event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
 
-    print(event);
+    //print(event);
 
     JsEvalResult res = js.evaluate(event);
 
     if (res.rawResult != null) {
-      print(event);
+      //print(event);
       print(res);
     }
   }

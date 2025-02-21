@@ -91,8 +91,9 @@ class Editor extends Forge2DGame {
     for (var object in objects) {
       if (object.gameObject.type == gameObject.type) {
         if (object.gameObject.assetId == gameObject.assetId) {
-          for (var component in object.gameObject.components) {
-            object.gameObject.components.remove(component);
+          for (int i = 0; i < object.gameObject.components.length; i++) {
+            object.gameObject.components.remove(object.gameObject.components[i]);
+            i--;
           }
           for (var component in gameObject.components) {
             object.gameObject.components.add(component.instance());

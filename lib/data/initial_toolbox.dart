@@ -62,10 +62,12 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/object
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_destroy.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set_force.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_spawn.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider_name.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/screen_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/touch_get.dart';
@@ -175,6 +177,7 @@ final initialToolbox = Toolbox(categories: [
       blocks: [
         ToolboxBlock(data: block_delta_time),
         ToolboxBlock(data: block_collider),
+        ToolboxBlock(data: block_collider_name),
         ToolboxBlock(data: block_screen_get),
         ToolboxBlock(data: block_wait),
         ToolboxBlock(data: block_touch_get)
@@ -195,7 +198,8 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object_set),
         ToolboxBlock(data: block_object_spawn),
         ToolboxBlock(data: block_asset_spawn),
-        ToolboxBlock(data: block_object_add_force)
+        ToolboxBlock(data: block_object_add_force),
+        ToolboxBlock(data: block_object_set_force),
       ]
   ),
   ToolboxCategory(

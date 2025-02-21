@@ -9,7 +9,7 @@ Blockly.defineBlocksWithJsonArray([
                 "type": "input_dummy"
             },
         ],
-        "output": "String",
+        "output": "Number",
         "colour": 230,
         "tooltip": "get collider data",
         "helpUrl": ""

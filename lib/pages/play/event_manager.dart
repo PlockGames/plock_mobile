@@ -26,6 +26,7 @@ class EventManager {
   ///
   /// [lua] The lua vm to register the events to.
   /// [game] The game data to execute the events on.
+  /// [thisObjectId] The id of the object that the events are executed on.
   static void registerEvents(JavascriptRuntime js, Game game, int thisObjectId) {
       // Colour
       js.onMessage("rgbToColor", (args) => _rgbToColor(game, thisObjectId, args));
@@ -47,6 +48,7 @@ class EventManager {
       js.onMessage("spawnObject", (args) => _spawnObject(game, thisObjectId, args));
       js.onMessage("spawnAsset", (args) => _spawnAsset(game, thisObjectId, args));
       js.onMessage("addForce", (args) => _setAddForce(game, thisObjectId, args));
+      js.onMessage("setForce", (args) => _setSetForce(game, thisObjectId, args));
       js.onMessage("getVariableValue", (args) => _getVariableValue(game, thisObjectId, args));
       js.onMessage("setVariableValue", (args) => _setVariableValue(game, thisObjectId, args));
   }
@@ -240,6 +242,7 @@ class EventManager {
     try {
       GameObject object = game.objects.firstWhere((element) => element.id == objectId);
       game.objects.remove(object);
+      game.isDirty = true;
     } catch (e) {
       print("Error(destroyObject): $e");
     }
@@ -291,7 +294,7 @@ class EventManager {
     int objectId = args[0];
     String property = args[1];
     double value = args[2].toDouble();
-    print("Add force: $objectId, $property, $value");
+    //print("Add force: $objectId, $property, $value");
     try {
       GameObject object = game.objects.firstWhere((element) =>
       element.id == objectId);
@@ -301,6 +304,27 @@ class EventManager {
         game.isDirty = true;
       } else if (property.toLowerCase() == "y") {
         object.force = PVector2.Vector2(object.force?.x ?? 0, value.toDouble());
+        game.isDirty = true;
+      }
+    } catch (e) {
+      print("Error(setObjectValue): $e");
+    }
+  }
+
+  static void _setSetForce(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String property = args[1];
+    double value = args[2].toDouble();
+    //print("Set force: $objectId, $property, $value");
+    try {
+      GameObject object = game.objects.firstWhere((element) =>
+      element.id == objectId);
+
+      if (property.toLowerCase() == "x") {
+        object.velocity = PVector2.Vector2(value.toDouble(), object.velocity?.y ?? 0);
+        game.isDirty = true;
+      } else if (property.toLowerCase() == "y") {
+        object.velocity = PVector2.Vector2(object.velocity?.x ?? 0, value.toDouble());
         game.isDirty = true;
       }
     } catch (e) {

@@ -23,6 +23,9 @@ class GameObject {
   /// the id of the asset, if the object is an asset
   int? assetId;
 
+  /// The parent of the object, if any.
+  GameObject? parent;
+
   /// is position dirty
   bool isPositionDirty = false;
 
@@ -32,6 +35,9 @@ class GameObject {
   /// set force
   Vector2? force;
 
+  /// set velocity
+  Vector2? velocity;
+
   GameObject({required this.id, required this.name});
 
   /// Return a copy of the object
@@ -40,6 +46,7 @@ class GameObject {
     instance.position = Vector2(position.x, position.y);
     instance.type = type;
     instance.assetId = assetId;
+    instance.parent = parent;
     for (var component in components) {
       instance.components.add(component.instance());
     }

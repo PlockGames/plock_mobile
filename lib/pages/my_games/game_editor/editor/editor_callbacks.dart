@@ -3,7 +3,7 @@ import 'package:plock_mobile/models/games/game_object.dart';
 import 'object_component.dart';
 
 class EditorCallbacks {
-  final Function(ObjectComponent object) openEditor;
+  final Function(ObjectComponent object, List<GameObject> objects) openEditor;
   final Function(GameObject gameObject) addGameObject;
   final Function(GameObject gameObject) removeGameObject;
   final Function(GameObject gameObject) updateGameObject;
