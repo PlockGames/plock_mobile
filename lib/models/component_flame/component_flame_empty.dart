@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -5,6 +6,8 @@ import 'package:flame/events.dart';
 import 'package:flame_forge2d/body_component.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
+
+import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
 class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
@@ -21,7 +24,7 @@ class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallb
   final Function onDragCancelCallback;
 
   /// The linked component, only with game player
-  final ComponentType? componentType;
+  final ComponentType componentType;
 
   /// The color of the rect.
   Color color;
@@ -36,7 +39,7 @@ class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallb
     required this.color,
     position,
     size,
-    this.componentType
+    required this.componentType
   }) {
     anchor = Anchor.center;
     position = Vector2(0, 0);
@@ -71,7 +74,7 @@ class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallb
   }
 
   @override
-  ComponentType? getComponentType() {
+  ComponentType getComponentType() {
     return componentType;
   }
 

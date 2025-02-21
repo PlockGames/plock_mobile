@@ -54,6 +54,13 @@ const valuesGetTypeList = {
             "VALUE",
             actionGetText
         ]
+    ],
+    "ComponentImage": [
+        [
+            "texture",
+            "TEXTURE",
+            actionGetText
+        ]
     ]
 };
 function actionGetNumber(thisBlock) {

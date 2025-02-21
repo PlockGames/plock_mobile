@@ -18,7 +18,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   late GameObject gameObject;
 
   /// The game data.
-  late Game plockGame;
+  final Game plockGame;
 
   /// List of all the components that can be displayed.
   List<Component> displayComponents = [];
@@ -88,8 +88,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   /// Update the display components.
-  void updateDisplay() {
-    List<ComponentType> alreadyDisplayed = [];
+  Future<void> updateDisplay() async {
+    List<String> alreadyDisplayed = [];
 
     // Update the components that are already instancied
     for (var component in this.children) {
@@ -99,15 +99,16 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
           continue;
         }
         ComponentType componentType = componentFlame.getComponentType()!;
-        this.bodyDef = componentType.updateDisplay(component, this).bodyDef;
-        alreadyDisplayed.add(componentFlame.getComponentType()!);
+        this.bodyDef = (await componentType.updateDisplay(component, this)).bodyDef;
+        alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
       }
     }
 
     // Add the new components
     for (var component in gameObject.components) {
-        if (!alreadyDisplayed.contains(component)) {
+        if (!alreadyDisplayed.contains(component.uuid)) {
           Component? comp = component.getGameDisplayComponent(
+            plockGame.medias,
             onTapUp,
             onDragStart,
             onDragUpdate,
@@ -120,7 +121,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
               continue;
             }
             ComponentType componentType = componentFlame.getComponentType()!;
-            this.bodyDef = componentType.updateDisplay(comp, this).bodyDef;
+            this.bodyDef = (await componentType.updateDisplay(comp, this)).bodyDef;
           }
         }
     }

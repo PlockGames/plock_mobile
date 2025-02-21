@@ -1,16 +1,23 @@
 import 'dart:convert';
 
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';
+
+import 'media.dart';
 
 /// A component that can be added to a game object.
 class ComponentType {
   /// The fields (or values) of the component.
   Map<String, ComponentField> fields = Map<String, ComponentField>.identity();
 
-  ComponentType();
+  ComponentType() {
+    uuid = UniqueKey().toString();
+  }
+
+  String uuid = "";
 
   /// The type of the component.
   String get type => 'Component';
@@ -32,6 +39,7 @@ class ComponentType {
 
   /// Return the flame component to display the component in the editor.
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -42,6 +50,7 @@ class ComponentType {
 
   /// Return the flame component to display the component in the game.
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -50,7 +59,7 @@ class ComponentType {
     return null;
   }
 
-  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     return parent;
   }
 

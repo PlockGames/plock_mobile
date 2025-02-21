@@ -6,6 +6,7 @@ import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
+import 'package:plock_mobile/models/games/game.dart' as Plock;
 import 'package:plock_mobile/models/games/game_object.dart';
 
 import '../../../../models/component_types/component_rect.dart';
@@ -40,11 +41,15 @@ class ObjectComponent extends BodyComponent
   /// List of display component that are displayed when the object is selected.
   List<ShapeComponent> selectComponents = [];
 
+  /// The game the object comes from.
+  final Plock.Game plockGame;
+
   ObjectComponent({
     required id,
     required this.selectObject,
     required this.isObjectSelected,
     required this.updateObject,
+    required this.plockGame,
     GameObject? gameObject
   })
   {
@@ -113,6 +118,7 @@ class ObjectComponent extends BodyComponent
     // Fill the display component list with updated components
     for (var component in _gameObject.components) {
       DisplayComponents displayComponent = component.getDisplayComponent(
+          plockGame.medias,
           onTapUpCallback,
           onDragStartCallback,
           onDragUpdateCallback,

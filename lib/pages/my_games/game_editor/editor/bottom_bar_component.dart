@@ -27,6 +27,8 @@ class BottomBarComponent extends PositionComponent {
   late BottomBarbuttonComponent objectsBtn;
   /// the button to access all the assets.
   late BottomBarbuttonComponent assetsBtn;
+  /// the button to access all medias
+  late BottomBarbuttonComponent mediasBtn;
 
   /// The SVG instance.
   ///
@@ -90,6 +92,11 @@ class BottomBarComponent extends PositionComponent {
           bottomBarCallbacks.openAssets(bottomBarCallbacks.spawnAsset, bottomBarCallbacks.updateAsset);
     });
 
+    mediasBtn = BottomBarbuttonComponent('svg/folder.svg', Vector2(screenWidth - iconWidth * 4, 0),
+        tapAction: () {
+          bottomBarCallbacks.openMedias();
+    });
+
     // Add the components to the bottom bar
     add(background);
     add(addBtn);
@@ -98,6 +105,7 @@ class BottomBarComponent extends PositionComponent {
     add(uploadBtn);
     add(objectsBtn);
     add(assetsBtn);
+    add(mediasBtn);
   }
 
   @override

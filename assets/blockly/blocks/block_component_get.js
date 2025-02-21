@@ -32,6 +32,10 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "variable",
                         "ComponentVariable"
+                    ],
+                    [
+                        "image",
+                        "ComponentImage"
                     ]
                 ]
             },

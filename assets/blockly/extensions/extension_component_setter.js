@@ -54,6 +54,13 @@ const valuesSetTypeList = {
             "VALUE",
             actionSetText
         ]
+    ],
+    "ComponentImage": [
+        [
+            "texture",
+            "TEXTURE",
+            actionSetText
+        ]
     ]
 };
 function actionRemoveAll(thisBlock, types) {

@@ -9,6 +9,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a rectangle.
 class ComponentRect extends ComponentType {
@@ -35,6 +36,7 @@ class ComponentRect extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -54,7 +56,8 @@ class ComponentRect extends ComponentType {
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
-      onDragUpdateCallback: onDragUpdateCallback
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
 
     RectangleComponent select = RectangleComponent(
@@ -74,7 +77,7 @@ class ComponentRect extends ComponentType {
   }
 
   @override
-  Component? getGameDisplayComponent( onTapeUpCallback, onDragStartCallback, onDragUpdateCallback, onDragEndCallback, onDragCancelCallback) {
+  Component? getGameDisplayComponent(List<Media> medias, onTapeUpCallback, onDragStartCallback, onDragUpdateCallback, onDragEndCallback, onDragCancelCallback) {
     Vector2 size = Vector2(
       fields["width"]!.value.toDouble(),
       fields["height"]!.value.toDouble(),
@@ -94,7 +97,7 @@ class ComponentRect extends ComponentType {
   }
 
   @override
-  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     if (component is ComponentFlameRect) {
       component.width = fields["width"]!.value.toDouble();
       component.height = fields["height"]!.value.toDouble();

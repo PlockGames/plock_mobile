@@ -36,6 +36,10 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "color",
                         "COLOR",
+                    ],
+                    [
+                        "texture",
+                        "TEXTURE",
                     ]
                 ]
             },
@@ -58,6 +62,10 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "event",
                         "ComponentEvent"
+                    ],
+                    [
+                        "image",
+                        "ComponentImage"
                     ]
                 ]
             },
@@ -109,7 +117,7 @@ javascript.javascriptGenerator.forBlock[type_cs] = function (block, generator) {
     if (toText) {
         return `sendMessage("setComponentValue", JSON.stringify([${object}, '${component}', '${value}', toString(${newValue})]))\n`;
     }
-    return `setComponentValue(${object}, '${component}', '${value}', ${newValue})\n`;
+    return `sendMessage("setComponentValue", JSON.stringify([${object}, '${component}', '${value}', ${newValue}]))\n`;
 };
 dart.dartGenerator.forBlock[type_cs] = function (block, generator) {
     const { object, component, value, newValue, toText } = setComponentValue(block, generator, dart.Order.ATOMIC);

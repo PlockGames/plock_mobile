@@ -11,6 +11,7 @@ class EditorCallbacks {
   final Function() goBack;
   final Function(List<ObjectComponent>) openObjects;
   final Function(Function(GameObject), Function(GameObject)) openAssets;
+  final Function() openMedias;
 
   EditorCallbacks({
     required this.openEditor,
@@ -21,5 +22,6 @@ class EditorCallbacks {
     required this.goBack,
     required this.openObjects,
     required this.openAssets,
+    required this.openMedias,
   });
 }

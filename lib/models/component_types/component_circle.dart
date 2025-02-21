@@ -8,6 +8,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a circle.
 class ComponentCircle extends ComponentType {
@@ -33,6 +34,7 @@ class ComponentCircle extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -50,7 +52,8 @@ class ComponentCircle extends ComponentType {
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
-      onDragUpdateCallback: onDragUpdateCallback
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
 
     CircleComponent select = CircleComponent(
@@ -71,6 +74,7 @@ class ComponentCircle extends ComponentType {
 
   @override
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -93,7 +97,7 @@ class ComponentCircle extends ComponentType {
   }
 
   @override
-  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     if (component is ComponentFlameCircle) {
       component.radius = fields["radius"]!.value.toDouble();
       component.paint = Paint()..color = fields["color"]!.value;

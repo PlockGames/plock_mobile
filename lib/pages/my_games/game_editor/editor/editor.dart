@@ -54,7 +54,7 @@ class Editor extends Forge2DGame {
 
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
-    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
+    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, plockGame: game);
     world.add(object);
     objects.add(object);
     game.objectCount++;
@@ -79,7 +79,7 @@ class Editor extends Forge2DGame {
   ObjectComponent spawnAsset(GameObject gameObject) {
     final gameObjectInstance = gameObject.instance();
     gameObjectInstance.id = game.objectCount;
-    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, gameObject: gameObjectInstance);
+    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, gameObject: gameObjectInstance, plockGame: game);
     world.add(object);
     objects.add(object);
     game.objectCount++;
@@ -129,7 +129,8 @@ class Editor extends Forge2DGame {
         openObjects: editorCallbacks.openObjects,
         openAssets: editorCallbacks.openAssets,
         spawnAsset: spawnAsset,
-        updateAsset: updateAsset
+        updateAsset: updateAsset,
+        openMedias: editorCallbacks.openMedias
     );
 
     final bottomBar = BottomBarComponent(
@@ -149,7 +150,7 @@ class Editor extends Forge2DGame {
 
     // Generate the object components of the game
     game.objects.forEach((element) {
-      ObjectComponent objectComponent = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject);
+      ObjectComponent objectComponent = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject, plockGame: game);
       add(objectComponent);
       world.add(objectComponent);
       objects.add(objectComponent);

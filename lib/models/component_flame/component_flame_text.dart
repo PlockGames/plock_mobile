@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -5,6 +6,8 @@ import 'package:flame/events.dart';
 import 'package:flame/text.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
+
+import '../games/media.dart';
 
 /// A flame component used in the editor to represent a text component.
 class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
@@ -21,7 +24,7 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
   final Function onDragCancelCallback;
 
   /// The linked component, only with game player
-  final ComponentType? componentType;
+  final ComponentType componentType;
 
 
   ComponentFlameText({
@@ -33,7 +36,7 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
     required Color color,
     super.position,
     super.text,
-    this.componentType
+    required this.componentType
   }) {
     this.textRenderer = TextPaint(
       style: TextStyle(
@@ -71,7 +74,7 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
   }
 
   @override
-  ComponentType? getComponentType() {
+  ComponentType getComponentType() {
     return componentType;
   }
 

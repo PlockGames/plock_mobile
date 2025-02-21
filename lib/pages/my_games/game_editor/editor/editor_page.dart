@@ -10,6 +10,7 @@ import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
 import '../assets_page.dart';
+import '../medias_page.dart';
 import '../objects_page.dart';
 import 'Editor.dart';
 
@@ -115,6 +116,12 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
+  Function() openMedias(BuildContext context) {
+    return () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => MediasPage(game: widget.game)));
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     EditorCallbacks callbacks = EditorCallbacks(
@@ -126,6 +133,7 @@ class _EditorPageState extends State<EditorPage> {
       goBack: goBack(context),
       openObjects: openObjects(context),
       openAssets: openAssets(context),
+      openMedias: openMedias(context),
     );
 
     return Column(

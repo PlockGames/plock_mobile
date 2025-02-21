@@ -9,6 +9,7 @@ import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a text.
 class ComponentText extends ComponentType {
@@ -35,6 +36,7 @@ class ComponentText extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -51,7 +53,8 @@ class ComponentText extends ComponentType {
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
-      onDragUpdateCallback: onDragUpdateCallback
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
 
     RectangleComponent select = RectangleComponent(
@@ -69,6 +72,7 @@ class ComponentText extends ComponentType {
 
   @override
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -91,7 +95,7 @@ class ComponentText extends ComponentType {
   }
 
   @override
-  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     if (component is ComponentFlameText) {
       component.text = fields["text"]!.value;
       component.textRenderer = TextPaint(

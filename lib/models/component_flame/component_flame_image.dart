@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/flame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
+
+import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
 class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
@@ -24,7 +24,7 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
   final Function onDragCancelCallback;
 
   /// The linked component, only with game player
-  final ComponentType? componentType;
+  final ComponentType componentType;
 
   /// The texture of the image.
   XFile? image;
@@ -40,12 +40,13 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
     super.position,
-    super.scale,
+    super.size,
     this.image,
-    this.componentType,
+    required this.componentType,
     required this.initScale,
   }) {
     anchor = Anchor.center;
+    super.size /= 30.0;
   }
 
   @override
@@ -95,7 +96,7 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
   }
 
   @override
-  ComponentType? getComponentType() {
+  ComponentType getComponentType() {
     return componentType;
   }
 

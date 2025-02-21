@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flame/components.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/models/games/media.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import '../../pages/play/game_player.dart';
@@ -18,6 +20,9 @@ class Game {
 
   /// The assets of the game.
   List<GameObject> assets = List<GameObject>.empty(growable: true);
+
+  /// The medias of the game.
+  List<Media> medias = List<Media>.empty(growable: true);
 
   /// If the game is dirty.
   bool isDirty = false;
@@ -53,6 +58,9 @@ class Game {
       instance.assets.add(asset.instance());
     }
 
+    for (var media in medias) {
+      instance.medias.add(media.instance());
+    }
 
     return instance;
   }

@@ -12,6 +12,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a rectangle.
 class ComponentPhysics extends ComponentType {
@@ -41,13 +42,15 @@ class ComponentPhysics extends ComponentType {
   }
 
   @override
-  DisplayComponents getDisplayComponent(onTapeUpCallback, onDragStartCallback,
+  DisplayComponents getDisplayComponent(
+      List<Media> medias,
+      onTapeUpCallback, onDragStartCallback,
       onDragUpdateCallback, onDragEndCallback, onDragCancelCallback) {
     return DisplayComponents(display: null, select: null);
   }
 
   @override
-  Component? getGameDisplayComponent(onTapeUpCallback, onDragStartCallback,
+  Component? getGameDisplayComponent(List<Media> medias,onTapeUpCallback, onDragStartCallback,
       onDragUpdateCallback, onDragEndCallback, onDragCancelCallback) {
 
     return ComponentFlameEmpty(
@@ -62,7 +65,7 @@ class ComponentPhysics extends ComponentType {
   }
 
   @override
-  GamePlayerObject updateDisplay(Component? component, GamePlayerObject parent) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
       String type = fields["type"]!.value.toString();
       BodyType bodyType = BodyType.static;
 

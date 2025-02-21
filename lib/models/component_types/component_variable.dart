@@ -8,6 +8,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 import '../component_fields/component_field_color.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that contain an object level variable
 class ComponentVariable extends ComponentType {
@@ -34,6 +35,7 @@ class ComponentVariable extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -45,6 +47,7 @@ class ComponentVariable extends ComponentType {
 
   @override
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
