@@ -4,7 +4,6 @@ import 'package:flame/components.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 /// The bottom bar of the editor.
 ///
@@ -24,12 +23,17 @@ class BottomBarComponent extends PositionComponent {
   late BottomBarbuttonComponent editBtn;
   /// The button to upload the game.
   late BottomBarbuttonComponent uploadBtn;
+  /// The button to access all the objects.
+  late BottomBarbuttonComponent objectsBtn;
+  /// the button to access all the assets.
+  late BottomBarbuttonComponent assetsBtn;
 
   /// The SVG instance.
   ///
   /// Used to load the SVG files.
   late Svg svgInstance;
 
+  /// The constructor.
   BottomBarComponent({
     required this.screenSize,
     required this.bottomBarCallbacks,
@@ -50,24 +54,40 @@ class BottomBarComponent extends PositionComponent {
         paint: Paint()..color = const Color(0xFF000000));
 
     // Create the buttons
+    const iconWidth = 40.0;
+
+    // aligned left
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
           var newObject = bottomBarCallbacks.addGameObject();
     });
 
-    deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(60, 0),
+    deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(iconWidth, 0),
         tapAction: () {
           bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
     });
 
-    editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(120, 0),
+    editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 2, 0),
         tapAction: () {
           bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject());
     });
 
-    uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(300, 0),
+    // aligned right
+    double screenWidth = screenSize.x;
+
+    uploadBtn = BottomBarbuttonComponent('svg/upload.svg', Vector2(screenWidth - iconWidth, 0),
         tapAction: () {
           bottomBarCallbacks.testGame();
+    });
+
+    objectsBtn = BottomBarbuttonComponent('svg/objects.svg', Vector2(screenWidth - iconWidth * 2, 0),
+        tapAction: () {
+          bottomBarCallbacks.openObjects(bottomBarCallbacks.getObjects());
+    });
+
+    assetsBtn = BottomBarbuttonComponent('svg/assets.svg', Vector2(screenWidth - iconWidth * 3, 0),
+        tapAction: () {
+          bottomBarCallbacks.openAssets(bottomBarCallbacks.spawnAsset, bottomBarCallbacks.updateAsset);
     });
 
     // Add the components to the bottom bar
@@ -76,6 +96,8 @@ class BottomBarComponent extends PositionComponent {
     add(deleteBtn);
     add(editBtn);
     add(uploadBtn);
+    add(objectsBtn);
+    add(assetsBtn);
   }
 
   @override

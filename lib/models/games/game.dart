@@ -16,6 +16,9 @@ class Game {
   /// The objects in the game.
   List<GameObject> objects = List<GameObject>.empty(growable: true);
 
+  /// The assets of the game.
+  List<GameObject> assets = List<GameObject>.empty(growable: true);
+
   /// If the game is dirty.
   bool isDirty = false;
 

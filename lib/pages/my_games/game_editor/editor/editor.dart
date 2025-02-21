@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
-import 'package:flame/game.dart';
+import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
@@ -9,11 +9,16 @@ import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
+import '../../../../models/utils/Vector2.dart' as Plock;
+
 /// The game editor.
 class Editor extends Forge2DGame {
 
   /// The currently selected object.
   ObjectComponent? selectedObject;
+
+  /// The list of all the objects in the game.
+  List<ObjectComponent> objects = [];
 
   /// All the callback coming from the widget editor
   final EditorCallbacks editorCallbacks;
@@ -23,6 +28,7 @@ class Editor extends Forge2DGame {
 
   /// The text component to display the name of the selected object.
   late TextComponent selectedObjectName;
+
 
   Editor({
     required this.game,
@@ -49,8 +55,8 @@ class Editor extends Forge2DGame {
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
     final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject);
-    //add(object);
     world.add(object);
+    objects.add(object);
     game.objectCount++;
     editorCallbacks.addGameObject(object.gameObject);
     return object;
@@ -59,11 +65,42 @@ class Editor extends Forge2DGame {
   void removeGameObjectCallback(ObjectComponent object) {
     editorCallbacks.removeGameObject(object.gameObject);
     world.remove(object);
-    //remove(object);
+    objects.remove(object);
   }
 
   ObjectComponent? getSelectedObject() {
     return selectedObject;
+  }
+
+  List<ObjectComponent> getObjects() {
+    return objects;
+  }
+
+  ObjectComponent spawnAsset(GameObject gameObject) {
+    final gameObjectInstance = gameObject.instance();
+    gameObjectInstance.position = Plock.Vector2(0, 0);
+    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, gameObject: gameObjectInstance);
+    world.add(object);
+    objects.add(object);
+    game.objectCount++;
+    editorCallbacks.addGameObject(object.gameObject);
+    return object;
+  }
+
+  void updateAsset(GameObject gameObject) {
+    for (var object in objects) {
+      if (object.gameObject.type == gameObject.type) {
+        if (object.gameObject.assetId == gameObject.assetId) {
+          for (var component in object.gameObject.components) {
+            object.gameObject.components.remove(component);
+          }
+          for (var component in gameObject.components) {
+            object.gameObject.components.add(component.instance());
+          }
+          object.updateDisplay();
+        }
+      }
+    }
   }
 
   @override
@@ -86,8 +123,13 @@ class Editor extends Forge2DGame {
         updateObject: updateObject,
         removeGameObject: removeGameObjectCallback,
         getSelectedObject: getSelectedObject,
+        getObjects: getObjects,
         testGame: editorCallbacks.testGame,
-        goBack: editorCallbacks.goBack
+        goBack: editorCallbacks.goBack,
+        openObjects: editorCallbacks.openObjects,
+        openAssets: editorCallbacks.openAssets,
+        spawnAsset: spawnAsset,
+        updateAsset: updateAsset
     );
 
     final bottomBar = BottomBarComponent(
@@ -110,6 +152,7 @@ class Editor extends Forge2DGame {
       ObjectComponent objectComponent = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject);
       add(objectComponent);
       world.add(objectComponent);
+      objects.add(objectComponent);
       game.objectCount++;
     });
 

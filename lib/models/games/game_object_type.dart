@@ -1,0 +1,4 @@
+enum GameObjectType {
+  object,
+  asset,
+}

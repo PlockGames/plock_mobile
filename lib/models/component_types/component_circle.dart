@@ -54,12 +54,15 @@ class ComponentCircle extends ComponentType {
     );
 
     CircleComponent select = CircleComponent(
-      radius: radius,
+      radius: radius * 20,
+      scale: Vector2(0.05, 0.05),
       position: Vector2(0, 0),
       paint: Paint()
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0.01,
     );
 
     display.add(select);

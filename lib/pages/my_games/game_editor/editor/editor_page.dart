@@ -9,6 +9,8 @@ import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
+import '../assets_page.dart';
+import '../objects_page.dart';
 import 'Editor.dart';
 
 /// The editor page.
@@ -101,6 +103,18 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
+  Function(List<ObjectComponent>) openObjects(BuildContext context) {
+    return (List<ObjectComponent> objects) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context),)));
+    };
+  }
+
+  Function(Function(GameObject), Function(GameObject)) openAssets(BuildContext context) {
+    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AssetsPage(game: widget.game, spawnAsset: spawnAsset, updateAsset: updateAsset)));
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     EditorCallbacks callbacks = EditorCallbacks(
@@ -109,7 +123,9 @@ class _EditorPageState extends State<EditorPage> {
       removeGameObject: removeGameObject,
       updateGameObject: updateGameObject,
       testGame: testGame(context),
-      goBack: goBack(context)
+      goBack: goBack(context),
+      openObjects: openObjects(context),
+      openAssets: openAssets(context),
     );
 
     return Column(

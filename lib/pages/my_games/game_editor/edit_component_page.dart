@@ -11,7 +11,10 @@ class EditComponentPage extends StatefulWidget {
   /// Is component in debug mode ?
   final bool debug;
 
-  const EditComponentPage({super.key, required this.component, this.debug = false});
+  /// The callback function to update the component. optional
+  final Function()? updateComponent;
+
+  const EditComponentPage({super.key, required this.component, this.debug = false, this.updateComponent});
 
   @override
   _EditComponentPageState createState() => _EditComponentPageState();
@@ -29,6 +32,15 @@ class _EditComponentPageState extends State<EditComponentPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    for (var pair in widget.component.fields.entries) {
+      if (widget.updateComponent != null) {
+        pair.value.onUpdate = () {
+          widget.updateComponent!();
+        };
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit ${widget.component.name}'),

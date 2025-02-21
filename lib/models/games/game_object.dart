@@ -1,6 +1,7 @@
 import 'package:plock_mobile/models/utils/Vector2.dart';
 import '../../data/ComponentList.dart';
 import 'component_type.dart';
+import 'game_object_type.dart';
 
 /// A game object that can be added to a game.
 class GameObject {
@@ -16,6 +17,12 @@ class GameObject {
   /// The position of the object.
   Vector2 position = Vector2(0, 0);
 
+  /// The type of the object.
+  GameObjectType type = GameObjectType.object;
+
+  /// the id of the asset, if the object is an asset
+  int? assetId;
+
   /// is position dirty
   bool isPositionDirty = false;
 
@@ -30,7 +37,9 @@ class GameObject {
   /// Return a copy of the object
   GameObject instance() {
     GameObject instance = GameObject(id: id, name: name);
-    instance.position = position;
+    instance.position = Vector2(position.x, position.y);
+    instance.type = type;
+    instance.assetId = assetId;
     for (var component in components) {
       instance.components.add(component.instance());
     }

@@ -61,6 +61,10 @@ class ObjectComponent extends BodyComponent
   }
 
   GameObject get gameObject => _gameObject;
+  void set gameObject(GameObject gameObject) {
+    _gameObject = gameObject;
+    updateDisplay();
+  }
 
   /// Remove a [component] from the object.
   ///

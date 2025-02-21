@@ -9,6 +9,8 @@ class EditorCallbacks {
   final Function(GameObject gameObject) updateGameObject;
   final Function() testGame;
   final Function() goBack;
+  final Function(List<ObjectComponent>) openObjects;
+  final Function(Function(GameObject), Function(GameObject)) openAssets;
 
   EditorCallbacks({
     required this.openEditor,
@@ -17,5 +19,7 @@ class EditorCallbacks {
     required this.updateGameObject,
     required this.testGame,
     required this.goBack,
+    required this.openObjects,
+    required this.openAssets,
   });
 }
