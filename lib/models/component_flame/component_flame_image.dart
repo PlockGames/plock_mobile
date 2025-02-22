@@ -46,7 +46,6 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
     required this.initScale,
   }) {
     anchor = Anchor.center;
-    super.size /= 30.0;
   }
 
   @override
@@ -58,8 +57,10 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
     }
     double sizeX = sprite?.image.width.toDouble() ?? 0;
     double sizeY = sprite?.image.height.toDouble() ?? 0;
-    size.x = initScale.x * sizeX;
-    size.y = initScale.y * sizeY;
+    sizeY = sizeY / sizeX;
+    sizeX = 1;
+    size.x = sizeX * initScale.x;
+    size.y = sizeY  * initScale.y;
   }
 
   @override

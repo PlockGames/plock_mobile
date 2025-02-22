@@ -3,13 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:plock_mobile/data/ComponentList.dart';
-import 'package:plock_mobile/models/games/game.dart';
-import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/models/games/media.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
-
-import '../../../models/games/component_type.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/paint/paint_page.dart';
 
 /// The page to add a component to an object.
 class MediaEditorPage extends StatefulWidget {
@@ -36,6 +31,12 @@ class _MediasPageState extends State<MediaEditorPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Media Editor'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => PaintPage()));
+        },
+        child: const Icon(Icons.brush),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
