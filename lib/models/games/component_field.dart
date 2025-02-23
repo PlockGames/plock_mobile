@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 
+import 'media.dart';
+
 /// A field (or value) of a component.
 class ComponentField {
 
@@ -14,7 +16,7 @@ class ComponentField {
   ComponentField({this.onUpdate});
 
   /// Return the widget to display the field in the editor.
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     return Container();
   }
 

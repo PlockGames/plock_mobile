@@ -5,6 +5,9 @@ import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_number.dart';
+import '../component_fields/component_field_sprite.dart';
+import '../component_fields/sprite/sprite_animation.dart';
+import '../component_flame/component_flame_sprite.dart';
 import '../games/component_type.dart';
 import '../games/media.dart';
 
@@ -13,7 +16,8 @@ class ComponentSprite extends ComponentType {
 
   ComponentSprite() {
     fields["size"] = ComponentFieldNumber(value: 1.0);
-    fields["texture"] = ComponentFieldText(value: "");
+    fields["current"] = ComponentFieldText(value: "");
+    fields["animator"] = ComponentFieldSprite(value: List<PlockSpriteAnimation>.empty(growable: true));
   }
 
   @override
@@ -38,30 +42,30 @@ class ComponentSprite extends ComponentType {
       onDragUpdateCallback,
       onDragEndCallback,
       onDragCancelCallback) {
-    if (fields["texture"]?.value == null) {
+
+    List<PlockSpriteAnimation> animator = fields["animator"]!.value;
+    String current = fields["current"]!.value;
+
+    if (animator.isEmpty) {
       return DisplayComponents(display: null, select: null);
     }
 
-    Media? media;
-
+    PlockSpriteAnimation? animation;
     try {
-      media = medias.firstWhere((element) => element.name ==
-          fields["texture"]!.value);
+      animation = animator.firstWhere((element) => element.name == current);
     } catch (e) {
-      print("Error: $e");
+      animation = null;
     }
+    animation ??= animator.first;
 
-    if (media == null) {
-      return DisplayComponents(display: null, select: null);
-    }
-
-    ComponentFlameImage display = ComponentFlameImage(
+    ComponentFlameSprite display = ComponentFlameSprite(
         onDragStartCallback: onDragStartCallback,
         onTapeUpCallback: onTapeUpCallback,
         onDragCancelCallback: onDragCancelCallback,
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
-        image: media.file,
+        animation: animation!,
+        medias: medias,
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         componentType: this
@@ -77,34 +81,36 @@ class ComponentSprite extends ComponentType {
       onDragUpdateCallback,
       onDragEndCallback,
       onDragCancelCallback) {
-    if (fields["texture"]?.value == null) {
+    List<PlockSpriteAnimation> animator = fields["animator"]!.value;
+    String current = fields["current"]!.value;
+
+    if (animator.isEmpty) {
       return null;
     }
 
-    Media? media;
+    PlockSpriteAnimation? animation;
     try {
-      print(medias);
-      media = medias.firstWhere((element) => element.name ==
-          fields["texture"]!.value);
+      animation = animator.firstWhere((element) => element.name == current);
     } catch (e) {
-      print("Error: $e");
+      animation = null;
     }
+    animation ??= animator.first;
 
-    if (media == null) {
-      return null;
-    }
-
-    double size = fields["size"]!.value.toDouble();
-    return ComponentFlameImage(
+    ComponentFlameSprite display = ComponentFlameSprite(
         onDragStartCallback: onDragStartCallback,
         onTapeUpCallback: onTapeUpCallback,
         onDragCancelCallback: onDragCancelCallback,
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
-        initScale: Vector2(size, size),
-        image: media.file,
+        animation: animation!,
+        medias: medias,
+        initScale: Vector2(
+            fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         componentType: this
     );
+
+    return display;
+
   }
 
   @override

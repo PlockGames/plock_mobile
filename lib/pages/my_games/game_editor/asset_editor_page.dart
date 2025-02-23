@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import '../../../models/games/component_type.dart';
+import '../../../models/games/media.dart';
 import 'edit_component_page.dart';
 
 /// The page to edit an object.
@@ -15,7 +16,10 @@ class AssetEditorPage extends StatefulWidget {
   /// The callback function to update the object.
   final Function(GameObject) updateAsset;
 
-  AssetEditorPage({super.key, required this.object, required this.updateAsset});
+  /// All the media of the game.
+  List<Media> medias;
+
+  AssetEditorPage({super.key, required this.object, required this.updateAsset, required this.medias});
 
   @override
   State<StatefulWidget> createState() {
@@ -108,6 +112,7 @@ class _ObjectEditorPageState extends State<AssetEditorPage> {
                             builder: (context) => EditComponentPage(
                               component: component,
                               updateComponent: updateComponent,
+                              medias: widget.medias,
                             ),
                           ),
                         );

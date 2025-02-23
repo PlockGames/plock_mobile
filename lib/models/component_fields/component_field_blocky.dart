@@ -6,6 +6,7 @@ import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:flutter_blockly_plus/flutter_blockly_plus.dart' as Blocky;
 
 import '../../data/initial_toolbox.dart';
+import '../games/media.dart';
 
 /// A field that contain a Blockly (lua code) value.
 class ComponentFieldBlockly extends ComponentField {
@@ -47,7 +48,7 @@ class ComponentFieldBlockly extends ComponentField {
   String get type => 'ComponentFieldBlocky';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     const Blocky.Theme blockyTheme = Blocky.Theme(
       name: 'classic',
       fontStyle: Blocky.BlocklyFontStyle(

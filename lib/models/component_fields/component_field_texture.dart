@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A Field that contain a Texture value
 class ComponentFieldTexture extends ComponentField {
 
@@ -21,7 +23,7 @@ class ComponentFieldTexture extends ComponentField {
   String get type => 'ComponentFieldTexture';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     return TextureField(value: _value, onUpdate: onUpdate, updateValue: updateValue);
   }
 

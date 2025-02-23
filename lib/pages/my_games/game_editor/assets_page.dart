@@ -60,7 +60,7 @@ class _AssetsPageState extends State<AssetsPage> {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AssetEditorPage(object: object, updateAsset: widget.updateAsset)));
+                    builder: (context) => AssetEditorPage(object: object, updateAsset: widget.updateAsset, medias: widget.game.medias)));
               },
             ),
         ],

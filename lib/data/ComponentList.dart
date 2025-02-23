@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/component_types/component_variable.dart';
 import '../models/component_types/component_circle.dart';
 import '../models/component_types/component_physics.dart';
 import '../models/component_types/component_rect.dart';
+import '../models/component_types/component_sprite.dart';
 import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
 import '../models/component_types/component_list.dart' as cp;
@@ -23,6 +24,7 @@ class ComponentList {
     'ComponentVariable': ComponentVariable(),
     'ComponentList': cp.ComponentList(),
     'ComponentImage': ComponentImage(),
+    'ComponentSprite': ComponentSprite(),
     'ComponentPhysics': ComponentPhysics(),
   };
 

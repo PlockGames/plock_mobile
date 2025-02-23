@@ -48,6 +48,7 @@ class _EditorPageState extends State<EditorPage> {
               builder: (context) => ObjectEditorPage(
                     object: object,
                     objects: objects,
+                    medias: widget.game.medias,
                   )));
     };
   }

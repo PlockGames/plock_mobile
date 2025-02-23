@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A field that contain a (int) number value.
 class ComponentFieldNumber extends ComponentField {
   /// The value of the field.
@@ -26,7 +28,7 @@ class ComponentFieldNumber extends ComponentField {
   }
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,

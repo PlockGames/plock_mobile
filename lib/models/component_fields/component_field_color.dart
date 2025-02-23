@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A field that contain a dropdown value.
 class ComponentFieldColour extends ComponentField {
 
@@ -22,7 +24,7 @@ class ComponentFieldColour extends ComponentField {
   String get type => 'ComponentFieldColor';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     field ??= ColourField(initialValue: _value, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }

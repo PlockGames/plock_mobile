@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../models/games/component_type.dart';
+import '../../../models/games/media.dart';
 
 /// The page to edit a component.
 class EditComponentPage extends StatefulWidget {
@@ -14,7 +15,10 @@ class EditComponentPage extends StatefulWidget {
   /// The callback function to update the component. optional
   final Function()? updateComponent;
 
-  const EditComponentPage({super.key, required this.component, this.debug = false, this.updateComponent});
+  /// All the media of the game.
+  List<Media> medias;
+
+  EditComponentPage({super.key, required this.component, this.debug = false, this.updateComponent, required this.medias});
 
   @override
   _EditComponentPageState createState() => _EditComponentPageState();
@@ -54,7 +58,7 @@ class _EditComponentPageState extends State<EditComponentPage> {
         child: Column(
             children: [
               for (var pair in widget.component.fields.entries)
-                pair.value.getField(pair.key, widget.debug)
+                pair.value.getField(pair.key, widget.debug, widget.medias),
             ],
           ),
       ),

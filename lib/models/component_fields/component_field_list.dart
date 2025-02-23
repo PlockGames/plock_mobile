@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A Field that contain a Text value
 class ComponentFieldList extends ComponentField {
 
@@ -20,7 +22,7 @@ class ComponentFieldList extends ComponentField {
   String get type => 'ComponentFieldList';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     field ??= ListField(options: _value, onUpdate: (text) {
       _value = _value;
       if (onUpdate != null) {

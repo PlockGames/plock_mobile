@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A Field that contain a Text value
 class ComponentFieldText extends ComponentField {
 
@@ -18,7 +20,7 @@ class ComponentFieldText extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,

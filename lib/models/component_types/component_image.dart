@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_fields/component_field_Image.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
@@ -13,7 +14,7 @@ class ComponentImage extends ComponentType {
 
   ComponentImage() {
     fields["size"] = ComponentFieldNumber(value: 1.0);
-    fields["texture"] = ComponentFieldText(value: "");
+    fields["texture"] = ComponentFieldImage(value: "");
   }
 
   @override
