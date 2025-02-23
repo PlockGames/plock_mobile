@@ -7,6 +7,7 @@ import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
+import '../component_fields/component_field_number.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
 import '../games/media.dart';
@@ -16,6 +17,7 @@ class ComponentText extends ComponentType {
 
   ComponentText() {
     fields["text"] = ComponentFieldText(value: "Text");
+    fields["size"] = ComponentFieldNumber(value: 1.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
@@ -44,11 +46,13 @@ class ComponentText extends ComponentType {
       onDragCancelCallback
       ) {
     String text = fields["text"]!.value.toString();
+    double size = fields["size"]!.value.toDouble();
 
     TextComponent display = ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
       color: fields["color"]!.value,
+      fontSize: size,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
@@ -58,12 +62,14 @@ class ComponentText extends ComponentType {
     );
 
     RectangleComponent select = RectangleComponent(
-      size: display.absoluteScaledSize,
+      size: display.absoluteScaledSize * 20,
+      scale: Vector2(0.05, 0.05),
       position: Vector2(0, 0),
+      anchor: size < 1 ? Anchor.centerLeft : Anchor.topLeft,
       paint: Paint()
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0,
     );
 
     display.add(select);
@@ -79,12 +85,14 @@ class ComponentText extends ComponentType {
       onDragEndCallback,
       onDragCancelCallback,) {
     String text = fields["text"]!.value.toString();
+    double size = fields["size"]!.value.toDouble();
 
 
     return ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
       color: fields["color"]!.value,
+      fontSize: size,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
