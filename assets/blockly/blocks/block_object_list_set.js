@@ -3,7 +3,7 @@ const type_ols = 'object_list_set';
 Blockly.defineBlocksWithJsonArray([
     {
         "type": type_ols,
-        "message0": "set variable %1 of object  %2 to %3",
+        "message0": "set list %1 of object  %2 to %3",
         "args0": [
             {
                 "type": "input_value",
@@ -18,7 +18,7 @@ Blockly.defineBlocksWithJsonArray([
             {
                 "type": "input_value",
                 "name": "newValue",
-                "check": ["Number", "String"]
+                "check": ["Array"]
             }
         ],
         "previousStatement": null,

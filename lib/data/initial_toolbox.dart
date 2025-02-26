@@ -43,8 +43,6 @@ import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_ind
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_is_empty.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_join.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_length.dart';
-import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_print.dart';
-import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_prompt_ext.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_replace.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_reverse.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_trim.dart';
@@ -53,10 +51,12 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_random.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_rgb.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/math/to_number.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/asset_spawn.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_event_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/list_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/list_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_component.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_force.dart';
@@ -77,9 +77,6 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/text/t
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
-
-import '../models/component_fields/blocky/custom_blocks/objects/asset_spawn.dart';
-
 
 /// The initial toolbox of the blockly.
 ///
@@ -193,6 +190,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_list_get),
         ToolboxBlock(data: block_component_set),
         ToolboxBlock(data: block_variable_set),
+        ToolboxBlock(data: block_list_set),
         ToolboxBlock(data: object_event_set),
         ToolboxBlock(data: block_object_add_component),
         ToolboxBlock(data: block_object_destroy),

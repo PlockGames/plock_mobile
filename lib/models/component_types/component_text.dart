@@ -63,7 +63,7 @@ class ComponentText extends ComponentType {
 
     RectangleComponent select = RectangleComponent(
       size: display.absoluteScaledSize * 20,
-      scale: Vector2(0.05, 0.05),
+      scale: Vector2(0.05, size < 1 ? 0.025 : 0.05),
       position: Vector2(0, 0),
       anchor: size < 1 ? Anchor.centerLeft : Anchor.topLeft,
       paint: Paint()
@@ -109,6 +109,7 @@ class ComponentText extends ComponentType {
       component.textRenderer = TextPaint(
         style: TextStyle(
           color: fields["color"]!.value,
+          fontSize: fields["size"]!.value.toDouble(),
         ),
       );
     }

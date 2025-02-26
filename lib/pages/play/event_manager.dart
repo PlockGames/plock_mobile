@@ -8,6 +8,7 @@ import 'package:plock_mobile/models/component_fields/component_field_blocky.dart
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
+import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 import '../../models/component_fields/component_field_color.dart';
 import '../../models/component_fields/component_field_number.dart';
@@ -257,10 +258,20 @@ class EventManager {
 
       try {
         GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+        List<Component> components = game.gamePlayer!.components;
+        GamePlayerObject? gameObject;
+        for (Component component in components) {
+          if (component is GamePlayerObject) {
+            if (component.gameObject.id == objectId) {
+              gameObject = component;
+              break;
+            }
+          }
+        }
         if (property.toLowerCase() == "x") {
-          return object.position.x;
+          return gameObject?.position.x ?? 0;
         } else if (property.toLowerCase() == "y") {
-          return object.position.y;
+          return gameObject?.position.y ?? 0;
         } else {
           return 0;
         }
@@ -391,7 +402,8 @@ class EventManager {
   static void _setListValue(Game game, int thisObjectId, dynamic args) {
     int objectId = args[0];
     String name = args[1];
-    String value = args[2].toString();
+    List<dynamic> value = args[2];
+
 
     print("Set list value: $objectId, $name, $value");
 

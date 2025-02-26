@@ -19,6 +19,7 @@ class ComponentPhysics extends ComponentType {
   ComponentPhysics() {
     fields["width"] = ComponentFieldNumber(value: 1.0);
     fields["height"] = ComponentFieldNumber(value: 1.0);
+    fields["gravity"] = ComponentFieldNumber(value: 10.0);
     fields["type"] = ComponentFieldDropDown(value: "static", options: {
       "static": "Static",
       "dynamic": "Dynamic",
@@ -67,6 +68,7 @@ class ComponentPhysics extends ComponentType {
   @override
   Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
       String type = fields["type"]!.value.toString();
+      double gravity = fields["gravity"]!.value.toDouble();
       BodyType bodyType = BodyType.static;
 
       if (type == "dynamic") {
@@ -74,6 +76,8 @@ class ComponentPhysics extends ComponentType {
       } else if (type == "kinematic") {
         bodyType = BodyType.kinematic;
       }
+
+      parent.bodyDef!.gravityScale = Vector2(0, gravity);
 
       if (parent.bodyDef!.type != bodyType) {
         parent.bodyDef!.type = bodyType;
