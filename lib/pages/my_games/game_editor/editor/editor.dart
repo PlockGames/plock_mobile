@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
@@ -9,10 +10,10 @@ import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
-import '../../../../models/utils/Vector2.dart' as Plock;
+import 'editor_mode.dart';
 
 /// The game editor.
-class Editor extends Forge2DGame {
+class Editor extends Forge2DGame with DragCallbacks {
 
   /// The currently selected object.
   ObjectComponent? selectedObject;
@@ -29,12 +30,35 @@ class Editor extends Forge2DGame {
   /// The text component to display the name of the selected object.
   late TextComponent selectedObjectName;
 
+  /// The mode of the editor.
+  EditorMode mode = EditorMode.edit;
 
   Editor({
     required this.game,
     required this.editorCallbacks,
 
   });
+
+  /// Move the camera
+  ///
+  /// @param delta the delta to move the camera
+  void moveCamera(Vector2 delta) {
+    camera.viewfinder.position -= delta;
+  }
+
+  /// change the mode of the editor
+  void changeMode() {
+    if (mode == EditorMode.edit) {
+      mode = EditorMode.move;
+    } else {
+      mode = EditorMode.edit;
+    }
+  }
+
+  /// get the current mode of the editor
+  EditorMode getMode() {
+    return mode;
+  }
 
   /// Select an object.
   selectObject(ObjectComponent? object) {
@@ -54,7 +78,15 @@ class Editor extends Forge2DGame {
 
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
-    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, plockGame: game);
+    final object = ObjectComponent(
+        id: game.objectCount,
+        selectObject: selectObject,
+        isObjectSelected: isObjectSelected,
+        updateObject: updateObject,
+        getMode: getMode,
+        moveCamera: moveCamera,
+        plockGame: game
+    );
     world.add(object);
     objects.add(object);
     game.objectCount++;
@@ -79,7 +111,16 @@ class Editor extends Forge2DGame {
   ObjectComponent spawnAsset(GameObject gameObject) {
     final gameObjectInstance = gameObject.instance();
     gameObjectInstance.id = game.objectCount;
-    final object = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, updateObject: updateObject, gameObject: gameObjectInstance, plockGame: game);
+    final object = ObjectComponent(
+        id: game.objectCount,
+        selectObject: selectObject,
+        isObjectSelected: isObjectSelected,
+        updateObject: updateObject,
+        getMode: getMode,
+        moveCamera: moveCamera,
+        gameObject: gameObjectInstance,
+        plockGame: game
+    );
     world.add(object);
     objects.add(object);
     game.objectCount++;
@@ -131,7 +172,9 @@ class Editor extends Forge2DGame {
         openAssets: editorCallbacks.openAssets,
         spawnAsset: spawnAsset,
         updateAsset: updateAsset,
-        openMedias: editorCallbacks.openMedias
+        openMedias: editorCallbacks.openMedias,
+        changeMode: changeMode,
+        getMode: getMode
     );
 
     final bottomBar = BottomBarComponent(
@@ -151,7 +194,16 @@ class Editor extends Forge2DGame {
 
     // Generate the object components of the game
     game.objects.forEach((element) {
-      ObjectComponent objectComponent = ObjectComponent(id: game.objectCount, selectObject: selectObject, isObjectSelected: isObjectSelected, gameObject: element, updateObject: updateObject, plockGame: game);
+      ObjectComponent objectComponent = ObjectComponent(
+          id: game.objectCount,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          gameObject: element,
+          updateObject: updateObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          plockGame: game
+      );
       add(objectComponent);
       world.add(objectComponent);
       objects.add(objectComponent);
@@ -172,5 +224,23 @@ class Editor extends Forge2DGame {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+  }
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    super.onDragUpdate(event);
+    if (mode == EditorMode.move) {
+      moveCamera(event.localDelta / camera.viewfinder.zoom);
+    }
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    super.onDragEnd(event);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 
 import '../../../../models/games/game_object.dart';
@@ -17,6 +18,8 @@ class BottomBarComponent extends PositionComponent {
   /// All the bottom bar callbacks
   final BottomBarCallbacks bottomBarCallbacks;
 
+  /// The button to change mode.
+  late BottomBarbuttonModeComponent modeBtn;
   /// The button to add an object.
   late BottomBarbuttonComponent addBtn;
   /// The button to delete an object.
@@ -61,17 +64,21 @@ class BottomBarComponent extends PositionComponent {
     const iconWidth = 40.0;
 
     // aligned left
+    modeBtn = BottomBarbuttonModeComponent(Vector2(0, 0), getMode: bottomBarCallbacks.getMode, tapAction: () {
+      bottomBarCallbacks.changeMode();
+    });
+
     addBtn =
-        BottomBarbuttonComponent('svg/add.svg', Vector2(0, 0), tapAction: () {
+        BottomBarbuttonComponent('svg/add.svg', Vector2(iconWidth, 0), tapAction: () {
           var newObject = bottomBarCallbacks.addGameObject();
     });
 
-    deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(iconWidth, 0),
+    deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(iconWidth * 2, 0),
         tapAction: () {
           bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
     });
 
-    editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 2, 0),
+    editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 3, 0),
         tapAction: () {
           List<dynamic> objects = bottomBarCallbacks.getObjects().map((e) => e.gameObject).toList();
           List<GameObject> gameObjects = objects.cast<GameObject>();
@@ -103,6 +110,7 @@ class BottomBarComponent extends PositionComponent {
 
     // Add the components to the bottom bar
     add(background);
+    add(modeBtn);
     add(addBtn);
     add(deleteBtn);
     add(editBtn);

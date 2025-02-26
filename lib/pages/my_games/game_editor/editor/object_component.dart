@@ -10,6 +10,7 @@ import 'package:plock_mobile/models/games/game.dart' as Plock;
 import 'package:plock_mobile/models/games/game_object.dart';
 
 import '../../../../models/component_types/component_rect.dart';
+import 'editor_mode.dart';
 
 /// A flame object that represents a component in the game editor.
 class ObjectComponent extends BodyComponent
@@ -30,6 +31,16 @@ class ObjectComponent extends BodyComponent
   /// Passed on by the constructor.
   final Function updateObject;
 
+  /// The function to get the current mode of the editor.
+  ///
+  /// Passed on by the constructor.
+  final Function getMode;
+
+  /// The function to move the camera
+  ///
+  /// Passed on by the constructor.
+  final Function(Vector2 delta) moveCamera;
+
   /// The game object linked to this Flame object.
   ///
   /// Passed on by the constructor.
@@ -49,6 +60,8 @@ class ObjectComponent extends BodyComponent
     required this.selectObject,
     required this.isObjectSelected,
     required this.updateObject,
+    required this.getMode,
+    required this.moveCamera,
     required this.plockGame,
     GameObject? gameObject
   })
@@ -163,12 +176,15 @@ class ObjectComponent extends BodyComponent
   }
 
   bool onTapUpCallback(TapUpEvent info) {
-    if (isObjectSelected(this)) {
-      selectObject(null);
-    } else {
-      selectObject(this);
+    if (getMode() == EditorMode.edit) {
+      if (isObjectSelected(this)) {
+        selectObject(null);
+      } else {
+        selectObject(this);
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   void onDragStartCallback(DragStartEvent event) {
@@ -178,11 +194,15 @@ class ObjectComponent extends BodyComponent
   void onDragUpdateCallback(DragUpdateEvent event) {
     super.onDragUpdate(event);
 
-    // update position if object is dragged
-    _gameObject.position.x += event.localDelta.x;
-    _gameObject.position.y += event.localDelta.y;
-    position.x = _gameObject.position.x;
-    position.y = _gameObject.position.y;
+    if (getMode() == EditorMode.edit) {
+      // update position if object is dragged
+      _gameObject.position.x += event.localDelta.x;
+      _gameObject.position.y += event.localDelta.y;
+      position.x = _gameObject.position.x;
+      position.y = _gameObject.position.y;
+    } else if (getMode() == EditorMode.move) {
+      moveCamera(event.localDelta);
+    }
   }
 
   void onDragEndCallback(DragEndEvent event) {

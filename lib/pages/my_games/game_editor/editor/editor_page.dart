@@ -20,6 +20,9 @@ class EditorPage extends StatefulWidget {
   /// The game to edit.
   final Plock.Game game;
 
+  /// The current mode of the editor.
+  //EditorMode mode = EditorMode.EDIT;
+
   /// The callback function to update a game object.
   final Function(GameObject) onGameObjectUpdated;
 
@@ -36,6 +39,7 @@ class EditorPage extends StatefulWidget {
 class _EditorPageState extends State<EditorPage> {
 
   _EditorPageState();
+
 
   /// Open the object editor.
   Function(ObjectComponent object, List<GameObject> objects) openEditor(BuildContext context) {

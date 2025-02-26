@@ -16,6 +16,8 @@ class BottomBarCallbacks {
   final Function(GameObject) spawnAsset;
   final Function(GameObject) updateAsset;
   final Function() openMedias;
+  final Function() changeMode;
+  final Function() getMode;
 
   BottomBarCallbacks({
     required this.selectObject,
@@ -32,5 +34,7 @@ class BottomBarCallbacks {
     required this.spawnAsset,
     required this.updateAsset,
     required this.openMedias,
+    required this.changeMode,
+    required this.getMode
   });
 }
