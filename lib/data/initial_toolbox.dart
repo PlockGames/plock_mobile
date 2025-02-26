@@ -67,6 +67,8 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/object
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_spawn.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/camera_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/camera_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider_name.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
@@ -177,6 +179,8 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_collider),
         ToolboxBlock(data: block_collider_name),
         ToolboxBlock(data: block_screen_get),
+        ToolboxBlock(data: block_camera_get),
+        ToolboxBlock(data: block_camera_set),
         ToolboxBlock(data: block_wait),
         ToolboxBlock(data: block_touch_get)
       ]

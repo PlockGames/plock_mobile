@@ -34,6 +34,8 @@ class EventManager {
       // System
       js.onMessage("wait", (args) async => await _wait(game, thisObjectId, args));
       js.onMessage("getScreenValue", (args) => _getScreenSize(game, thisObjectId, args));
+      js.onMessage("getCameraValue", (args) => _getCameraValue(game, thisObjectId, args));
+      js.onMessage("setCameraValue", (args) => _setCameraValue(game, thisObjectId, args));
       js.onMessage("deltaTime", (args) => _deltaTime(game, thisObjectId, args));
       js.onMessage("getTouch", (args) => _getTouch(game, thisObjectId, args));
       // Objects
@@ -106,6 +108,33 @@ class EventManager {
         return game.screenSize.y;
       }
       return 0;
+  }
+
+  /// Return the camera value.
+  static double _getCameraValue(Game game, int thisObjectId, dynamic args) {
+    String value = args[0];
+
+    if (value == "X") {
+      return game.gamePlayer?.camera.viewfinder.position.x ?? 0;
+    } else if (value == "Y") {
+      return game.gamePlayer?.camera.viewfinder.position.y ?? 0;
+    }
+    return 0;
+  }
+
+  /// Return the camera value.
+  static void _setCameraValue(Game game, int thisObjectId, dynamic args) {
+    String value = args[0];
+    double newValue = args[1].toDouble();
+    print("Set camera value: $value, $newValue");
+
+    if (value == "X") {
+      game.gamePlayer?.camera.viewfinder.position =
+          Vector2(newValue, game.gamePlayer?.camera.viewfinder.position.y ?? 0);
+    } else if (value == "Y") {
+      game.gamePlayer?.camera.viewfinder.position =
+          Vector2(game.gamePlayer?.camera.viewfinder.position.x ?? 0, newValue);
+    }
   }
 
   /// return this object id

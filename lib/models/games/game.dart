@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:flame/components.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/media.dart';
-import 'package:plock_mobile/services/api.dart';
 
 import '../../pages/play/game_player.dart';
 import '../../pages/play/game_player_object.dart';
