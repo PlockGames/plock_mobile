@@ -31,6 +31,7 @@ class BottomBarButtonCanvasComponent extends PositionComponent with TapCallbacks
   late SvgComponent svgComponent;
 
   BottomBarButtonCanvasComponent(Vector2 pos, {required this.getCanvas, this.tapAction}) {
+    priority = 10000;
     position = pos;
   }
 

@@ -312,8 +312,8 @@ class Editor extends Forge2DGame with DragCallbacks {
       ..position = Vector2(10, size.y - 90);
 
     //Add the components to the editor
-    add(bottomBar);
-    add(selectedObjectName);
+    camera.viewport.add(bottomBar);
+    camera.viewport.add(selectedObjectName);
 
     // Generate the object components of the game
     game.objects.forEach((element) {
@@ -350,7 +350,7 @@ class Editor extends Forge2DGame with DragCallbacks {
 
     // Add an exit button
     var exitButton = ExitButton(exitGame: editorCallbacks.goBack);
-    add(exitButton);
+    camera.viewport.add(exitButton);
 
     // add a body to the world to avoid error
     world.createBody(BodyDef());

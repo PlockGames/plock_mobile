@@ -48,7 +48,9 @@ class BottomBarComponent extends PositionComponent {
   BottomBarComponent({
     required this.screenSize,
     required this.bottomBarCallbacks,
-  });
+  }) {
+    priority = 10000;
+  }
 
   @override
   Future<void> onLoad() async {
@@ -60,6 +62,7 @@ class BottomBarComponent extends PositionComponent {
 
     // Create the background
     final background = RectangleComponent(
+        priority: 10000,
         size: Vector2(screenSize.x, 50),
         position: Vector2(0, 0),
         paint: Paint()..color = const Color(0xFF000000));

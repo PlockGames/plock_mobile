@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
 import 'package:plock_mobile/models/component_fields/sprite/sprite_editor_page.dart';
+import 'package:plock_mobile/models/component_fields/tilemap/tile.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
 import '../games/media.dart';
@@ -11,10 +12,10 @@ import '../games/media.dart';
 class ComponentFieldTileset extends ComponentField {
 
   /// The value of the field
-   List<String> _value;
+   List<Tile> _value;
 
    ComponentFieldTileset({
-    required List<String> value,
+    required List<Tile> value,
     onUpdate,
   }) : _value = value {
     this.onUpdate = onUpdate;
@@ -34,7 +35,7 @@ class ComponentFieldTileset extends ComponentField {
   }
 
   @override
-  List<String> get value => _value;
+  List<Tile> get value => _value;
 
   @override
   set value(dynamic value) {
@@ -48,7 +49,7 @@ class ComponentFieldTileset extends ComponentField {
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as List<String>;
+    _value = jsonVal as List<Tile>;
   }
 
 }
@@ -58,6 +59,8 @@ class ComponentFieldTilesetField extends StatefulWidget {
   final String name;
   final List<Media> medias;
   final Function? onUpdate;
+
+  List<FocusNode> focusNodes = List<FocusNode>.empty(growable: true);
 
   ComponentFieldTilesetField({
     super.key,
@@ -72,10 +75,21 @@ class ComponentFieldTilesetField extends StatefulWidget {
 }
 
 class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField> {
+  List<TextEditingController> controllers = List<TextEditingController>.empty(growable: true);
+
 
   @override
   void initState() {
     super.initState();
+    widget.focusNodes = List<FocusNode>.empty(growable: true);
+    controllers = List<TextEditingController>.empty(growable: true);
+    for (int i = 0; i < widget.field.value.length; i++) {
+      FocusNode focusNode = FocusNode();
+      widget.focusNodes.add(focusNode);
+
+      TextEditingController controller = TextEditingController(text: widget.field.value[i].media);
+      controllers.add(controller);
+    }
   }
 
   @override
@@ -84,7 +98,7 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
 
     for (int i = 0; i < widget.field.value.length; i++) {
       try {
-        tilesMedia.add(widget.medias.firstWhere((element) => element.name == widget.field.value[i]));
+        tilesMedia.add(widget.medias.firstWhere((element) => element.name == widget.field.value[i].media));
       } catch (e) {
         tilesMedia.add(null);
       }
@@ -123,17 +137,18 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                             child: snapshot.data![i] != null ? Image.memory(snapshot.data![i]!) : const Text('')),
                         Expanded(child:
                         TextField(
-                          controller: TextEditingController(
-                              text: widget.field.value[i]),
+                          focusNode: widget.focusNodes[i],
+                          controller: controllers[i],
                           decoration: const InputDecoration(
                             labelText: 'Tile',
                           ),
                           onChanged: (value) {
                             setState(() {
-                              widget.field.value[i] = value;
+                              widget.field.value[i].media = value;
                               if (widget.onUpdate != null) {
                                 widget.onUpdate!();
                               }
+                              widget.focusNodes[i].requestFocus();
                             });
                           },
                         )
@@ -146,6 +161,8 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                               if (widget.field.onUpdate != null) {
                                 widget.field.onUpdate!();
                               }
+                              widget.focusNodes.removeAt(i);
+                              controllers.removeAt(i);
                             });
                           },
                         ),
@@ -155,7 +172,10 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                 SizedBox(height: 10),
                 FilledButton(onPressed: () {
                   setState(() {
-                    widget.field.value.add("");
+                    Tile tile = Tile();
+                    widget.focusNodes.add(FocusNode());
+                    controllers.add(TextEditingController(text: tile.media));
+                    widget.field.value.add(tile);
                     if (widget.field.onUpdate != null) {
                       widget.field.onUpdate!();
                     }

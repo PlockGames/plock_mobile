@@ -19,6 +19,7 @@ class BottomBarbuttonComponent extends PositionComponent with TapCallbacks {
   late Svg svgInstance;
 
   BottomBarbuttonComponent(this.svgPath, Vector2 pos, {this.tapAction}) {
+    priority = 10000;
     position = pos;
   }
 

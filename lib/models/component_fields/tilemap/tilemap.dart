@@ -42,4 +42,7 @@ class Tilemap {
     }
     return map[x][y];
   }
+
+  int get width => map.length;
+  int get height => map[0].length;
 }

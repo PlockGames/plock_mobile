@@ -4,11 +4,13 @@ import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_tilemap.dart';
 import 'package:plock_mobile/models/component_fields/component_field_tileset.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
+import 'package:plock_mobile/models/component_flame/component_flame_tilemap.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_number.dart';
 import '../component_fields/component_field_sprite.dart';
 import '../component_fields/sprite/sprite_animation.dart';
+import '../component_fields/tilemap/tile.dart';
 import '../component_fields/tilemap/tilemap.dart';
 import '../component_flame/component_flame_sprite.dart';
 import '../games/component_type.dart';
@@ -18,10 +20,11 @@ import '../games/media.dart';
 class ComponentTilemap extends ComponentType {
 
   ComponentTilemap() {
+    var tiles = ComponentFieldTileset(value: List<Tile>.empty(growable: true));
+
     fields["size"] = ComponentFieldNumber(value: 1.0);
-    fields["tiles size"] = ComponentFieldNumber(value: 16.0);
-    fields["map"] = ComponentFieldTilemap(value: Tilemap(16, 16));
-    fields["tiles"] = ComponentFieldTileset(value: List<String>.empty(growable: true));
+    fields["map"] = ComponentFieldTilemap(value: Tilemap(16, 16), tiles: tiles);
+    fields["tiles"] = tiles;
   }
 
   @override
@@ -47,7 +50,25 @@ class ComponentTilemap extends ComponentType {
       onDragEndCallback,
       onDragCancelCallback) {
 
+    if (fields["map"] == null || fields["tiles"] == null) {
       return DisplayComponents(display: null, select: null);
+    }
+
+    var display = ComponentFlameTilemap(
+        onDragStartCallback: onDragStartCallback,
+        onTapeUpCallback: onTapeUpCallback,
+        onDragCancelCallback: onDragCancelCallback,
+        onDragEndCallback: onDragEndCallback,
+        onDragUpdateCallback: onDragUpdateCallback,
+        tilemap: fields["map"]!.value,
+        tiles: fields["tiles"]!.value,
+        componentType: this,
+        initScale: Vector2(
+            fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
+        medias: medias
+    );
+
+      return DisplayComponents(display: display, select: null);
 
   }
 
@@ -58,32 +79,23 @@ class ComponentTilemap extends ComponentType {
       onDragUpdateCallback,
       onDragEndCallback,
       onDragCancelCallback) {
-    List<PlockSpriteAnimation> animator = fields["animator"]!.value;
-    String current = fields["current"]!.value;
 
-    if (animator.isEmpty) {
+    if (fields["map"] == null || fields["tiles"] == null) {
       return null;
     }
 
-    PlockSpriteAnimation? animation;
-    try {
-      animation = animator.firstWhere((element) => element.name == current);
-    } catch (e) {
-      animation = null;
-    }
-    animation ??= animator.first;
-
-    ComponentFlameSprite display = ComponentFlameSprite(
+    var display = ComponentFlameTilemap(
         onDragStartCallback: onDragStartCallback,
         onTapeUpCallback: onTapeUpCallback,
         onDragCancelCallback: onDragCancelCallback,
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
-        animation: animation!,
-        medias: medias,
+        tilemap: fields["map"]!.value,
+        tiles: fields["tiles"]!.value,
+        componentType: this,
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
-        componentType: this
+        medias: medias
     );
 
     return display;
@@ -93,29 +105,6 @@ class ComponentTilemap extends ComponentType {
   @override
   Future<GamePlayerObject> updateDisplay(Component? component,
       GamePlayerObject parent) async {
-    if (component is ComponentFlameImage) {
-
-      if (fields['texture'] != null) {
-        late Media? media;
-        try {
-          media =
-              parent.plockGame.medias.firstWhere((element) => element.name ==
-                  fields['texture']!.value);
-        } catch (e) {
-          media = null;
-        }
-        if (media != null) {
-          component.image = media.file;
-        }
-        if (component.image != null) {
-          var img = await decodeImageFromList(
-              await component.image!.readAsBytes());
-          component.sprite = Sprite(img);
-        }
-      } else {
-        component.sprite = null;
-      }
-    }
     return parent;
   }
 

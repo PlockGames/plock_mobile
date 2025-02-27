@@ -95,6 +95,7 @@ flutter:
     - assets/svg/select.svg
     - assets/svg/ui.svg
     - assets/svg/scene.svg
+    - assets/images/empty.png
     - packages/flutter_blockly_plus/assets/blockly.min.js
     - packages/flutter_blockly_plus/assets/dart_compressed.js
     - packages/flutter_blockly_plus/assets/lua_compressed.js

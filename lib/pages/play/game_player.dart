@@ -60,13 +60,13 @@ class GamePlayer extends Forge2DGame {
     // Add button to exit the game if in test mode
     if (isTest && exitGame != null) {
       final exitButton = ExitButton(exitGame: exitGameCallback);
-      add(exitButton);
+      camera.viewport.add(exitButton);
     }
 
     // Add button to publish the game if in test mode
     if (isTest && uploadGame != null) {
       final uploadButton = UploadButton(uploadGame: uploadGame!, screenSize: size);
-      add(uploadButton);
+      camera.viewport.add(uploadButton);
     }
 
     // Generate all the game objects of the game
