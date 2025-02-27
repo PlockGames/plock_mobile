@@ -31,6 +31,9 @@ class ComponentList {
 
   static final Map<String, ComponentType> uiComponents = {
     'ComponentUiText': ComponentUiText(),
+    'ComponentVariable': ComponentVariable(),
+    'ComponentList': cp.ComponentList(),
+    'ComponentEvent': ComponentEvent(),
   };
 
   static Map<String, ComponentType> getScene() {
