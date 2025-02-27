@@ -29,7 +29,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   /// js state, used to execute events.
   JavascriptRuntime js = getJavascriptRuntime();
 
-  List<Contact> contacts = [];
+  /// A list of all untreated start contacts.
+  List<Contact> beginContacts = [];
+
+  /// A list of all untreated end contacts.
+  List<Contact> endContacts = [];
 
   /// lock X position
   bool lockX = false;
@@ -248,9 +252,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
         }
       }
 
-      for (var contact in contacts) {
+      for (var contact in beginContacts) {
         for (var component in eventComponents) {
-          if (component.fields['trigger']!.value == 'ON_COLLISION') {
+          if (component.fields['trigger']!.value == 'ON_BEGIN_COLLISION') {
             GamePlayerObject contactObjectA = contact.bodyB
                 .userData as GamePlayerObject;
             GamePlayerObject contactObjectB = contact.bodyA
@@ -264,7 +268,24 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
           }
         }
       }
-      contacts = [];
+      beginContacts = [];
+
+      for (var contact in endContacts) {
+        for (var component in eventComponents) {
+          if (component.fields['trigger']!.value == 'ON_END_COLLISION') {
+            GamePlayerObject contactObjectA = contact.bodyB
+                .userData as GamePlayerObject;
+            GamePlayerObject contactObjectB = contact.bodyA
+                .userData as GamePlayerObject;
+            GameObject contactGameObject = contactObjectA.gameObject.id ==
+                gameObject.id ? contactObjectB.gameObject : contactObjectA
+                .gameObject;
+            executeEvent(
+                component.fields['event']!.value[0], contactGameObject.id,
+                contactGameObject.name);
+          }
+        }
+      }
     }
   }
 
@@ -352,7 +373,16 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     super.beginContact(other, contact);
 
     if (other is GamePlayerObject) {
-      contacts.add(contact);
+      beginContacts.add(contact);
+    }
+  }
+
+  @override
+  void endContact(Object other, Contact contact) {
+    super.endContact(other, contact);
+
+    if (other is GamePlayerObject) {
+      endContacts.add(contact);
     }
   }
 }
