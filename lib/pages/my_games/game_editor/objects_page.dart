@@ -5,14 +5,16 @@ import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
 import '../../../models/games/component_type.dart';
+import 'editor/editor_canvas.dart';
 
 /// The page to add a component to an object.
 class ObjectsPage extends StatefulWidget {
   // A callback function to add a component to the game object
   final List<ObjectComponent> objects;
-  final Function(ObjectComponent, List<GameObject>) openEditor;
+  final Function(ObjectComponent, List<GameObject>, EditorCanvas canvas) openEditor;
+  final EditorCanvas canvas;
 
-  const ObjectsPage({super.key, required this.objects, required this.openEditor});
+  const ObjectsPage({super.key, required this.objects, required this.openEditor, required this.canvas});
 
   @override
   _AddComponentPageState createState() => _AddComponentPageState();
@@ -37,7 +39,7 @@ class _AddComponentPageState extends State<ObjectsPage> {
               title: Text(object.gameObject.name),
               onTap: () {
                 List<GameObject> objects = widget.objects.map((e) => e.gameObject).toList();
-                widget.openEditor(object, objects);
+                widget.openEditor(object, objects, widget.canvas);
               },
             ),
         ],

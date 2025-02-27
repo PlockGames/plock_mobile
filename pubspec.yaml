@@ -93,6 +93,8 @@ flutter:
     - assets/svg/folder.svg
     - assets/svg/move.svg
     - assets/svg/select.svg
+    - assets/svg/ui.svg
+    - assets/svg/scene.svg
     - packages/flutter_blockly_plus/assets/blockly.min.js
     - packages/flutter_blockly_plus/assets/dart_compressed.js
     - packages/flutter_blockly_plus/assets/lua_compressed.js

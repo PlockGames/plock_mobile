@@ -6,6 +6,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
 import 'edit_component_page.dart';
+import 'editor/editor_canvas.dart';
 
 /// The page to edit an object.
 class AssetEditorPage extends StatefulWidget {
@@ -19,7 +20,10 @@ class AssetEditorPage extends StatefulWidget {
   /// All the media of the game.
   List<Media> medias;
 
-  AssetEditorPage({super.key, required this.object, required this.updateAsset, required this.medias});
+  /// The canvas of the object.
+  final EditorCanvas canvas;
+
+  AssetEditorPage({super.key, required this.object, required this.updateAsset, required this.medias, required this.canvas});
 
   @override
   State<StatefulWidget> createState() {
@@ -135,6 +139,7 @@ class _ObjectEditorPageState extends State<AssetEditorPage> {
               MaterialPageRoute(
                 builder: (context) => AddComponentPage(
                   onAddComponent: addComponent,
+                  canvas: widget.canvas,
                 ),
               ),
             );

@@ -7,6 +7,8 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 
 import '../../../../models/games/game_object.dart';
+import 'bottom_bar_button_canvas_component.dart';
+import 'editor_canvas.dart';
 
 /// The bottom bar of the editor.
 ///
@@ -20,6 +22,8 @@ class BottomBarComponent extends PositionComponent {
 
   /// The button to change mode.
   late BottomBarbuttonModeComponent modeBtn;
+  /// The button to change canvas.
+  late BottomBarButtonCanvasComponent canvasBtn;
   /// The button to add an object.
   late BottomBarbuttonComponent addBtn;
   /// The button to delete an object.
@@ -70,19 +74,35 @@ class BottomBarComponent extends PositionComponent {
 
     addBtn =
         BottomBarbuttonComponent('svg/add.svg', Vector2(iconWidth, 0), tapAction: () {
-          var newObject = bottomBarCallbacks.addGameObject();
+          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
+            bottomBarCallbacks.addUIObject();
+          } else {
+            bottomBarCallbacks.addGameObject();
+          }
     });
 
     deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(iconWidth * 2, 0),
         tapAction: () {
-          bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
+          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
+            bottomBarCallbacks.removeUIObject(bottomBarCallbacks.getSelectedObject());
+          } else {
+            bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
+          }
     });
 
     editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 3, 0),
         tapAction: () {
-          List<dynamic> objects = bottomBarCallbacks.getObjects().map((e) => e.gameObject).toList();
-          List<GameObject> gameObjects = objects.cast<GameObject>();
-          bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject(), gameObjects);
+          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
+            List<dynamic> objects = bottomBarCallbacks.getUiObjects().map((e) => e.gameObject).toList();
+            List<GameObject> gameObjects = objects.cast<GameObject>();
+            bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject(), gameObjects, EditorCanvas.ui);
+          } else {
+            List<dynamic> objects = bottomBarCallbacks.getObjects().map((e) =>
+            e.gameObject).toList();
+            List<GameObject> gameObjects = objects.cast<GameObject>();
+            bottomBarCallbacks.openEditor(
+                bottomBarCallbacks.getSelectedObject(), gameObjects, EditorCanvas.scene);
+          }
     });
 
     // aligned right
@@ -95,17 +115,26 @@ class BottomBarComponent extends PositionComponent {
 
     objectsBtn = BottomBarbuttonComponent('svg/objects.svg', Vector2(screenWidth - iconWidth * 2, 0),
         tapAction: () {
-          bottomBarCallbacks.openObjects(bottomBarCallbacks.getObjects());
+          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
+            bottomBarCallbacks.openObjects(bottomBarCallbacks.getUiObjects(), bottomBarCallbacks.getCanvas());
+          } else {
+            bottomBarCallbacks.openObjects(bottomBarCallbacks.getObjects(),
+                bottomBarCallbacks.getCanvas());
+          }
     });
 
     assetsBtn = BottomBarbuttonComponent('svg/assets.svg', Vector2(screenWidth - iconWidth * 3, 0),
         tapAction: () {
-          bottomBarCallbacks.openAssets(bottomBarCallbacks.spawnAsset, bottomBarCallbacks.updateAsset);
+          bottomBarCallbacks.openAssets(bottomBarCallbacks.spawnAsset, bottomBarCallbacks.updateAsset, bottomBarCallbacks.getCanvas());
     });
 
     mediasBtn = BottomBarbuttonComponent('svg/folder.svg', Vector2(screenWidth - iconWidth * 4, 0),
         tapAction: () {
           bottomBarCallbacks.openMedias();
+    });
+
+    canvasBtn = BottomBarButtonCanvasComponent(Vector2(screenWidth - iconWidth * 5, 0), getCanvas: bottomBarCallbacks.getCanvas, tapAction: () {
+      bottomBarCallbacks.changeCanvas();
     });
 
     // Add the components to the bottom bar
@@ -118,6 +147,7 @@ class BottomBarComponent extends PositionComponent {
     add(objectsBtn);
     add(assetsBtn);
     add(mediasBtn);
+    add(canvasBtn);
   }
 
   @override
@@ -140,6 +170,17 @@ class BottomBarComponent extends PositionComponent {
         if (!children.contains(editBtn)) {
           add(editBtn);
         }
+      }
+    }
+
+    // Update the buttons depending on the canvas
+    if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
+      if (children.contains(modeBtn)) {
+        children.remove(modeBtn);
+      }
+    } else {
+      if (!children.contains(modeBtn)) {
+        add(modeBtn);
       }
     }
   }

@@ -10,6 +10,7 @@ import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 
+import 'editor_canvas.dart';
 import 'editor_mode.dart';
 
 /// The game editor.
@@ -20,6 +21,9 @@ class Editor extends Forge2DGame with DragCallbacks {
 
   /// The list of all the objects in the game.
   List<ObjectComponent> objects = [];
+
+  /// The list of all the objects in the ui canvas.
+  List<ObjectComponent> uiObjects = [];
 
   /// All the callback coming from the widget editor
   final EditorCallbacks editorCallbacks;
@@ -32,6 +36,9 @@ class Editor extends Forge2DGame with DragCallbacks {
 
   /// The mode of the editor.
   EditorMode mode = EditorMode.edit;
+
+  /// The current canvas that is being edited.
+  EditorCanvas canvas = EditorCanvas.scene;
 
   Editor({
     required this.game,
@@ -60,6 +67,48 @@ class Editor extends Forge2DGame with DragCallbacks {
     return mode;
   }
 
+  /// change the canvas that is being edited
+  void changeCanvas() {
+    if (canvas == EditorCanvas.scene) {
+      canvas = EditorCanvas.ui;
+      mode = EditorMode.edit;
+
+      for (var object in objects) {
+        if (world.contains(object)) {
+          world.remove(object);
+        }
+      }
+
+      for (var object in uiObjects) {
+        if (!world.contains(object)) {
+          world.add(object);
+        }
+      }
+
+      camera.viewfinder.position = Vector2(0, 0);
+
+    } else {
+      canvas = EditorCanvas.scene;
+
+      for (var object in uiObjects) {
+        if (world.contains(object)) {
+          world.remove(object);
+        }
+      }
+
+      for (var object in objects) {
+        if (!world.contains(object)) {
+          world.add(object);
+        }
+      }
+    }
+  }
+
+  /// get the current canvas that is being edited
+  EditorCanvas getCanvas() {
+    return canvas;
+  }
+
   /// Select an object.
   selectObject(ObjectComponent? object) {
     selectedObject = object;
@@ -76,6 +125,12 @@ class Editor extends Forge2DGame with DragCallbacks {
     object.updateDisplay();
   }
 
+  /// Update an ui object.
+  updateUiObject(ObjectComponent object) {
+    editorCallbacks.updateUIObject(object.gameObject);
+    object.updateDisplay();
+  }
+
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
     final object = ObjectComponent(
@@ -87,17 +142,58 @@ class Editor extends Forge2DGame with DragCallbacks {
         moveCamera: moveCamera,
         plockGame: game
     );
-    world.add(object);
+    if (canvas == EditorCanvas.scene) {
+      world.add(object);
+    }
     objects.add(object);
     game.objectCount++;
     editorCallbacks.addGameObject(object.gameObject);
     return object;
   }
 
+  /// Add a UI object to the game.
+  ObjectComponent addUiGameObjectCallback() {
+    final object = ObjectComponent(
+        id: game.objectCount,
+        selectObject: selectObject,
+        isObjectSelected: isObjectSelected,
+        updateObject: updateObject,
+        getMode: getMode,
+        moveCamera: moveCamera,
+        plockGame: game,
+        gameObject: GameObject(id: game.objectCount, name: 'UI Object')
+    );
+    if (canvas == EditorCanvas.ui) {
+      world.add(object);
+    }
+    uiObjects.add(object);
+    game.objectCount++;
+    editorCallbacks.addUIObject(object.gameObject);
+    return object;
+  }
+
+  /// Remove a game object from the game.
   void removeGameObjectCallback(ObjectComponent object) {
     editorCallbacks.removeGameObject(object.gameObject);
-    world.remove(object);
+    if (world.contains(object)) {
+      world.remove(object);
+    }
     objects.remove(object);
+    if (selectedObject == object) {
+      selectedObject = null;
+    }
+  }
+
+  /// Remove a UI object from the game.
+  void removeUiGameObjectCallback(ObjectComponent object) {
+    editorCallbacks.removeUIObject(object.gameObject);
+    if (world.contains(object)) {
+      world.remove(object);
+    }
+    uiObjects.remove(object);
+    if (selectedObject == object) {
+      selectedObject = null;
+    }
   }
 
   ObjectComponent? getSelectedObject() {
@@ -106,6 +202,10 @@ class Editor extends Forge2DGame with DragCallbacks {
 
   List<ObjectComponent> getObjects() {
     return objects;
+  }
+
+  List<ObjectComponent> getUiObjects() {
+    return uiObjects;
   }
 
   ObjectComponent spawnAsset(GameObject gameObject) {
@@ -162,10 +262,14 @@ class Editor extends Forge2DGame with DragCallbacks {
         selectObject: selectObject,
         openEditor: editorCallbacks.openEditor,
         addGameObject: addGameObjectCallback,
+        addUIObject: addUiGameObjectCallback,
         updateObject: updateObject,
+        updateUIObject: updateUiObject,
         removeGameObject: removeGameObjectCallback,
+        removeUIObject: removeUiGameObjectCallback,
         getSelectedObject: getSelectedObject,
         getObjects: getObjects,
+        getUiObjects: getUiObjects,
         testGame: editorCallbacks.testGame,
         goBack: editorCallbacks.goBack,
         openObjects: editorCallbacks.openObjects,
@@ -174,7 +278,9 @@ class Editor extends Forge2DGame with DragCallbacks {
         updateAsset: updateAsset,
         openMedias: editorCallbacks.openMedias,
         changeMode: changeMode,
-        getMode: getMode
+        getMode: getMode,
+        getCanvas: getCanvas,
+        changeCanvas: changeCanvas
     );
 
     final bottomBar = BottomBarComponent(
@@ -204,7 +310,7 @@ class Editor extends Forge2DGame with DragCallbacks {
           moveCamera: moveCamera,
           plockGame: game
       );
-      add(objectComponent);
+      //add(objectComponent);
       world.add(objectComponent);
       objects.add(objectComponent);
       game.objectCount++;
@@ -213,6 +319,9 @@ class Editor extends Forge2DGame with DragCallbacks {
     // Add an exit button
     var exitButton = ExitButton(exitGame: editorCallbacks.goBack);
     add(exitButton);
+
+    // add a body to the world to avoid error
+    world.createBody(BodyDef());
   }
 
   @override

@@ -16,7 +16,7 @@ import '../models/games/component_type.dart';
  * This contain all the components that can be used in the game.
  */
 class ComponentList {
-  static final Map<String, ComponentType> components = {
+  static final Map<String, ComponentType> sceneComponents = {
     'ComponentRect': ComponentRect(),
     'ComponentCircle': ComponentCircle(),
     'ComponentText': ComponentText(),
@@ -28,7 +28,24 @@ class ComponentList {
     'ComponentPhysics': ComponentPhysics(),
   };
 
-  static get() {
+  static final Map<String, ComponentType> uiComponents = {
+
+  };
+
+  static Map<String, ComponentType> getScene() {
+    return sceneComponents;
+  }
+
+  static Map<String, ComponentType> getUi() {
+    return uiComponents;
+  }
+
+  static final Map<String, ComponentType> components = {
+    ...sceneComponents,
+    ...uiComponents,
+  };
+
+  static Map<String, ComponentType> getAll() {
     return components;
   }
 

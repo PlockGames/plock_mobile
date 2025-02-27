@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
@@ -42,9 +43,9 @@ class _EditorPageState extends State<EditorPage> {
 
 
   /// Open the object editor.
-  Function(ObjectComponent object, List<GameObject> objects) openEditor(BuildContext context) {
+  Function(ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) openEditor(BuildContext context) {
 
-    return (ObjectComponent object, List<GameObject> objects) {
+    return (ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) {
 
       Navigator.push(
           context,
@@ -53,6 +54,7 @@ class _EditorPageState extends State<EditorPage> {
                     object: object,
                     objects: objects,
                     medias: widget.game.medias,
+                    canvas: canvas,
                   )));
     };
   }
@@ -62,15 +64,31 @@ class _EditorPageState extends State<EditorPage> {
     widget.game.objects.add(gameObject);
   }
 
+  /// Callback : Add a ui object to the game.
+  void addUiGameObject(GameObject gameObject) {
+    widget.game.uiObjects.add(gameObject);
+  }
+
   /// Callback : Remove a game object from the game.
   void removeGameObject(GameObject gameObject) {
     widget.game.objects.remove(gameObject);
+  }
+
+  /// Callback : Remove a ui object from the game.
+  void removeUiGameObject(GameObject gameObject) {
+    widget.game.uiObjects.remove(gameObject);
   }
 
   /// Callback : Update a game object in the game.
   void updateGameObject(GameObject gameObject) {
     widget.game.objects.remove(gameObject);
     widget.game.objects.add(gameObject);
+  }
+
+  /// Callback : Update a ui object in the game.
+  void updateUiGameObject(GameObject gameObject) {
+    widget.game.uiObjects.remove(gameObject);
+    widget.game.uiObjects.add(gameObject);
   }
 
   /// Callback : Upload the game to the server and close the editor.
@@ -112,15 +130,15 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
-  Function(List<ObjectComponent>) openObjects(BuildContext context) {
-    return (List<ObjectComponent> objects) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context))));
+  Function(List<ObjectComponent>, EditorCanvas canvas) openObjects(BuildContext context) {
+    return (List<ObjectComponent> objects, EditorCanvas canvas) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context), canvas: canvas)));
     };
   }
 
-  Function(Function(GameObject), Function(GameObject)) openAssets(BuildContext context) {
-    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => AssetsPage(game: widget.game, spawnAsset: spawnAsset, updateAsset: updateAsset)));
+  Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets(BuildContext context) {
+    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset, EditorCanvas canvas) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AssetsPage(game: widget.game, spawnAsset: spawnAsset, updateAsset: updateAsset, canvas: canvas)));
     };
   }
 
@@ -135,8 +153,11 @@ class _EditorPageState extends State<EditorPage> {
     EditorCallbacks callbacks = EditorCallbacks(
       openEditor: openEditor(context),
       addGameObject: addGameObject,
+      addUIObject: addUiGameObject,
       removeGameObject: removeGameObject,
+      removeUIObject: removeUiGameObject,
       updateGameObject: updateGameObject,
+      updateUIObject: updateUiGameObject,
       testGame: testGame(context),
       goBack: goBack(context),
       openObjects: openObjects(context),

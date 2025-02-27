@@ -69,6 +69,11 @@ class GamePlayer extends Forge2DGame {
       components.add(newComponent);
     }
 
+    for (var object in game.uiObjects) {
+      Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
+      components.add(newComponent);
+    }
+
     // set parenting for all the objects
     for (var comp in components) {
       GamePlayerObject object = comp as GamePlayerObject;

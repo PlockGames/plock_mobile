@@ -16,8 +16,14 @@ class Game {
   /// The objects in the game.
   List<GameObject> objects = List<GameObject>.empty(growable: true);
 
+  /// the ui objects in the game
+  List<GameObject> uiObjects = List<GameObject>.empty(growable: true);
+
   /// The assets of the game.
   List<GameObject> assets = List<GameObject>.empty(growable: true);
+
+  /// the UI assets of the game
+  List<GameObject> uiAssets = List<GameObject>.empty(growable: true);
 
   /// The medias of the game.
   List<Media> medias = List<Media>.empty(growable: true);
@@ -27,6 +33,9 @@ class Game {
 
   /// Object count, used to assign id
   int objectCount = 0;
+
+  /// Asset count, used to assign id
+  int assetCount = 0;
 
   /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
@@ -50,6 +59,10 @@ class Game {
 
     for (var object in objects) {
       instance.objects.add(object.instance());
+    }
+
+    for (var object in uiObjects) {
+      instance.uiObjects.add(object.instance());
     }
 
     for (var asset in assets) {
@@ -84,7 +97,17 @@ class Game {
       throw Exception("Game player not set. Do not use outside of game player!");
     }
 
-    GameObject asset = assets.firstWhere((element) => element.name == assetName);
+    GameObject asset;
+
+    try {
+      asset = assets.firstWhere((element) => element.name == assetName);
+    } catch (e) {
+      try {
+        asset = uiAssets.firstWhere((element) => element.name == assetName);
+      } catch (e) {
+        throw Exception("Asset not found");
+      }
+    }
 
     GameObject newObject = asset.instance();
     newObject.id = objectCount;
