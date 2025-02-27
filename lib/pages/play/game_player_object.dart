@@ -84,6 +84,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
           ..setAsBoxXY((width / 2), (height / 2)),
         density: 1.0,
         friction: 0.3,
+        isSensor: true,
       ),
     ];
 

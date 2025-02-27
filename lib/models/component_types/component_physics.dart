@@ -21,6 +21,7 @@ class ComponentPhysics extends ComponentType {
     fields["lock rotation"] = ComponentFieldBool(value: false);
     fields["lock move X"] = ComponentFieldBool(value: false);
     fields["lock move Y"] = ComponentFieldBool(value: false);
+    fields["is sensor"] = ComponentFieldBool(value: false);
     fields["type"] = ComponentFieldDropDown(value: "static", options: {
       "static": "Static",
       "dynamic": "Dynamic",
@@ -106,6 +107,11 @@ class ComponentPhysics extends ComponentType {
       if (parent.lockY != fields["lock move Y"]!.value) {
         parent.lockY = fields["lock move Y"]!.value;
         parent.lockYPosition = parent.position.y;
+        parent.gameObject.isPhysicsDirty = true;
+      }
+
+      if (parent.fixtureDefs![0].isSensor != fields["is sensor"]!.value) {
+        parent.fixtureDefs![0].isSensor = fields["is sensor"]!.value;
         parent.gameObject.isPhysicsDirty = true;
       }
 
