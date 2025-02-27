@@ -184,6 +184,23 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().rotation.toString()),
+                  onChanged: (value) {
+                    try {
+                      widget.object.getGameObject().rotation = double.parse(value);
+                    } catch (e) {
+                      widget.object.getGameObject().rotation = 0;
+                    }
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Rotation',
+                    border: OutlineInputBorder(),
+                    label: Text('Rotation'),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 OutlinedButton(onPressed: setParent, child: Text(widget.object.getGameObject().parent != null ? "Parent: ${widget.object.getGameObject().parent!.name}" : "Parent: None")),
                 const SizedBox(height: 40),
                 for (var component in widget.object.getGameObject().components)

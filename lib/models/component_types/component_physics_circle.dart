@@ -13,10 +13,9 @@ import '../games/component_type.dart';
 import '../games/media.dart';
 
 /// A component that display a rectangle.
-class ComponentPhysics extends ComponentType {
-  ComponentPhysics() {
-    fields["width"] = ComponentFieldNumber(value: 1.0);
-    fields["height"] = ComponentFieldNumber(value: 1.0);
+class ComponentPhysicsCircle extends ComponentType {
+  ComponentPhysicsCircle() {
+    fields["radius"] = ComponentFieldNumber(value: 0.5);
     fields["gravity"] = ComponentFieldNumber(value: 10.0);
     fields["lock rotation"] = ComponentFieldBool(value: false);
     fields["lock move X"] = ComponentFieldBool(value: false);
@@ -29,14 +28,14 @@ class ComponentPhysics extends ComponentType {
   }
 
   @override
-  String get type => 'ComponentPhysics';
+  String get type => 'ComponentPhysicsCircle';
 
   @override
-  String get name => 'Physics';
+  String get name => 'Physics Circle';
 
   @override
   ComponentType instance() {
-    ComponentPhysics comp = ComponentPhysics();
+    ComponentPhysicsCircle comp = ComponentPhysicsCircle();
     fields.forEach((key, value) {
       comp.fields[key] = value.instance();
     });
@@ -78,21 +77,26 @@ class ComponentPhysics extends ComponentType {
         bodyType = BodyType.kinematic;
       }
 
-      if (parent.fixtureDefs?[0].shape is! PolygonShape) {
-        parent.fixtureDefs?[0].shape = PolygonShape()
-          ..setAsBoxXY(
-            fields["width"]!.value.toDouble(),
-            fields["height"]!.value.toDouble()
-          );
+      if (parent.fixtureDefs?[0].shape is! CircleShape) {
+        parent.fixtureDefs?[0].shape = CircleShape()
+          ..radius = fields["radius"]!.value.toDouble();
         parent.gameObject.isPhysicsDirty = true;
       }
 
       parent.bodyDef!.gravityScale = Vector2(0, gravity);
 
       // if lock rotation is true
-      if (parent.lockRotation != fields["lock rotation"]!.value) {
+      if (parent.bodyDef!.fixedRotation != fields["lock rotation"]!.value) {
+        parent.bodyDef!.fixedRotation = fields["lock rotation"]!.value;
         parent.lockRotationValue = parent.angle;
         parent.lockRotation = fields["lock rotation"]!.value;
+
+        if (parent.bodyDef!.fixedRotation) {
+          parent.bodyDef!.angularDamping = 0;
+
+        } else {
+          parent.bodyDef!.angularDamping = 0.1;
+        }
 
         parent.gameObject.isPhysicsDirty = true;
       }

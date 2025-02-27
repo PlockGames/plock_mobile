@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -109,6 +110,7 @@ class ObjectSceneComponent extends BodyComponent
 
     bodyDef = BodyDef()
       ..position = Vector2(_gameObject.position.x, _gameObject.position.y)
+      ..angle = _gameObject.rotation * pi / 180
       ..type = BodyType.static
       ..userData = this;
 
@@ -128,6 +130,7 @@ class ObjectSceneComponent extends BodyComponent
     if (!load) {
       this.position.x = _gameObject.position.x;
       this.position.y = _gameObject.position.y;
+      this.body.setTransform(Vector2(_gameObject.position.x, _gameObject.position.y), _gameObject.rotation * pi / 180);
     }
 
     // Empty the display component list
@@ -206,9 +209,10 @@ class ObjectSceneComponent extends BodyComponent
 
     if (getMode() == EditorMode.edit) {
       if (!_gameObject.locked) {
-        // update position if object is dragged
-        _gameObject.position.x += event.localDelta.x;
-        _gameObject.position.y += event.localDelta.y;
+        // update position if object is dragged taking in account the rotation
+        var rotationRadians = _gameObject.rotation * pi / 180;
+        _gameObject.position.x += event.localDelta.x * cos(rotationRadians) - event.localDelta.y * sin(rotationRadians);
+        _gameObject.position.y += event.localDelta.x * sin(rotationRadians) + event.localDelta.y * cos(rotationRadians);
         position.x = _gameObject.position.x;
         position.y = _gameObject.position.y;
       }

@@ -1,4 +1,5 @@
 import 'package:plock_mobile/models/component_types/component_image.dart';
+import 'package:plock_mobile/models/component_types/component_physics_circle.dart';
 import 'package:plock_mobile/models/component_types/component_tilemap.dart';
 import 'package:plock_mobile/models/component_types/component_ui_text.dart';
 import 'package:plock_mobile/models/component_types/component_variable.dart';
@@ -28,6 +29,7 @@ class ComponentList {
     'ComponentImage': ComponentImage(),
     'ComponentSprite': ComponentSprite(),
     'ComponentPhysics': ComponentPhysics(),
+    'ComponentPhysicsCircle': ComponentPhysicsCircle(),
     'ComponentTilemap': ComponentTilemap(),
   };
 

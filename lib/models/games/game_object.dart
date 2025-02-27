@@ -17,6 +17,9 @@ class GameObject {
   /// The position of the object.
   Vector2 position = Vector2(0, 0);
 
+  /// The rotation of the object.
+  double rotation = 0;
+
   /// The type of the object.
   GameObjectType type = GameObjectType.object;
 
@@ -56,6 +59,7 @@ class GameObject {
   GameObject instance() {
     GameObject instance = GameObject(id: id, name: name);
     instance.position = Vector2(position.x, position.y);
+    instance.rotation = rotation;
     instance.type = type;
     instance.assetId = assetId;
     instance.parent = parent;

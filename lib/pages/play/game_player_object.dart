@@ -73,6 +73,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
     bodyDef = BodyDef()
       ..position = Vector2(gameObject.position.x, gameObject.position.y)
+      // rotation from degree to radian
+      ..angle = gameObject.rotation * 3.141592653589793 / 180.0
       ..type = BodyType.static
       ..userData = this;
 
@@ -174,12 +176,14 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     if (gameObject.isPhysicsDirty && body.isAwake) {
       gameObject.isPhysicsDirty = false;
       Vector2 oldPos = this.body.position;
+      double oldAngle = this.body.angle;
       if (gameObject.isPositionDirty) {
         oldPos = Vector2(gameObject.position.x, gameObject.position.y);
         gameObject.isPositionDirty = false;
       }
       world.destroyBody(body);
       bodyDef!.position = oldPos;
+      bodyDef!.angle = oldAngle;
       this.body = world.createBody(bodyDef!);
       for (var fixtureDef in fixtureDefs!) {
         body.createFixture(fixtureDef);
@@ -187,10 +191,10 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     } else {
       if (gameObject.isPositionDirty) {
         gameObject.isPositionDirty = false;
-        body.setTransform(Vector2(gameObject.position.x, gameObject.position.y), 0.0);
+        body.setTransform(Vector2(gameObject.position.x, gameObject.position.y), body.angle);
         for (var contact in body.contacts) {
           Vector2 pos = contact.bodyB.position;
-          contact.bodyB.setTransform(pos, 0.0);
+          contact.bodyB.setTransform(pos, contact.bodyB.angle);
           contact.bodyB.setAwake(true);
         }
       }
