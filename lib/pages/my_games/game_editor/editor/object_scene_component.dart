@@ -118,13 +118,17 @@ class ObjectSceneComponent extends BodyComponent
       ..friction = 0.3];
 
     // Update the components
-    updateDisplay();
+    updateDisplay(load: true);
   }
 
   /// Update the display components.
   @override
-  void updateDisplay() {
+  void updateDisplay({bool load = false}) {
     this.priority = _gameObject.layer;
+    if (!load) {
+      this.position.x = _gameObject.position.x;
+      this.position.y = _gameObject.position.y;
+    }
 
     // Empty the display component list
     for (var component in displayComponents) {

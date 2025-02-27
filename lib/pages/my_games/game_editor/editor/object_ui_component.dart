@@ -114,6 +114,7 @@ class ObjectUiComponent extends PositionComponent
   @override
   void updateDisplay() {
     this.priority = _gameObject.layer;
+    this.position = Vector2(_gameObject.position.x, _gameObject.position.y);
 
     // Empty the display component list
     for (var component in displayComponents) {
