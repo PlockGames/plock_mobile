@@ -221,6 +221,14 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   void onDragStart(DragStartEvent event) {
+    for (var component in eventComponents) {
+      if (component.fields['trigger']!.value == 'ON_START_DRAG') {
+        double x = event.canvasPosition.x;
+        double y = event.canvasPosition.y;
+        plockGame.lastTouchPosition = Vector2(x, y);
+        executeEvent(component.fields['event']!.value[0], -1, "");
+      }
+    }
   }
 
   void onDragUpdate(DragUpdateEvent event) {
@@ -235,6 +243,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   void onDragEnd(DragEndEvent event) {
+    for (var component in eventComponents) {
+      if (component.fields['trigger']!.value == 'ON_END_DRAG') {
+        executeEvent(component.fields['event']!.value[0], -1, "");
+      }
+    }
   }
 
   void onDragCancel(DragCancelEvent event) {
