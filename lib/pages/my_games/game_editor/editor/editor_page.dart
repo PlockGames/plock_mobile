@@ -76,6 +76,15 @@ class _EditorPageState extends State<EditorPage> {
     widget.game.uiObjects.remove(gameObject);
   }
 
+  /// Callback : Remove an object depending on the current canvas.
+  void removeObject(ObjectComponent object, EditorCanvas canvas) {
+    if (canvas == EditorCanvas.scene) {
+      removeGameObject(object.getGameObject());
+    } else {
+      removeUiGameObject(object.getGameObject());
+    }
+  }
+
   /// Callback : Update a game object in the game.
   void updateGameObject(GameObject gameObject) {
     widget.game.objects.remove(gameObject);
@@ -129,7 +138,7 @@ class _EditorPageState extends State<EditorPage> {
 
   Function(List<ObjectComponent>, EditorCanvas canvas) openObjects(BuildContext context) {
     return (List<ObjectComponent> objects, EditorCanvas canvas) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context), canvas: canvas)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context), canvas: canvas, removeObject: removeObject)));
     };
   }
 

@@ -138,6 +138,52 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().layer.toString()),
+                  onChanged: (value) {
+                    widget.object.getGameObject().layer = int.parse(value);
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Layer',
+                    border: OutlineInputBorder(),
+                    label: Text('Layer'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.x.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.x = double.parse(value);
+                        widget.object.updateDisplay();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'X',
+                        border: OutlineInputBorder(),
+                        label: Text('X'),
+                      ),
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.y.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.y = double.parse(value);
+                        widget.object.updateDisplay();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Y',
+                        border: OutlineInputBorder(),
+                        label: Text('Y'),
+                      ),
+                    ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 OutlinedButton(onPressed: setParent, child: Text(widget.object.getGameObject().parent != null ? "Parent: ${widget.object.getGameObject().parent!.name}" : "Parent: None")),
                 const SizedBox(height: 40),
                 for (var component in widget.object.getGameObject().components)

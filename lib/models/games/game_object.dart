@@ -26,6 +26,18 @@ class GameObject {
   /// The parent of the object, if any.
   GameObject? parent;
 
+  /// The layer of the object.
+  int layer = 0;
+
+  /// If the object is locked, it can't be moved in the editor.
+  bool locked = false;
+
+  /// If the object is Visible in the editor.
+  bool visible = true;
+
+  /// If the object is enabled
+  bool enabled = true;
+
   /// is position dirty
   bool isPositionDirty = false;
 
@@ -47,6 +59,10 @@ class GameObject {
     instance.type = type;
     instance.assetId = assetId;
     instance.parent = parent;
+    instance.layer = layer;
+    instance.locked = locked;
+    instance.visible = visible;
+    instance.enabled = enabled;
     for (var component in components) {
       instance.components.add(component.instance());
     }

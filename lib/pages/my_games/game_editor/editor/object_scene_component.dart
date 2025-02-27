@@ -124,6 +124,8 @@ class ObjectSceneComponent extends BodyComponent
   /// Update the display components.
   @override
   void updateDisplay() {
+    this.priority = _gameObject.layer;
+
     // Empty the display component list
     for (var component in displayComponents) {
       remove(component);
@@ -139,7 +141,7 @@ class ObjectSceneComponent extends BodyComponent
           onDragUpdateCallback,
           onDragEndCallback,
           onDragCancelCallback);
-      if (displayComponent.display != null) {
+      if (displayComponent.display != null && gameObject.visible && gameObject.enabled) {
         displayComponents.add(displayComponent.display!);
         add(displayComponent.display!);
       }
@@ -179,12 +181,14 @@ class ObjectSceneComponent extends BodyComponent
 
   bool onTapUpCallback(TapUpEvent info) {
     if (getMode() == EditorMode.edit) {
-      if (isObjectSelected(this)) {
-        selectObject(null);
-      } else {
-        selectObject(this);
+      if (!_gameObject.locked) {
+        if (isObjectSelected(this)) {
+          selectObject(null);
+        } else {
+          selectObject(this);
+        }
+        return true;
       }
-      return true;
     }
     return false;
   }
@@ -197,11 +201,13 @@ class ObjectSceneComponent extends BodyComponent
     super.onDragUpdate(event);
 
     if (getMode() == EditorMode.edit) {
-      // update position if object is dragged
-      _gameObject.position.x += event.localDelta.x;
-      _gameObject.position.y += event.localDelta.y;
-      position.x = _gameObject.position.x;
-      position.y = _gameObject.position.y;
+      if (!_gameObject.locked) {
+        // update position if object is dragged
+        _gameObject.position.x += event.localDelta.x;
+        _gameObject.position.y += event.localDelta.y;
+        position.x = _gameObject.position.x;
+        position.y = _gameObject.position.y;
+      }
     } else if (getMode() == EditorMode.move) {
       moveCamera(event.localDelta);
     }

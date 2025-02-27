@@ -79,9 +79,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     js.evaluate("let collider = \"\";");
 
     // Execute the start events
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_START') {
-        executeEvent(component.fields['event']!.value[0], -1, "");
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_START') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
 
@@ -89,6 +91,17 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// Update the display components.
   Future<void> updateDisplay() async {
+    this.priority = gameObject.layer;
+
+    if (!gameObject.enabled) {
+      for (var component in this.children) {
+        if (component is ComponentFlame) {
+          remove(component);
+        }
+      }
+      return;
+    }
+
     List<String> alreadyDisplayed = [];
 
     // Update the components that are already instancied
@@ -189,63 +202,78 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   void update(double dt) {
     super.update(dt);
 
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_UPDATE') {
-
-        executeEvent(component.fields['event']!.value[0], -1, "");
-      }
-    }
-
-    for (var contact in contacts) {
+    if (gameObject.enabled) {
       for (var component in eventComponents) {
-        if (component.fields['trigger']!.value == 'ON_COLLISION') {
-          GamePlayerObject contactObjectA = contact.bodyB.userData as GamePlayerObject;
-          GamePlayerObject contactObjectB = contact.bodyA.userData as GamePlayerObject;
-          GameObject contactGameObject = contactObjectA.gameObject.id == gameObject.id ? contactObjectB.gameObject : contactObjectA.gameObject;
-          executeEvent(component.fields['event']!.value[0], contactGameObject.id, contactGameObject.name);
+        if (component.fields['trigger']!.value == 'ON_UPDATE') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
         }
       }
-    }
-    contacts = [];
 
+      for (var contact in contacts) {
+        for (var component in eventComponents) {
+          if (component.fields['trigger']!.value == 'ON_COLLISION') {
+            GamePlayerObject contactObjectA = contact.bodyB
+                .userData as GamePlayerObject;
+            GamePlayerObject contactObjectB = contact.bodyA
+                .userData as GamePlayerObject;
+            GameObject contactGameObject = contactObjectA.gameObject.id ==
+                gameObject.id ? contactObjectB.gameObject : contactObjectA
+                .gameObject;
+            executeEvent(
+                component.fields['event']!.value[0], contactGameObject.id,
+                contactGameObject.name);
+          }
+        }
+      }
+      contacts = [];
+    }
   }
 
   bool onTapUp(TapUpEvent info) {
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_TAP') {
-        plockGame.lastTouchPosition = Vector2(info.localPosition.x, info.localPosition.y);
-        executeEvent(component.fields['event']!.value[0], -1, "");
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_TAP') {
+          plockGame.lastTouchPosition =
+              Vector2(info.localPosition.x, info.localPosition.y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
     return true;
   }
 
   void onDragStart(DragStartEvent event) {
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_START_DRAG') {
-        double x = event.canvasPosition.x;
-        double y = event.canvasPosition.y;
-        plockGame.lastTouchPosition = Vector2(x, y);
-        executeEvent(component.fields['event']!.value[0], -1, "");
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_START_DRAG') {
+          double x = event.canvasPosition.x;
+          double y = event.canvasPosition.y;
+          plockGame.lastTouchPosition = Vector2(x, y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
   }
 
   void onDragUpdate(DragUpdateEvent event) {
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_DRAG') {
-        double x = event.canvasStartPosition.x + event.canvasDelta.x;
-        double y = event.canvasStartPosition.y + event.canvasDelta.y;
-        plockGame.lastTouchPosition = Vector2(x, y);
-        executeEvent(component.fields['event']!.value[0], -1, "");
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_DRAG') {
+          double x = event.canvasStartPosition.x + event.canvasDelta.x;
+          double y = event.canvasStartPosition.y + event.canvasDelta.y;
+          plockGame.lastTouchPosition = Vector2(x, y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
   }
 
   void onDragEnd(DragEndEvent event) {
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_END_DRAG') {
-        executeEvent(component.fields['event']!.value[0], -1, "");
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_END_DRAG') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
   }
@@ -255,6 +283,10 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// Execute an event.
   Future<void> executeEvent(String event, int collider, String colliderName) async {
+    if (!gameObject.enabled) {
+      return;
+    }
+
     // add collider to the event
     event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
 
