@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_loaded.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_painter.dart';
 
 import '../../games/media.dart';
@@ -14,11 +15,12 @@ class TilemapEditor extends StatefulWidget {
   final List<Media> medias;
   final int selectedTile;
   final Tilemap tilemap;
+  final int tileSize = 32;
 
   final TilemapEditorController controller;
 
   TilemapEditor({required this.tiles, required this.medias, this.selectedTile = 0, required this.tilemap})
-      : controller = TilemapEditorController(tileSize: 16, width: tilemap.width, height: tilemap.height);
+      : controller = TilemapEditorController(tileSize: 32, width: tilemap.width, height: tilemap.height);
 
   @override
   _TilemapEditorState createState() => _TilemapEditorState();
@@ -53,50 +55,13 @@ class _TilemapEditorState extends State<TilemapEditor> {
 
     Future<List<ui.Image?>> future = loadTilesMedias();
 
-    GestureDetector buildGestureDetector(RepaintBoundary boundary) {
-
-      return GestureDetector(
-        child: boundary,
-        onPanStart: (details) {
-          int x = (details.localPosition.dx ~/ 16);
-          int y = (details.localPosition.dy ~/ 16);
-
-          widget.tilemap.map[y][x] = widget.selectedTile;
-        },
-        onPanUpdate: (details) {
-          setState(() {
-            int x = (details.localPosition.dx ~/ 16);
-            int y = (details.localPosition.dy ~/ 16);
-
-            widget.tilemap.map[y][x] = widget.selectedTile;
-
-          });
-        },
-        onPanEnd: (details) {
-          setState(() {
-
-          });
-        },
-      );
-    }
-
     return FutureBuilder<List<ui.Image?>>(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-        return Container(
-          color: Colors.grey,
-          width: widget.controller.width * widget.controller.tileSize.toDouble(),
-          height: widget.controller.height * widget.controller.tileSize.toDouble(),
-          child: buildGestureDetector(RepaintBoundary(
-            child: CustomPaint(
-              painter: TilemapEditorPainter(controller: widget.controller, tiles: widget.tiles, loadedMedias: snapshot.data!, tilemap: widget.tilemap),
-            ),
-          ),
-          ),
-        );
+        return TilemapEditorLoaded(tiles: widget.tiles, loadedMedias: snapshot.data!, selectedTile: widget.selectedTile, tilemap: widget.tilemap);
         } else {
-          return Container();
+          return const CircularProgressIndicator();
         }
       },
     );
