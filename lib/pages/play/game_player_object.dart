@@ -11,7 +11,7 @@ import 'package:plock_mobile/pages/play/event_manager.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
-/// A flame object that represents a game object in te game engine.
+/// A flame object that represents a game object in the game engine.
 class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// The game object linked to this Flame object.
