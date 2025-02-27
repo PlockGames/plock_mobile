@@ -85,6 +85,18 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
     controllers = List<TextEditingController>.empty(growable: true);
     for (int i = 0; i < widget.field.value.length; i++) {
       FocusNode focusNode = FocusNode();
+      focusNode.addListener(() {
+        if (!focusNode.hasFocus) {
+          setState(() {
+            widget.field.value[i].media = controllers[i].text;
+
+            if (widget.onUpdate != null) {
+              widget.onUpdate!();
+            }
+          });
+
+        }
+      });
       widget.focusNodes.add(focusNode);
 
       TextEditingController controller = TextEditingController(text: widget.field.value[i].media);
@@ -142,15 +154,6 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                           decoration: const InputDecoration(
                             labelText: 'Tile',
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              widget.field.value[i].media = value;
-                              if (widget.onUpdate != null) {
-                                widget.onUpdate!();
-                              }
-                              widget.focusNodes[i].requestFocus();
-                            });
-                          },
                         )
                         ),
                         IconButton(

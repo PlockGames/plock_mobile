@@ -85,6 +85,9 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
+
+    this.size = Vector2(tilemap.width * initScale.x, tilemap.height * initScale.y);
+
     await loadSprites();
     for (int x = 0; x < tilemap.width; x++) {
       for (int y = 0; y < tilemap.height; y++) {
@@ -99,7 +102,6 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
         spriteComponent.position = Vector2(x * initScale.x, y * initScale.y);
         spriteComponents.add(spriteComponent);
         add(spriteComponent);
-        print(spriteComponent.position);
       }
 
     }
