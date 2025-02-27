@@ -31,6 +31,24 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   List<Contact> contacts = [];
 
+  /// lock X position
+  bool lockX = false;
+
+  /// lock X position position
+  double lockXPosition = 0;
+
+  /// lock Y position
+  bool lockY = false;
+
+  /// lock Y position position
+  double lockYPosition = 0;
+
+  /// lock rotation
+  bool lockRotation = false;
+
+  /// lock rotation rotation
+  double lockRotationValue = 0;
+
   GamePlayerObject({
     required this.gameObject,
     required this.plockGame,
@@ -71,7 +89,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     EventManager.registerEvents(js, plockGame, gameObject.id);
 
     // Update the components
-    gameObject.isPhysicsDirty = false;
+    gameObject.isPhysicsDirty = true;
+    plockGame.isDirty = true;
     updateDisplay();
     updateEvents();
 
@@ -201,6 +220,21 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (lockX) {
+      body.linearVelocity = Vector2(0, body.linearVelocity.y);
+      body.position.x = lockXPosition;
+    }
+
+    if (lockY) {
+      body.linearVelocity = Vector2(body.linearVelocity.x, 0);
+      body.position.y = lockYPosition;
+    }
+
+    if (lockRotation) {
+      body.angularVelocity = 0;
+      body.setTransform(body.position, lockRotationValue);
+    }
 
     if (gameObject.enabled) {
       for (var component in eventComponents) {

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:plock_mobile/models/component_fields/component_field_bool.dart';
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_empty.dart';
@@ -17,6 +18,9 @@ class ComponentPhysics extends ComponentType {
     fields["width"] = ComponentFieldNumber(value: 1.0);
     fields["height"] = ComponentFieldNumber(value: 1.0);
     fields["gravity"] = ComponentFieldNumber(value: 10.0);
+    fields["lock rotation"] = ComponentFieldBool(value: false);
+    fields["lock move X"] = ComponentFieldBool(value: false);
+    fields["lock move Y"] = ComponentFieldBool(value: false);
     fields["type"] = ComponentFieldDropDown(value: "static", options: {
       "static": "Static",
       "dynamic": "Dynamic",
@@ -75,6 +79,34 @@ class ComponentPhysics extends ComponentType {
       }
 
       parent.bodyDef!.gravityScale = Vector2(0, gravity);
+
+      // if lock rotation is true
+      if (parent.bodyDef!.fixedRotation != fields["lock rotation"]!.value) {
+        parent.bodyDef!.fixedRotation = fields["lock rotation"]!.value;
+        parent.lockRotationValue = parent.angle;
+        parent.lockRotation = fields["lock rotation"]!.value;
+
+        if (parent.bodyDef!.fixedRotation) {
+          parent.bodyDef!.angularDamping = 0;
+
+        } else {
+          parent.bodyDef!.angularDamping = 0.1;
+        }
+
+        parent.gameObject.isPhysicsDirty = true;
+      }
+
+      if (parent.lockX != fields["lock move X"]!.value) {
+        parent.lockX = fields["lock move X"]!.value;
+        parent.lockXPosition = parent.position.x;
+        parent.gameObject.isPhysicsDirty = true;
+      }
+
+      if (parent.lockY != fields["lock move Y"]!.value) {
+        parent.lockY = fields["lock move Y"]!.value;
+        parent.lockYPosition = parent.position.y;
+        parent.gameObject.isPhysicsDirty = true;
+      }
 
       if (parent.bodyDef!.type != bodyType) {
         parent.bodyDef!.type = bodyType;
