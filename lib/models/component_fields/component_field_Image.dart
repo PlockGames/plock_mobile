@@ -122,7 +122,6 @@ class _ComponentFieldImageFieldState extends State<ComponentFieldImageField> {
             }
 
             updateMedia();
-            //focusNode.requestFocus();
           }
         ),
         SizedBox.fromSize(size: const Size(0, 20)),

@@ -1,12 +1,15 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
+import 'package:plock_mobile/models/component_fields/component_field_tilemap.dart';
+import 'package:plock_mobile/models/component_fields/component_field_tileset.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_number.dart';
 import '../component_fields/component_field_sprite.dart';
 import '../component_fields/sprite/sprite_animation.dart';
+import '../component_fields/tilemap/tilemap.dart';
 import '../component_flame/component_flame_sprite.dart';
 import '../games/component_type.dart';
 import '../games/media.dart';
@@ -17,8 +20,8 @@ class ComponentTilemap extends ComponentType {
   ComponentTilemap() {
     fields["size"] = ComponentFieldNumber(value: 1.0);
     fields["tiles size"] = ComponentFieldNumber(value: 16.0);
-    fields["tiles"] = ComponentFieldText(value: "");
-    fields["map"] = ComponentFieldSprite(value: List<PlockSpriteAnimation>.empty(growable: true));
+    fields["map"] = ComponentFieldTilemap(value: Tilemap(16, 16));
+    fields["tiles"] = ComponentFieldTileset(value: List<String>.empty(growable: true));
   }
 
   @override
@@ -44,35 +47,8 @@ class ComponentTilemap extends ComponentType {
       onDragEndCallback,
       onDragCancelCallback) {
 
-    List<PlockSpriteAnimation> animator = fields["animator"]!.value;
-    String current = fields["current"]!.value;
-
-    if (animator.isEmpty) {
       return DisplayComponents(display: null, select: null);
-    }
 
-    PlockSpriteAnimation? animation;
-    try {
-      animation = animator.firstWhere((element) => element.name == current);
-    } catch (e) {
-      animation = null;
-    }
-    animation ??= animator.first;
-
-    ComponentFlameSprite display = ComponentFlameSprite(
-        onDragStartCallback: onDragStartCallback,
-        onTapeUpCallback: onTapeUpCallback,
-        onDragCancelCallback: onDragCancelCallback,
-        onDragEndCallback: onDragEndCallback,
-        onDragUpdateCallback: onDragUpdateCallback,
-        animation: animation!,
-        medias: medias,
-        initScale: Vector2(
-            fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
-        componentType: this
-    );
-
-    return DisplayComponents(display: display, select: null);
   }
 
   @override
