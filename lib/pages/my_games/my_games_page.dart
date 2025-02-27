@@ -54,7 +54,6 @@ class _MyGamesPageState extends State<MyGamesPage> {
                             MaterialPageRoute(
                               builder: (context) => EditorPage(
                                 game: project,
-                                onGameObjectUpdated: (updatedGameObject) {},
                               ),
                               settings: const RouteSettings(name: '/editor'),
                             ),
@@ -112,7 +111,6 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   MaterialPageRoute(
                     builder: (context) => EditorPage(
                       game: game,
-                      onGameObjectUpdated: (updatedGameObject) {},
                     ),
                     settings: const RouteSettings(name: '/editor'),
                   ),

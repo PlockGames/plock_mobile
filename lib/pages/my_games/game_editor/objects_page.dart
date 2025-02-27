@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import '../../../models/games/component_type.dart';
 import 'editor/editor_canvas.dart';
+import 'editor/object_component.dart';
 
 /// The page to add a component to an object.
 class ObjectsPage extends StatefulWidget {
@@ -36,9 +37,9 @@ class _AddComponentPageState extends State<ObjectsPage> {
         children: [
           for (var object in widget.objects)
             ListTile(
-              title: Text(object.gameObject.name),
+              title: Text(object.getGameObject().name),
               onTap: () {
-                List<GameObject> objects = widget.objects.map((e) => e.gameObject).toList();
+                List<GameObject> objects = widget.objects.map((e) => e.getGameObject()).toList();
                 widget.openEditor(object, objects, widget.canvas);
               },
             ),

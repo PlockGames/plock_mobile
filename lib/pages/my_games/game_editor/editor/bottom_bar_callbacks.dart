@@ -1,16 +1,19 @@
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
+
+import 'object_component.dart';
+import 'object_ui_component.dart';
 
 class BottomBarCallbacks {
   final Function(ObjectComponent? object) selectObject;
   final Function(ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) openEditor;
   final ObjectComponent Function()  addGameObject;
-  final ObjectComponent Function() addUIObject;
+  final ObjectUiComponent Function() addUIObject;
   final Function(ObjectComponent object) updateObject;
-  final Function(ObjectComponent object) updateUIObject;
+  final Function(ObjectUiComponent object) updateUIObject;
   final Function(ObjectComponent object) removeGameObject;
-  final Function(ObjectComponent object) removeUIObject;
+  final Function(ObjectUiComponent object) removeUIObject;
   final Function getSelectedObject;
   final Function getObjects;
   final Function getUiObjects;

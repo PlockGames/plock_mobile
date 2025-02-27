@@ -126,7 +126,7 @@ class EventManager {
   static void _setCameraValue(Game game, int thisObjectId, dynamic args) {
     String value = args[0];
     double newValue = args[1].toDouble();
-    print("Set camera value: $value, $newValue");
+    //print("Set camera value: $value, $newValue");
 
     if (value == "X") {
       game.gamePlayer?.camera.viewfinder.position =

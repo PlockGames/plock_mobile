@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flame/camera.dart';
 import 'package:flame_forge2d/forge2d_game.dart';
 
 import 'package:flame/components.dart';
@@ -8,6 +9,7 @@ import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
 import '../../models/games/game.dart' as plock;
 import 'game_player_object.dart';
+import 'game_player_ui_object.dart';
 
 /// The game player.
 class GamePlayer extends Forge2DGame {
@@ -17,6 +19,9 @@ class GamePlayer extends Forge2DGame {
 
   /// List of all the game objects.
   List<Component> components = [];
+
+  /// List of all the ui objects.
+  List<Component> uiComponents = [];
 
   /// is used with the editor to test the game ?
   ///
@@ -50,6 +55,7 @@ class GamePlayer extends Forge2DGame {
 
     camera.viewfinder.zoom = 50;
     camera.viewfinder.position = Vector2(0, 0);
+    camera.viewport = MaxViewport();
 
     // Add button to exit the game if in test mode
     if (isTest && exitGame != null) {
@@ -70,8 +76,8 @@ class GamePlayer extends Forge2DGame {
     }
 
     for (var object in game.uiObjects) {
-      Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
-      components.add(newComponent);
+      Component newComponent = GamePlayerUiObject(gameObject: object, plockGame: game);
+      uiComponents.add(newComponent);
     }
 
     // set parenting for all the objects
@@ -79,7 +85,7 @@ class GamePlayer extends Forge2DGame {
       GamePlayerObject object = comp as GamePlayerObject;
 
       if (object.gameObject.parent == null) {
-        add(comp);
+        //add(comp);
         world.add(comp);
         continue;
       }
@@ -94,6 +100,27 @@ class GamePlayer extends Forge2DGame {
         parent.add(comp);
       }
     }
+
+    // set parenting for all the ui objects
+    for (var comp in uiComponents) {
+      GamePlayerUiObject object = comp as GamePlayerUiObject;
+
+      if (object.gameObject.parent == null) {
+        camera.viewport.add(comp);
+        continue;
+      }
+
+      GamePlayerUiObject? parent;
+      try {
+        parent = uiComponents.firstWhere((element) => (element as GamePlayerUiObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerUiObject;
+      } catch (e) {
+        parent = null;
+      }
+      if (parent != null) {
+        parent.add(comp);
+      }
+    }
+
   }
 
   @override
@@ -104,6 +131,8 @@ class GamePlayer extends Forge2DGame {
     // If game is dirty, update all the components and objects
     if (game.isDirty) {
       game.isDirty = false;
+
+      // Update all the components
       for (int i = 0; i < components.length; i++) {
         GamePlayerObject object = components[i] as GamePlayerObject;
 
@@ -119,6 +148,21 @@ class GamePlayer extends Forge2DGame {
         }
 
       }
+
+      // Update all the ui components
+      for (int i = 0; i < uiComponents.length; i++) {
+        GamePlayerUiObject object = uiComponents[i] as GamePlayerUiObject;
+
+        if (!game.uiObjects.contains(object.gameObject)) {
+          uiComponents.remove(object);
+          camera.viewport.remove(object);
+          i--;
+        } else {
+          object.updateDisplay();
+          object.updateEvents();
+        }
+      }
+
     }
   }
 

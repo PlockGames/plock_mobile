@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
 import 'edit_component_page.dart';
 import 'editor/editor_canvas.dart';
+import 'editor/object_component.dart';
 import 'object_select_parent_page.dart';
 
 /// The page to edit an object.
@@ -45,7 +46,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     setState(() {
       ComponentType instance = component.instance();
       instance.setOnUpdate(widget.object.updateDisplay);
-      widget.object.gameObject.components.add(instance);
+      widget.object.getGameObject().components.add(instance);
       widget.object.updateDisplay();
     });
   }
@@ -55,7 +56,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
   /// The [component] is removed from the object and the display is updated.
   void removeComponent(ComponentType component) {
     setState(() {
-      widget.object.gameObject.components.remove(component);
+      widget.object.getGameObject().components.remove(component);
       widget.object.updateDisplay();
     });
   }
@@ -63,8 +64,8 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
   /// Convert an asset to an object
   void convertAssetToObject() {
     setState(() {
-      widget.object.gameObject.type = GameObjectType.object;
-      widget.object.gameObject.assetId = null;
+      widget.object.getGameObject().type = GameObjectType.object;
+      widget.object.getGameObject().assetId = null;
     });
   }
 
@@ -83,9 +84,9 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController =
-    TextEditingController(text: widget.object.gameObject.name);
+    TextEditingController(text: widget.object.getGameObject().name);
 
-    if (widget.object.gameObject.type == GameObjectType.asset) {
+    if (widget.object.getGameObject().type == GameObjectType.asset) {
       return Scaffold(
           appBar: AppBar(
             title: const Row(
@@ -122,13 +123,13 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("id : ${widget.object.gameObject.id}"),
+                    Text("id : ${widget.object.getGameObject().id}"),
                   ],
                 ),
                 TextField(
                   controller: nameController,
                   onChanged: (value) {
-                    widget.object.gameObject.name = value;
+                    widget.object.getGameObject().name = value;
                   },
                   decoration: const InputDecoration(
                     hintText: 'Name',
@@ -137,9 +138,9 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                OutlinedButton(onPressed: setParent, child: Text(widget.object.gameObject.parent != null ? "Parent: ${widget.object.gameObject.parent!.name}" : "Parent: None")),
+                OutlinedButton(onPressed: setParent, child: Text(widget.object.getGameObject().parent != null ? "Parent: ${widget.object.getGameObject().parent!.name}" : "Parent: None")),
                 const SizedBox(height: 40),
-                for (var component in widget.object.gameObject.components)
+                for (var component in widget.object.getGameObject().components)
                   Row(
                     children: [
                       Text(component.name),

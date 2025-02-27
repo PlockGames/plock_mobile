@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/games/game.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';

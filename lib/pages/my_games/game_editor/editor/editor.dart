@@ -2,16 +2,19 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_types/component_ui_text.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
 import '../../../../models/games/game.dart' as Plock;
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_component.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import 'editor_canvas.dart';
 import 'editor_mode.dart';
+import 'object_component.dart';
+import 'object_ui_component.dart';
 
 /// The game editor.
 class Editor extends Forge2DGame with DragCallbacks {
@@ -20,10 +23,10 @@ class Editor extends Forge2DGame with DragCallbacks {
   ObjectComponent? selectedObject;
 
   /// The list of all the objects in the game.
-  List<ObjectComponent> objects = [];
+  List<ObjectSceneComponent> objects = [];
 
   /// The list of all the objects in the ui canvas.
-  List<ObjectComponent> uiObjects = [];
+  List<ObjectUiComponent> uiObjects = [];
 
   /// All the callback coming from the widget editor
   final EditorCallbacks editorCallbacks;
@@ -80,8 +83,8 @@ class Editor extends Forge2DGame with DragCallbacks {
       }
 
       for (var object in uiObjects) {
-        if (!world.contains(object)) {
-          world.add(object);
+        if (!camera.viewport.contains(object)) {
+          camera.viewport.add(object);
         }
       }
 
@@ -91,14 +94,16 @@ class Editor extends Forge2DGame with DragCallbacks {
       canvas = EditorCanvas.scene;
 
       for (var object in uiObjects) {
-        if (world.contains(object)) {
-          world.remove(object);
+        if (camera.viewport.contains(object)) {
+          camera.viewport.remove(object);
         }
       }
 
       for (var object in objects) {
-        if (!world.contains(object)) {
-          world.add(object);
+        if (object is ObjectSceneComponent) {
+          if (!world.contains(object)) {
+            world.add(object);
+          }
         }
       }
     }
@@ -121,19 +126,21 @@ class Editor extends Forge2DGame with DragCallbacks {
 
   /// Update an object.
   updateObject(ObjectComponent object) {
-    editorCallbacks.updateGameObject(object.gameObject);
-    object.updateDisplay();
+    if (object is ObjectSceneComponent) {
+      editorCallbacks.updateGameObject(object.gameObject);
+      object.updateDisplay();
+    }
   }
 
   /// Update an ui object.
-  updateUiObject(ObjectComponent object) {
+  updateUiObject(ObjectUiComponent object) {
     editorCallbacks.updateUIObject(object.gameObject);
     object.updateDisplay();
   }
 
   /// Add a game object to the game.
   ObjectComponent addGameObjectCallback() {
-    final object = ObjectComponent(
+    final object = ObjectSceneComponent(
         id: game.objectCount,
         selectObject: selectObject,
         isObjectSelected: isObjectSelected,
@@ -152,19 +159,27 @@ class Editor extends Forge2DGame with DragCallbacks {
   }
 
   /// Add a UI object to the game.
-  ObjectComponent addUiGameObjectCallback() {
-    final object = ObjectComponent(
+  ObjectUiComponent addUiGameObjectCallback() {
+    final gameObject = GameObject(id: game.objectCount, name: 'UI Object');
+    final middle = size / 2;
+    gameObject.components.add(ComponentUiText());
+    gameObject.position.x = middle.x;
+    gameObject.position.y = middle.y;
+
+    final object = ObjectUiComponent(
         id: game.objectCount,
         selectObject: selectObject,
         isObjectSelected: isObjectSelected,
-        updateObject: updateObject,
+        updateObject: updateUiObject,
         getMode: getMode,
         moveCamera: moveCamera,
         plockGame: game,
-        gameObject: GameObject(id: game.objectCount, name: 'UI Object')
+        gameObject: gameObject,
+        position: size / 2
     );
+
     if (canvas == EditorCanvas.ui) {
-      world.add(object);
+      camera.viewport.add(object);
     }
     uiObjects.add(object);
     game.objectCount++;
@@ -174,21 +189,23 @@ class Editor extends Forge2DGame with DragCallbacks {
 
   /// Remove a game object from the game.
   void removeGameObjectCallback(ObjectComponent object) {
-    editorCallbacks.removeGameObject(object.gameObject);
-    if (world.contains(object)) {
-      world.remove(object);
-    }
-    objects.remove(object);
-    if (selectedObject == object) {
-      selectedObject = null;
+    if (object is ObjectSceneComponent) {
+      editorCallbacks.removeGameObject(object.gameObject);
+      if (world.contains(object)) {
+        world.remove(object);
+      }
+      objects.remove(object);
+      if (selectedObject == object) {
+        selectedObject = null;
+      }
     }
   }
 
   /// Remove a UI object from the game.
-  void removeUiGameObjectCallback(ObjectComponent object) {
+  void removeUiGameObjectCallback(ObjectUiComponent object) {
     editorCallbacks.removeUIObject(object.gameObject);
-    if (world.contains(object)) {
-      world.remove(object);
+    if (camera.viewport.contains(object)) {
+      camera.viewport.remove(object);
     }
     uiObjects.remove(object);
     if (selectedObject == object) {
@@ -204,14 +221,14 @@ class Editor extends Forge2DGame with DragCallbacks {
     return objects;
   }
 
-  List<ObjectComponent> getUiObjects() {
+  List<ObjectUiComponent> getUiObjects() {
     return uiObjects;
   }
 
   ObjectComponent spawnAsset(GameObject gameObject) {
     final gameObjectInstance = gameObject.instance();
     gameObjectInstance.id = game.objectCount;
-    final object = ObjectComponent(
+    final object = ObjectSceneComponent(
         id: game.objectCount,
         selectObject: selectObject,
         isObjectSelected: isObjectSelected,
@@ -290,7 +307,7 @@ class Editor extends Forge2DGame with DragCallbacks {
 
     // Create the text component to display the name of the selected object
     selectedObjectName = TextComponent()
-      ..text = selectedObject?.gameObject.name ?? ''
+      ..text = selectedObject?.getGameObject().name ?? ''
       ..anchor = Anchor.topLeft
       ..position = Vector2(10, size.y - 90);
 
@@ -300,7 +317,7 @@ class Editor extends Forge2DGame with DragCallbacks {
 
     // Generate the object components of the game
     game.objects.forEach((element) {
-      ObjectComponent objectComponent = ObjectComponent(
+      ObjectSceneComponent objectComponent = ObjectSceneComponent(
           id: game.objectCount,
           selectObject: selectObject,
           isObjectSelected: isObjectSelected,
@@ -316,6 +333,21 @@ class Editor extends Forge2DGame with DragCallbacks {
       game.objectCount++;
     });
 
+    game.uiObjects.forEach((element) {
+      ObjectUiComponent objectComponent = ObjectUiComponent(
+          id: game.objectCount,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          gameObject: element,
+          updateObject: updateUiObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          plockGame: game,
+      );
+      uiObjects.add(objectComponent);
+      game.objectCount++;
+    });
+
     // Add an exit button
     var exitButton = ExitButton(exitGame: editorCallbacks.goBack);
     add(exitButton);
@@ -327,7 +359,7 @@ class Editor extends Forge2DGame with DragCallbacks {
   @override
   void update(double dt) {
     super.update(dt);
-    selectedObjectName.text = selectedObject?.gameObject.name ?? '';
+    selectedObjectName.text = selectedObject?.getGameObject().name ?? '';
   }
 
   @override

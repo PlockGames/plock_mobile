@@ -3,9 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import '../../../models/games/component_type.dart';
+import 'editor/object_component.dart';
 
 /// The page to add a component to an object.
 class ObjectSelectParentPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _ObjectSelectParentPageState extends State<ObjectSelectParentPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<GameObject> objects = widget.objects.where((element) => element.id != widget.object.gameObject.id).toList();
+    List<GameObject> objects = widget.objects.where((element) => element.id != widget.object.getGameObject().id).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +40,7 @@ class _ObjectSelectParentPageState extends State<ObjectSelectParentPage> {
             ListTile(
               title: Text("${object.id}: ${object.name}"),
               onTap: () {
-                widget.object.gameObject.parent = object;
+                widget.object.getGameObject().parent = object;
                 Navigator.pop(context);
               },
             ),

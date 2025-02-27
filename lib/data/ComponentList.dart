@@ -1,4 +1,5 @@
 import 'package:plock_mobile/models/component_types/component_image.dart';
+import 'package:plock_mobile/models/component_types/component_ui_text.dart';
 import 'package:plock_mobile/models/component_types/component_variable.dart';
 
 import '../models/component_types/component_circle.dart';
@@ -29,7 +30,7 @@ class ComponentList {
   };
 
   static final Map<String, ComponentType> uiComponents = {
-
+    'ComponentUiText': ComponentUiText(),
   };
 
   static Map<String, ComponentType> getScene() {

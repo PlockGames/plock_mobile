@@ -4,7 +4,7 @@ import 'package:plock_mobile/models/component_types/component_event.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -14,6 +14,7 @@ import '../assets_page.dart';
 import '../medias_page.dart';
 import '../objects_page.dart';
 import 'Editor.dart';
+import 'object_component.dart';
 
 /// The editor page.
 class EditorPage extends StatefulWidget {
@@ -24,13 +25,9 @@ class EditorPage extends StatefulWidget {
   /// The current mode of the editor.
   //EditorMode mode = EditorMode.EDIT;
 
-  /// The callback function to update a game object.
-  final Function(GameObject) onGameObjectUpdated;
-
   EditorPage({
     Key? key,
     required this.game,
-    required this.onGameObjectUpdated,
   }) : super(key: key);
 
   @override
