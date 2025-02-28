@@ -23,8 +23,9 @@ class TilemapEditorPainter extends CustomPainter {
 
   @override
   Future<void> paint(Canvas canvas, Size size) async {
-    canvas.drawRect(Rect.fromLTWH(0, 0, tilemap.width * controller.tileSize.toDouble(), tilemap.height * controller.tileSize.toDouble()), Paint()..color = Colors.grey);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.grey);
 
+    // draw map
     for (int i = 0; i < tilemap.height; i++) {
       for (int j = 0; j < tilemap.width; j++) {
         int tileIndex = tilemap.map[j][i];
@@ -32,6 +33,9 @@ class TilemapEditorPainter extends CustomPainter {
           Tile tile = tiles[tileIndex];
           ui.Image? loadedMedia = loadedMedias[tileIndex];
 
+          if (controller.x + j * controller.tileSize < -controller.tileSize || controller.x + j * controller.tileSize > size.width || controller.y + i * controller.tileSize < -controller.tileSize || controller.y + i * controller.tileSize > size.height) {
+            continue;
+          }
           if (loadedMedia != null) {
             canvas.drawImageRect(
               loadedMedia,
@@ -41,6 +45,21 @@ class TilemapEditorPainter extends CustomPainter {
             );
           }
         }
+      }
+    }
+
+    // draw grid
+    for (int i = 0; i < tilemap.height; i++) {
+      for (int j = 0; j < tilemap.width; j++) {
+        if (controller.x + j * controller.tileSize < -controller.tileSize || controller.x + j * controller.tileSize > size.width || controller.y + i * controller.tileSize < -controller.tileSize || controller.y + i * controller.tileSize > size.height) {
+          continue;
+        }
+        canvas.drawRect(
+          Rect.fromLTWH(j * controller.tileSize.toDouble() + controller.x.toDouble(), i * controller.tileSize.toDouble() + controller.y.toDouble(), controller.tileSize.toDouble(), controller.tileSize.toDouble()),
+          Paint()
+            ..color = Colors.black
+            ..style = PaintingStyle.stroke,
+        );
       }
     }
 
