@@ -58,7 +58,7 @@ class _EditComponentPageState extends State<EditComponentPage> {
         child: Column(
             children: [
               for (var pair in widget.component.fields.entries)
-                pair.value.getField(pair.key, widget.debug, widget.medias),
+                pair.value.getField(pair.key, widget.debug, widget.medias, widget.component.fields),
             ],
           ),
       ),

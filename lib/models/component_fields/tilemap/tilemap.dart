@@ -1,4 +1,16 @@
+import '../../utils/Vector2.dart';
+
+enum ExpandDirection {
+  top,
+  right,
+  bottom,
+  left,
+}
+
 class Tilemap {
+  static const int MAX_WIDTH = 10000;
+  static const int MAX_HEIGHT = 10000;
+
   List<List<int>> map = List<List<int>>.empty(growable: true);
 
   Tilemap(int width, int height) {
@@ -8,19 +20,49 @@ class Tilemap {
     }
   }
 
-  void changeSize(int width, int height) {
-    if (width == map.length && height == map[0].length) {
-      return;
+  Vector2 changeSize(int width, int height, ExpandDirection directionHorizontal, ExpandDirection directionVertical) {
+    if (width > MAX_WIDTH) {
+      width = MAX_WIDTH;
     }
+
+    if (height > MAX_HEIGHT) {
+      height = MAX_HEIGHT;
+    }
+
+    if (width == map.length && height == map[0].length) {
+      return Vector2(width.toDouble(), height.toDouble());
+    }
+
     List<List<int>> newMap = List<List<int>>.empty(growable: true);
-    newMap.length = width;
     for (int x = 0; x < width; x++) {
-      newMap[x] = List<int>.filled(height, -1);
-      for (int y = 0; y < height; y++) {
-        newMap[x][y] = getTile(x, y);
+      newMap.add(List<int>.filled(height, -1));
+    }
+
+    int xStart = 0;
+    int yStart = 0;
+    if (directionHorizontal == ExpandDirection.right) {
+      xStart = width - map.length;
+    } else if (directionHorizontal == ExpandDirection.left) {
+      xStart = 0;
+    } else {
+      throw Exception('Invalid directionHorizontal');
+    }
+
+    if (directionVertical == ExpandDirection.bottom) {
+      yStart = height - map[0].length;
+    } else if (directionVertical == ExpandDirection.top) {
+      yStart = 0;
+    } else {
+      throw Exception('Invalid directionVertical');
+    }
+
+    for (int x = 0; x < map.length; x++) {
+      for (int y = 0; y < map[x].length; y++) {
+        newMap[x + xStart][y + yStart] = map[x][y];
       }
     }
     map = newMap;
+    return Vector2(width.toDouble(), height.toDouble());
   }
 
   void setTile(int x, int y, int value) {

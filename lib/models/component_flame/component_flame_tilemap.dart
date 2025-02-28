@@ -91,7 +91,7 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
     await loadSprites();
     for (int x = 0; x < tilemap.width; x++) {
       for (int y = 0; y < tilemap.height; y++) {
-        final int tile = tilemap.map[y][x];
+        final int tile = tilemap.map[x][y];
         if (tile < 0 || tile >= sprites.length) {
           continue;
         }

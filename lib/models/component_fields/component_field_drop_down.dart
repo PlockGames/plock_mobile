@@ -27,7 +27,7 @@ class ComponentFieldDropDown extends ComponentField {
   String get type => 'ComponentFieldDropDown';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     field ??= DropDownField(initialValue: _value, options: _options, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }

@@ -24,7 +24,7 @@ class ComponentFieldColour extends ComponentField {
   String get type => 'ComponentFieldColor';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     field ??= ColourField(initialValue: _value, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }

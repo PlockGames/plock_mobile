@@ -15,12 +15,8 @@ class ComponentFieldTilemap extends ComponentField {
    /// The value of the field
    Tilemap _value;
 
-   /// The list of the tiles
-   ComponentFieldTileset tiles;
-
    ComponentFieldTilemap({
     required Tilemap value,
-    required this.tiles,
     onUpdate,
   }) : _value = value {
     this.onUpdate = onUpdate;
@@ -30,7 +26,8 @@ class ComponentFieldTilemap extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
+    var tiles = fields['tiles'] as ComponentFieldTileset;
     return ComponentFieldTilemapField(field: this, name: name, medias: medias, onUpdate: onUpdate, tiles: tiles.value);
   }
 
@@ -42,7 +39,7 @@ class ComponentFieldTilemap extends ComponentField {
         instanceValue.map[i][j] = _value.map[i][j];
       }
     }
-    return ComponentFieldTilemap(value: instanceValue, onUpdate: onUpdate, tiles: tiles);
+    return ComponentFieldTilemap(value: instanceValue, onUpdate: onUpdate);
   }
 
   @override

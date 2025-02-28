@@ -22,7 +22,7 @@ class ComponentFieldImage extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return ComponentFieldImageField(field: this, name: name, medias: medias);
   }
 

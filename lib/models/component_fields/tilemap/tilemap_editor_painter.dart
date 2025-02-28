@@ -23,9 +23,11 @@ class TilemapEditorPainter extends CustomPainter {
 
   @override
   Future<void> paint(Canvas canvas, Size size) async {
+    canvas.drawRect(Rect.fromLTWH(0, 0, tilemap.width * controller.tileSize.toDouble(), tilemap.height * controller.tileSize.toDouble()), Paint()..color = Colors.grey);
+
     for (int i = 0; i < tilemap.height; i++) {
       for (int j = 0; j < tilemap.width; j++) {
-        int tileIndex = tilemap.map[i][j];
+        int tileIndex = tilemap.map[j][i];
         if (tileIndex >= 0 && tileIndex < tiles.length) {
           Tile tile = tiles[tileIndex];
           ui.Image? loadedMedia = loadedMedias[tileIndex];
@@ -34,7 +36,7 @@ class TilemapEditorPainter extends CustomPainter {
             canvas.drawImageRect(
               loadedMedia,
               Rect.fromLTWH(0, 0, loadedMedia.width!.toDouble(), loadedMedia.height!.toDouble()),
-              Rect.fromLTWH(j * controller.tileSize.toDouble(), i * controller.tileSize.toDouble(), controller.tileSize.toDouble(), controller.tileSize.toDouble()),
+              Rect.fromLTWH(j * controller.tileSize.toDouble() + controller.x.toDouble(), i * controller.tileSize.toDouble() + controller.y.toDouble(), controller.tileSize.toDouble(), controller.tileSize.toDouble()),
               Paint(),
             );
           }

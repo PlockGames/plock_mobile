@@ -22,7 +22,7 @@ class ComponentFieldSprite extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return ComponentFieldSpriteField(field: this, name: name, medias: medias, onUpdate: onUpdate);
   }
 

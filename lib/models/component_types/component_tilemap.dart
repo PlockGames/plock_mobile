@@ -20,11 +20,9 @@ import '../games/media.dart';
 class ComponentTilemap extends ComponentType {
 
   ComponentTilemap() {
-    var tiles = ComponentFieldTileset(value: List<Tile>.empty(growable: true));
-
     fields["size"] = ComponentFieldNumber(value: 1.0);
-    fields["map"] = ComponentFieldTilemap(value: Tilemap(16, 16), tiles: tiles);
-    fields["tiles"] = tiles;
+    fields["map"] = ComponentFieldTilemap(value: Tilemap(3, 2));
+    fields["tiles"] = ComponentFieldTileset(value: List<Tile>.empty(growable: true));
   }
 
   @override

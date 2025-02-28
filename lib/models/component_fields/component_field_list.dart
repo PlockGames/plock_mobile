@@ -22,7 +22,7 @@ class ComponentFieldList extends ComponentField {
   String get type => 'ComponentFieldList';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     field ??= ListField(options: _value, onUpdate: (text) {
       _value = _value;
       if (onUpdate != null) {

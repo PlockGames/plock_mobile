@@ -16,7 +16,7 @@ class ComponentField {
   ComponentField({this.onUpdate});
 
   /// Return the widget to display the field in the editor.
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return Container();
   }
 

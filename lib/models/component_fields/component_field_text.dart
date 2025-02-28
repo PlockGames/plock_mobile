@@ -20,7 +20,7 @@ class ComponentFieldText extends ComponentField {
   String get type => 'ComponentFieldText';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,

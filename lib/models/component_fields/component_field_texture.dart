@@ -23,7 +23,7 @@ class ComponentFieldTexture extends ComponentField {
   String get type => 'ComponentFieldTexture';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return TextureField(value: _value, onUpdate: onUpdate, updateValue: updateValue);
   }
 

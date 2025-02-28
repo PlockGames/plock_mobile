@@ -1,13 +1,11 @@
 import 'dart:ui';
 
 class TilemapEditorController {
-  final int width;
-  final int height;
   final int tileSize;
+  int x = 0;
+  int y = 0;
 
   TilemapEditorController({
-    required this.width,
-    required this.height,
     required this.tileSize,
   });
 }

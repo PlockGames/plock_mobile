@@ -28,7 +28,7 @@ class ComponentFieldNumber extends ComponentField {
   }
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return TextField(
       decoration: InputDecoration(
         labelText: name,

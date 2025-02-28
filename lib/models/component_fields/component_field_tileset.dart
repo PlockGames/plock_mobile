@@ -25,13 +25,21 @@ class ComponentFieldTileset extends ComponentField {
   String get type => 'ComponentFieldTileset';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return ComponentFieldTilesetField(field: this, name: name, medias: medias, onUpdate: onUpdate);
   }
 
   @override
   ComponentFieldTileset instance() {
-    return ComponentFieldTileset(value: _value, onUpdate: onUpdate);
+    List<Tile> instanceValue = List<Tile>.empty(growable: true);
+    for (int i = 0; i < _value.length; i++) {
+      Tile tile = Tile();
+      tile.media = _value[i].media;
+      tile.layer = _value[i].layer;
+      tile.collision = _value[i].collision;
+      instanceValue.add(tile);
+    }
+    return ComponentFieldTileset(value: instanceValue, onUpdate: onUpdate);
   }
 
   @override

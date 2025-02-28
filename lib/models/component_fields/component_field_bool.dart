@@ -20,7 +20,7 @@ class ComponentFieldBool extends ComponentField {
   String get type => 'ComponentFieldBool';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     return ComponentFieldBoolField(field: this, name: name, medias: medias);
   }
 

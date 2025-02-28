@@ -48,7 +48,7 @@ class ComponentFieldBlockly extends ComponentField {
   String get type => 'ComponentFieldBlocky';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     const Blocky.Theme blockyTheme = Blocky.Theme(
       name: 'classic',
       fontStyle: Blocky.BlocklyFontStyle(
