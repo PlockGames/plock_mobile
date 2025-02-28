@@ -311,6 +311,16 @@ class Editor extends Forge2DGame with DragCallbacks {
         bottomBarCallbacks: bottomBarCallbacks
     );
 
+    // display the camera
+    final phoneCamera = RectangleComponent(
+      size: Vector2(size.x / 50, size.y / 50),
+      position: Vector2(-size.x / 2 / 50, -size.y / 2 / 50),
+      paint: Paint()..color = const Color(0xFF000000)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.01,
+      priority: 10000 - 1,
+    );
+
     // Create the text component to display the name of the selected object
     selectedObjectName = TextComponent()
       ..text = selectedObject?.getGameObject().name ?? ''
@@ -321,6 +331,7 @@ class Editor extends Forge2DGame with DragCallbacks {
     camera.viewport.add(bottomBar);
     camera.viewport.add(sideBar);
     camera.viewport.add(selectedObjectName);
+    world.add(phoneCamera);
 
     // Generate the object components of the game
     game.objects.forEach((element) {

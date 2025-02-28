@@ -34,6 +34,8 @@ class BottomBarComponent extends PositionComponent {
   late BottomBarbuttonComponent assetsBtn;
   /// the button to access all medias
   late BottomBarbuttonComponent mediasBtn;
+  /// the button to access the scenes
+  late BottomBarbuttonComponent scenesBtn;
 
   /// The SVG instance.
   ///
