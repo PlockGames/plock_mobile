@@ -19,7 +19,6 @@ import 'object_component.dart';
 
 /// The editor page.
 class EditorPage extends StatefulWidget {
-
   /// The game to edit.
   final Plock.Game game;
 
@@ -36,15 +35,14 @@ class EditorPage extends StatefulWidget {
 }
 
 class _EditorPageState extends State<EditorPage> {
-
   _EditorPageState();
 
-
   /// Open the object editor.
-  Function(ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) openEditor(BuildContext context) {
-
-    return (ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) {
-
+  Function(
+          ObjectComponent object, List<GameObject> objects, EditorCanvas canvas)
+      openEditor(BuildContext context) {
+    return (ObjectComponent object, List<GameObject> objects,
+        EditorCanvas canvas) {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -69,12 +67,14 @@ class _EditorPageState extends State<EditorPage> {
 
   /// Callback : Remove a game object from the game.
   void removeGameObject(GameObject gameObject) {
-    widget.game.scenes[widget.game.currentSceneIndex].objects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects
+        .remove(gameObject);
   }
 
   /// Callback : Remove a ui object from the game.
   void removeUiGameObject(GameObject gameObject) {
-    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects
+        .remove(gameObject);
   }
 
   /// Callback : Remove an object depending on the current canvas.
@@ -97,28 +97,51 @@ class _EditorPageState extends State<EditorPage> {
 
   /// Callback : Update a game object in the game.
   void updateGameObject(GameObject gameObject) {
-    widget.game.scenes[widget.game.currentSceneIndex].objects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects
+        .remove(gameObject);
     widget.game.scenes[widget.game.currentSceneIndex].objects.add(gameObject);
   }
 
   /// Callback : Update a ui object in the game.
   void updateUiGameObject(GameObject gameObject) {
-    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects
+        .remove(gameObject);
     widget.game.scenes[widget.game.currentSceneIndex].uiObjects.add(gameObject);
   }
 
   /// Callback : Upload the game to the server and close the editor.
   Function() uploadGame(BuildContext context) {
     return () async {
-      var upload = await ApiService.createGame(CreateGameDto(
-        title: widget.game.name,
-        tags: [],
-        playTime: "0",
-        gameType: "test",
-        thumbnailUrl: "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
-        contentGame: widget.game.toJson(),
-      ));
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+      if (widget.game.uuid.isEmpty) {
+        // Create the game
+
+        var upload = await ApiService.createGame(CreateGameDto(
+          title: widget.game.name,
+          tags: [],
+          playTime: "0",
+          gameType: "test",
+          thumbnailUrl:
+              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+          contentGame: widget.game.toJson(),
+        ));
+        widget.game.uuid = "test";
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      } else {
+        // Update the game
+        var upload = await ApiService.updateGame(
+            widget.game.uuid,
+            CreateGameDto(
+              title: widget.game.name,
+              tags: [],
+              playTime: "0",
+              gameType: "test",
+              thumbnailUrl:
+                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+              contentGame: widget.game.toJson(),
+            ));
+        print(upload.body);
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      }
     };
   }
 
@@ -132,14 +155,22 @@ class _EditorPageState extends State<EditorPage> {
         for (var component in object.components) {
           if (component is ComponentEvent) {
             ComponentEvent event = component;
-            event.fields['event']!.value[0] = event.fields['event']!.value[0].replaceAll('\n', ' ');
-            event.fields['event']!.value[0] = event.fields['event']!.value[0].replaceAll('\\"', '"');
+            event.fields['event']!.value[0] =
+                event.fields['event']!.value[0].replaceAll('\n', ' ');
+            event.fields['event']!.value[0] =
+                event.fields['event']!.value[0].replaceAll('\\"', '"');
           }
         }
       }
-      Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(
-          game: GamePlayer(game: tempGame, isTest: true, exitGame: goBack(context), uploadGame: uploadGame(context))
-      )));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GameWidget(
+                  game: GamePlayer(
+                      game: tempGame,
+                      isTest: true,
+                      exitGame: goBack(context),
+                      uploadGame: uploadGame(context)))));
     };
   }
 
@@ -149,27 +180,54 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
-  Function(List<ObjectComponent>, EditorCanvas canvas) openObjects(BuildContext context) {
+  Function(List<ObjectComponent>, EditorCanvas canvas) openObjects(
+      BuildContext context) {
     return (List<ObjectComponent> objects, EditorCanvas canvas) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ObjectsPage(objects: objects, openEditor: openEditor(context), canvas: canvas, removeObject: removeObject)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ObjectsPage(
+                  objects: objects,
+                  openEditor: openEditor(context),
+                  canvas: canvas,
+                  removeObject: removeObject)));
     };
   }
 
-  Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets(BuildContext context) {
-    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset, EditorCanvas canvas) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => AssetsPage(game: widget.game, spawnAsset: spawnAsset, updateAsset: updateAsset, canvas: canvas)));
+  Function(Function(GameObject), Function(GameObject), EditorCanvas canvas)
+      openAssets(BuildContext context) {
+    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset,
+        EditorCanvas canvas) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AssetsPage(
+                  game: widget.game,
+                  spawnAsset: spawnAsset,
+                  updateAsset: updateAsset,
+                  canvas: canvas)));
     };
   }
 
   Function() openMedias(BuildContext context) {
     return () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MediasPage(game: widget.game)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MediasPage(game: widget.game)));
     };
   }
 
   Function(Function(Scene)) openScenes(BuildContext context) {
     return (Function(Scene) changeScene) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ScenesPage(scenes: widget.game.scenes, removeScene: removeScene, changeScene: changeScene, selectedScene: widget.game.currentSceneIndex)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ScenesPage(
+                  scenes: widget.game.scenes,
+                  removeScene: removeScene,
+                  changeScene: changeScene,
+                  selectedScene: widget.game.currentSceneIndex)));
     };
   }
 
@@ -195,11 +253,11 @@ class _EditorPageState extends State<EditorPage> {
       children: <Widget>[
         Expanded(
           child: GameWidget(
-              key: Key("editor_game"),
-              game: Editor(
-                  game: widget.game,
-                  editorCallbacks: callbacks,
-              ),
+            key: Key("editor_game"),
+            game: Editor(
+              game: widget.game,
+              editorCallbacks: callbacks,
+            ),
           ),
         ),
       ],

@@ -19,6 +19,9 @@ class Game {
   /// The current scene index.
   int currentSceneIndex = 0;
 
+  /// The uuid of the game.
+  String uuid = "";
+
   /// The name of the game.
   final String name;
 

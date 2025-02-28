@@ -38,6 +38,15 @@ class ApiService {
       "Authorization": "Bearer $apiKey"
     });
   }
+
+  static Future<http.Response> updateGame(String id, CreateGameDto data) async {
+    print(id);
+    print(data.toJson());
+    return await http.put(Uri.parse("$url/game/$id"), body: data.toJson(), headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $apiKey"
+    });
+  }
 }
 
 class CreateGameDto {
