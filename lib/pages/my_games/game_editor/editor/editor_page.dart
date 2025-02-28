@@ -131,7 +131,7 @@ class _EditorPageState extends State<EditorPage> {
         var upload = await ApiService.updateGame(
             widget.game.uuid,
             CreateGameDto(
-              title: widget.game.name,
+              title: "${widget.game.name}_",
               tags: [],
               playTime: "0",
               gameType: "test",

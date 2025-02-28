@@ -33,7 +33,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
     for (var game in allGames) {
       var gameData = await http.get(Uri.parse(game['gameUrl']));
       var json = jsonDecode(gameData.body);
-      Game? loadedGame = await Game.jsonToGame(json);
+      //print(game);
+      Game? loadedGame = await Game.jsonToGame(name: game['title'], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
       if (loadedGame == null) {
         continue;
       }
@@ -67,6 +68,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
   void removeProject(Game game) {
     setState(() {
+      ApiService.deleteGame(game.uuid);
       projects.remove(game);
     });
   }
@@ -90,6 +92,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 return Center(child: Text('Erreur : ${snapshot.error}'));
               } else if (snapshot.hasData) {
                 projects = snapshot.data!;
+                projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
                 return Column(
                   children: [
                     for (var project in projects)

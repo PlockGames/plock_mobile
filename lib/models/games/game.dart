@@ -25,6 +25,9 @@ class Game {
   /// The name of the game.
   final String name;
 
+  /// The last update time.
+  DateTime lastUpdate = DateTime.now();
+
   /// The assets of the game.
   List<GameObject> assets = List<GameObject>.empty(growable: true);
 
@@ -170,10 +173,14 @@ class Game {
   }
 
   /// Create a Game from a JSON object.
-  static jsonToGame(Map<String, dynamic> json) async {
+  static jsonToGame({required String name, required Map<String, dynamic> json, DateTime? lastUpdate}) async {
 
     try {
-      Game game = Game(name: json['name']);
+      Game game = Game(name: name);
+      if (lastUpdate != null) {
+        game.lastUpdate = lastUpdate;
+      }
+
       game.scenes.clear();
       game.objectCount = json['objectCount'];
       var jsonScene = json['scenes'];
