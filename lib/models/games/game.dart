@@ -171,6 +171,7 @@ class Game {
 
     try {
       Game game = Game(name: json['name']);
+      game.scenes.clear();
       game.objectCount = json['objectCount'];
       var jsonScene = json['scenes'];
       for (var scene in jsonScene) {

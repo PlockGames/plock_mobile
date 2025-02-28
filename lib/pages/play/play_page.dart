@@ -54,10 +54,12 @@ class PlayPageState extends State<PlayPage> {
   Widget build(BuildContext context) {
     return StreamBuilder<List<plock.Game>>(stream: getAllGamesWithData().asStream(), builder: (context, snapshot) {
       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+        var games = snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList();
+
         return Column(
           children: [Expanded(child: PageView(
             scrollDirection: Axis.vertical,
-            children: snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList(),
+            children: games,
           ))],
         );
       } else if (snapshot.data != null && snapshot.data!.isEmpty) {
