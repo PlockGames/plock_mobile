@@ -79,7 +79,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mes projets'),
+          title: const Text('My projects'),
           backgroundColor: Colors.grey[800],
         ),
         body: SingleChildScrollView(
@@ -89,7 +89,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Erreur : ${snapshot.error}'));
+                return Center(child: Text('Error : ${snapshot.error}'));
               } else if (snapshot.hasData) {
                 projects = snapshot.data!;
                 projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
@@ -127,7 +127,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   ],
                 );
               } else {
-                return const Center(child: Text('Aucun jeu trouvé'));
+                return const Center(child: Text('No games found'));
               }
             },
           )
@@ -148,15 +148,15 @@ class _MyGamesPageState extends State<MyGamesPage> {
       builder: (_) {
         var nameController = TextEditingController();
         return AlertDialog(
-          title: const Text('Nouveau jeu'),
+          title: const Text('New game'),
           content: TextFormField(
             controller: nameController,
-            decoration: const InputDecoration(hintText: 'Nom'),
+            decoration: const InputDecoration(hintText: 'Name'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Retour'),
+              child: const Text('Back'),
             ),
             TextButton(
               onPressed: () {
@@ -176,7 +176,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   ),
                 );
               },
-              child: const Text('Créer'),
+              child: const Text('Create'),
             ),
           ],
         );
@@ -191,19 +191,19 @@ class _MyGamesPageState extends State<MyGamesPage> {
       builder: (_) {
         String name = game.name;
         return AlertDialog(
-          title: const Text('Supprimer le jeu ?'),
-          content: Text('Voulez-vous vraiment supprimer le jeu $name ?'),
+          title: const Text('Delete game ?'),
+          content: Text('Do you really want to delete $name ?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annuler'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 removeProject(game);
                 Navigator.pop(context);
               },
-              child: const Text('Supprimer'),
+              child: const Text('Delete'),
             ),
           ],
         );
