@@ -26,10 +26,6 @@ class BottomBarComponent extends PositionComponent {
   late BottomBarButtonCanvasComponent canvasBtn;
   /// The button to add an object.
   late BottomBarbuttonComponent addBtn;
-  /// The button to delete an object.
-  late BottomBarbuttonComponent deleteBtn;
-  /// The button to edit an object.
-  late BottomBarbuttonComponent editBtn;
   /// The button to upload the game.
   late BottomBarbuttonComponent uploadBtn;
   /// The button to access all the objects.
@@ -84,30 +80,6 @@ class BottomBarComponent extends PositionComponent {
           }
     });
 
-    deleteBtn = BottomBarbuttonComponent('svg/delete.svg', Vector2(iconWidth * 2, 0),
-        tapAction: () {
-          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
-            bottomBarCallbacks.removeUIObject(bottomBarCallbacks.getSelectedObject());
-          } else {
-            bottomBarCallbacks.removeGameObject(bottomBarCallbacks.getSelectedObject());
-          }
-    });
-
-    editBtn = BottomBarbuttonComponent('svg/edit.svg', Vector2(iconWidth * 3, 0),
-        tapAction: () {
-          if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {
-            List<dynamic> objects = bottomBarCallbacks.getUiObjects().map((e) => e.gameObject).toList();
-            List<GameObject> gameObjects = objects.cast<GameObject>();
-            bottomBarCallbacks.openEditor(bottomBarCallbacks.getSelectedObject(), gameObjects, EditorCanvas.ui);
-          } else {
-            List<dynamic> objects = bottomBarCallbacks.getObjects().map((e) =>
-            e.gameObject).toList();
-            List<GameObject> gameObjects = objects.cast<GameObject>();
-            bottomBarCallbacks.openEditor(
-                bottomBarCallbacks.getSelectedObject(), gameObjects, EditorCanvas.scene);
-          }
-    });
-
     // aligned right
     double screenWidth = screenSize.x;
 
@@ -144,8 +116,6 @@ class BottomBarComponent extends PositionComponent {
     add(background);
     add(modeBtn);
     add(addBtn);
-    add(deleteBtn);
-    add(editBtn);
     add(uploadBtn);
     add(objectsBtn);
     add(assetsBtn);
@@ -156,25 +126,6 @@ class BottomBarComponent extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-
-    // Update the buttons depending on the selected object
-    if (deleteBtn != null && editBtn != null) {
-      if (bottomBarCallbacks.getSelectedObject() == null) {
-        if (children.contains(deleteBtn)) {
-          children.remove(deleteBtn);
-        }
-        if (children.contains(editBtn)) {
-          children.remove(editBtn);
-        }
-      } else {
-        if (!children.contains(deleteBtn)) {
-          add(deleteBtn);
-        }
-        if (!children.contains(editBtn)) {
-          add(editBtn);
-        }
-      }
-    }
 
     // Update the buttons depending on the canvas
     if (bottomBarCallbacks.getCanvas() == EditorCanvas.ui) {

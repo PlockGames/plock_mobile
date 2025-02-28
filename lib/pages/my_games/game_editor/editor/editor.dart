@@ -15,6 +15,7 @@ import 'editor_canvas.dart';
 import 'editor_mode.dart';
 import 'object_component.dart';
 import 'object_ui_component.dart';
+import 'side_bar_component.dart';
 
 /// The game editor.
 class Editor extends Forge2DGame with DragCallbacks {
@@ -305,6 +306,11 @@ class Editor extends Forge2DGame with DragCallbacks {
         bottomBarCallbacks: bottomBarCallbacks
     );
 
+    final sideBar = SideBarComponent(
+        screenSize: size,
+        bottomBarCallbacks: bottomBarCallbacks
+    );
+
     // Create the text component to display the name of the selected object
     selectedObjectName = TextComponent()
       ..text = selectedObject?.getGameObject().name ?? ''
@@ -313,6 +319,7 @@ class Editor extends Forge2DGame with DragCallbacks {
 
     //Add the components to the editor
     camera.viewport.add(bottomBar);
+    camera.viewport.add(sideBar);
     camera.viewport.add(selectedObjectName);
 
     // Generate the object components of the game
