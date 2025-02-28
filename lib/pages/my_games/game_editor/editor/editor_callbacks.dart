@@ -1,6 +1,7 @@
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
 
+import '../../../../models/games/scene.dart';
 import 'object_component.dart';
 import 'object_scene_component.dart';
 
@@ -17,6 +18,7 @@ class EditorCallbacks {
   final Function(List<ObjectComponent>, EditorCanvas canvas) openObjects;
   final Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets;
   final Function() openMedias;
+  final Function(Function(Scene) changeScene) openScenes;
 
   EditorCallbacks({
     required this.openEditor,
@@ -31,5 +33,6 @@ class EditorCallbacks {
     required this.openObjects,
     required this.openAssets,
     required this.openMedias,
+    required this.openScenes,
   });
 }

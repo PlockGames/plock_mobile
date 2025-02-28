@@ -114,6 +114,11 @@ class BottomBarComponent extends PositionComponent {
       bottomBarCallbacks.changeCanvas();
     });
 
+    scenesBtn = BottomBarbuttonComponent('svg/scenes.svg', Vector2(screenWidth - iconWidth * 6, 0),
+        tapAction: () {
+          bottomBarCallbacks.openScenes(bottomBarCallbacks.changeScene);
+    });
+
     // Add the components to the bottom bar
     add(background);
     add(modeBtn);
@@ -123,6 +128,7 @@ class BottomBarComponent extends PositionComponent {
     add(assetsBtn);
     add(mediasBtn);
     add(canvasBtn);
+    add(scenesBtn);
   }
 
   @override

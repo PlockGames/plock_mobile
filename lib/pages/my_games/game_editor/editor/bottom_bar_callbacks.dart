@@ -2,6 +2,7 @@ import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
+import '../../../../models/games/scene.dart';
 import 'object_component.dart';
 import 'object_ui_component.dart';
 
@@ -28,6 +29,8 @@ class BottomBarCallbacks {
   final Function() getMode;
   final Function() getCanvas;
   final Function() changeCanvas;
+  final Function(Function(Scene) changeScene) openScenes;
+  final Function(Scene scene) changeScene;
 
   BottomBarCallbacks({
     required this.selectObject,
@@ -52,5 +55,7 @@ class BottomBarCallbacks {
     required this.getMode,
     required this.getCanvas,
     required this.changeCanvas,
+    required this.openScenes,
+    required this.changeScene,
   });
 }

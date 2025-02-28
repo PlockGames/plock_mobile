@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/games/media.dart';
@@ -6,18 +5,22 @@ import 'package:plock_mobile/models/games/media.dart';
 import '../../pages/play/game_player.dart';
 import '../../pages/play/game_player_object.dart';
 import 'game_object.dart';
+import 'scene.dart' as Plock;
 
 /// A game.
 class Game {
 
+  /// The scenes of the game.
+  List<Plock.Scene> scenes = List<Plock.Scene>.empty(growable: true);
+
+  /// The name of the first scene.
+  int firstScene = 0;
+
+  /// The current scene index.
+  int currentSceneIndex = 0;
+
   /// The name of the game.
   final String name;
-
-  /// The objects in the game.
-  List<GameObject> objects = List<GameObject>.empty(growable: true);
-
-  /// the ui objects in the game
-  List<GameObject> uiObjects = List<GameObject>.empty(growable: true);
 
   /// The assets of the game.
   List<GameObject> assets = List<GameObject>.empty(growable: true);
@@ -50,20 +53,24 @@ class Game {
   /// Set at runtime when the game is played, used to spawn and destroy objects.
   GamePlayer? gamePlayer;
 
-  Game({required this.name});
+  Game({required this.name}) {
+    scenes.add(Plock.Scene(name: "scene"));
+  }
 
   Game instance() {
     Game instance = Game(name: name);
     instance.screenSize = screenSize;
     instance.objectCount = objectCount;
+    instance.assetCount = assetCount;
+    instance.currentSceneIndex = currentSceneIndex;
+    instance.firstScene = firstScene;
 
-    for (var object in objects) {
-      instance.objects.add(object.instance());
+    instance.scenes.clear();
+
+    for (var scene in scenes) {
+      instance.scenes.add(scene.instance());
     }
 
-    for (var object in uiObjects) {
-      instance.uiObjects.add(object.instance());
-    }
 
     for (var asset in assets) {
       instance.assets.add(asset.instance());
@@ -82,7 +89,7 @@ class Game {
     }
 
     GameObject newObject = GameObject(id: objectCount, name: name);
-    objects.add(newObject);
+    scenes[currentSceneIndex].objects.add(newObject);
     GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
     gamePlayer!.add(newGamePlayerObject);
     gamePlayer!.components.add(newGamePlayerObject);
@@ -113,7 +120,7 @@ class Game {
     newObject.id = objectCount;
     newObject.name = name;
 
-    objects.add(newObject);
+    scenes[currentSceneIndex].objects.add(newObject);
     GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
     gamePlayer!.add(newGamePlayerObject);
     gamePlayer!.components.add(newGamePlayerObject);
@@ -132,7 +139,7 @@ class Game {
       return (element as GamePlayerObject).gameObject.id == id;
       }) as GamePlayerObject?;
     if (object != null) {
-      objects.remove(object.gameObject);
+      scenes[currentSceneIndex].objects.remove(object.gameObject);
       for (var component in object.displayComponents) {
         object.remove(component);
       }
@@ -147,10 +154,10 @@ class Game {
     String json = "{";
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
-    json += "\"objects\": [";
-    objects.forEach((element) {
+    json += "\"scenes\": [";
+    scenes.forEach((element) {
       json += element.toJson();
-      if (objects.indexOf(element) != objects.length - 1) {
+      if (scenes.indexOf(element) != scenes.length - 1) {
         json += ",";
       }
     });
@@ -165,9 +172,9 @@ class Game {
     try {
       Game game = Game(name: json['name']);
       game.objectCount = json['objectCount'];
-      var objects = json['objects'];
-      for (var object in objects) {
-        game.objects.add(GameObject.fromJson(object));
+      var jsonScene = json['scenes'];
+      for (var scene in jsonScene) {
+        game.scenes.add(Plock.Scene.fromJson(scene));
       }
 
       return game;

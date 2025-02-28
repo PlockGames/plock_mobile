@@ -4,6 +4,7 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_types/component_ui_text.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
+import 'package:plock_mobile/models/games/scene.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
@@ -47,7 +48,6 @@ class Editor extends Forge2DGame with DragCallbacks {
   Editor({
     required this.game,
     required this.editorCallbacks,
-
   });
 
   /// Move the camera
@@ -214,6 +214,54 @@ class Editor extends Forge2DGame with DragCallbacks {
     }
   }
 
+  /// Change the current scene.
+  void changeSceneCallback(Scene scene) {
+    game.currentSceneIndex = game.scenes.indexOf(scene);
+
+    for (var object in objects) {
+      world.remove(object);
+    }
+
+    for (var object in uiObjects) {
+      camera.viewport.remove(object);
+    }
+
+    objects = [];
+    uiObjects = [];
+
+    for (var object in game.scenes[game.currentSceneIndex].objects) {
+      ObjectSceneComponent objectComponent = ObjectSceneComponent(
+          id: object.id,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          gameObject: object,
+          updateObject: updateObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          plockGame: game
+      );
+      world.add(objectComponent);
+      objects.add(objectComponent);
+    }
+
+    for (var object in game.scenes[game.currentSceneIndex].uiObjects) {
+      ObjectUiComponent objectComponent = ObjectUiComponent(
+          id: object.id,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          gameObject: object,
+          updateObject: updateUiObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          plockGame: game
+      );
+      uiObjects.add(objectComponent);
+    }
+
+    camera.viewfinder.position = Vector2(0, 0);
+    canvas = EditorCanvas.scene;
+  }
+
   ObjectComponent? getSelectedObject() {
     return selectedObject;
   }
@@ -298,7 +346,9 @@ class Editor extends Forge2DGame with DragCallbacks {
         changeMode: changeMode,
         getMode: getMode,
         getCanvas: getCanvas,
-        changeCanvas: changeCanvas
+        changeCanvas: changeCanvas,
+        openScenes: editorCallbacks.openScenes,
+        changeScene: changeSceneCallback
     );
 
     final bottomBar = BottomBarComponent(
@@ -334,7 +384,7 @@ class Editor extends Forge2DGame with DragCallbacks {
     world.add(phoneCamera);
 
     // Generate the object components of the game
-    game.objects.forEach((element) {
+    game.scenes[game.currentSceneIndex].objects.forEach((element) {
       ObjectSceneComponent objectComponent = ObjectSceneComponent(
           id: game.objectCount,
           selectObject: selectObject,
@@ -351,7 +401,7 @@ class Editor extends Forge2DGame with DragCallbacks {
       game.objectCount++;
     });
 
-    game.uiObjects.forEach((element) {
+    game.scenes[game.currentSceneIndex].uiObjects.forEach((element) {
       ObjectUiComponent objectComponent = ObjectUiComponent(
           id: game.objectCount,
           selectObject: selectObject,

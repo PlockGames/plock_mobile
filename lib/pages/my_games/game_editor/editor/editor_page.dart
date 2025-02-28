@@ -4,15 +4,16 @@ import 'package:plock_mobile/models/component_types/component_event.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_callbacks.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
+import '../../../../models/games/scene.dart';
 import '../assets_page.dart';
 import '../medias_page.dart';
 import '../objects_page.dart';
+import '../scenes_page.dart';
 import 'Editor.dart';
 import 'object_component.dart';
 
@@ -58,22 +59,22 @@ class _EditorPageState extends State<EditorPage> {
 
   /// Callback : Add a game object to the game.
   void addGameObject(GameObject gameObject) {
-    widget.game.objects.add(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects.add(gameObject);
   }
 
   /// Callback : Add a ui object to the game.
   void addUiGameObject(GameObject gameObject) {
-    widget.game.uiObjects.add(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.add(gameObject);
   }
 
   /// Callback : Remove a game object from the game.
   void removeGameObject(GameObject gameObject) {
-    widget.game.objects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects.remove(gameObject);
   }
 
   /// Callback : Remove a ui object from the game.
   void removeUiGameObject(GameObject gameObject) {
-    widget.game.uiObjects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.remove(gameObject);
   }
 
   /// Callback : Remove an object depending on the current canvas.
@@ -85,16 +86,25 @@ class _EditorPageState extends State<EditorPage> {
     }
   }
 
+  /// Callback : Remove a scene from the game.
+  void removeScene(Scene scene) {
+    widget.game.scenes.remove(scene);
+  }
+
+  void addScene(Scene scene) {
+    widget.game.scenes.add(scene);
+  }
+
   /// Callback : Update a game object in the game.
   void updateGameObject(GameObject gameObject) {
-    widget.game.objects.remove(gameObject);
-    widget.game.objects.add(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].objects.add(gameObject);
   }
 
   /// Callback : Update a ui object in the game.
   void updateUiGameObject(GameObject gameObject) {
-    widget.game.uiObjects.remove(gameObject);
-    widget.game.uiObjects.add(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.remove(gameObject);
+    widget.game.scenes[widget.game.currentSceneIndex].uiObjects.add(gameObject);
   }
 
   /// Callback : Upload the game to the server and close the editor.
@@ -115,7 +125,10 @@ class _EditorPageState extends State<EditorPage> {
   Function() testGame(BuildContext context) {
     return () async {
       Plock.Game tempGame = widget.game.instance();
-      for (var object in tempGame.objects) {
+      tempGame.currentSceneIndex = tempGame.firstScene;
+      print(tempGame.scenes[tempGame.firstScene].objects.length);
+
+      for (var object in tempGame.scenes[tempGame.firstScene].objects) {
         for (var component in object.components) {
           if (component is ComponentEvent) {
             ComponentEvent event = component;
@@ -154,6 +167,12 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
+  Function(Function(Scene)) openScenes(BuildContext context) {
+    return (Function(Scene) changeScene) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ScenesPage(scenes: widget.game.scenes, removeScene: removeScene, changeScene: changeScene, selectedScene: widget.game.currentSceneIndex)));
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     EditorCallbacks callbacks = EditorCallbacks(
@@ -169,6 +188,7 @@ class _EditorPageState extends State<EditorPage> {
       openObjects: openObjects(context),
       openAssets: openAssets(context),
       openMedias: openMedias(context),
+      openScenes: openScenes(context),
     );
 
     return Column(

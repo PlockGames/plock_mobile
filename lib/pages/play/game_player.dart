@@ -70,12 +70,12 @@ class GamePlayer extends Forge2DGame {
     }
 
     // Generate all the game objects of the game
-    for (var object in game.objects) {
+    for (var object in game.scenes[game.currentSceneIndex].objects) {
       Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
       components.add(newComponent);
     }
 
-    for (var object in game.uiObjects) {
+    for (var object in game.scenes[game.currentSceneIndex].uiObjects) {
       Component newComponent = GamePlayerUiObject(gameObject: object, plockGame: game);
       uiComponents.add(newComponent);
     }
@@ -136,7 +136,7 @@ class GamePlayer extends Forge2DGame {
       for (int i = 0; i < components.length; i++) {
         GamePlayerObject object = components[i] as GamePlayerObject;
 
-        if (!game.objects.contains(object.gameObject)) {
+        if (!game.scenes[game.currentSceneIndex].objects.contains(object.gameObject)) {
           components.remove(object);
           world.remove(object);
           i--;
@@ -153,7 +153,7 @@ class GamePlayer extends Forge2DGame {
       for (int i = 0; i < uiComponents.length; i++) {
         GamePlayerUiObject object = uiComponents[i] as GamePlayerUiObject;
 
-        if (!game.uiObjects.contains(object.gameObject)) {
+        if (!game.scenes[game.currentSceneIndex].uiObjects.contains(object.gameObject)) {
           uiComponents.remove(object);
           camera.viewport.remove(object);
           i--;

@@ -144,14 +144,14 @@ class EventManager {
 
   /// return the last spawned object
   static int _lastObject(Game game, int thisObjectId, dynamic args) {
-    return game.objects.last.id;
+    return game.scenes[game.currentSceneIndex].objects.last.id;
   }
 
   /// get object by name
   static int _getObjectByName(Game game, int thisObjectId, dynamic args) {
       String name = args[0];
       try {
-        GameObject? object = game.objects.firstWhere((element) =>
+        GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) =>
         element.name == name);
         return object.id;
       } catch (e) {
@@ -167,7 +167,7 @@ class EventManager {
     String property = args[2];
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == component);
       for (int i = 0; i < componentType.fields.length; i++) {
         if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
@@ -200,7 +200,7 @@ class EventManager {
     String value = args[3].toString();
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == component);
       for (int i = 0; i < componentType.fields.length; i++) {
         if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
@@ -239,7 +239,7 @@ class EventManager {
     print("Set variable value: $objectId, $name, $value");
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
       componentType.fields["value"]!.value = value;
     } catch (e) {
@@ -254,7 +254,7 @@ class EventManager {
     String name = args[2];
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       ComponentType componentTypeModel = ComponentList.getByName(component);
       ComponentType componentType = componentTypeModel.instance();
 
@@ -272,8 +272,8 @@ class EventManager {
     int? objectId = args[0];
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
-      game.objects.remove(object);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      game.scenes[game.currentSceneIndex].objects.remove(object);
       game.isDirty = true;
     } catch (e) {
       print("Error(destroyObject): $e");
@@ -286,7 +286,7 @@ class EventManager {
       String property = args[1];
 
       try {
-        GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+        GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
         List<Component> components = game.gamePlayer!.components;
         GamePlayerObject? gameObject;
         for (Component component in components) {
@@ -317,7 +317,7 @@ class EventManager {
     double value = args[2].toDouble();
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       if (property.toLowerCase() == "x") {
         object.position.x = value;
         object.isPositionDirty = true;
@@ -338,8 +338,7 @@ class EventManager {
     double value = args[2].toDouble();
     //print("Add force: $objectId, $property, $value");
     try {
-      GameObject object = game.objects.firstWhere((element) =>
-      element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
 
       if (property.toLowerCase() == "x") {
         object.force = PVector2.Vector2(value.toDouble(), object.force?.y ?? 0);
@@ -359,7 +358,7 @@ class EventManager {
     double value = args[2].toDouble();
     //print("Set force: $objectId, $property, $value");
     try {
-      GameObject object = game.objects.firstWhere((element) =>
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) =>
       element.id == objectId);
 
       if (property.toLowerCase() == "x") {
@@ -403,7 +402,7 @@ class EventManager {
     String name = args[1];
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
       return componentType.fields["value"]!.value;
     } catch (e) {
@@ -418,7 +417,7 @@ class EventManager {
     String name = args[1];
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
       return componentType.fields["values"]!.value;
     } catch (e) {
@@ -437,7 +436,7 @@ class EventManager {
     print("Set list value: $objectId, $name, $value");
 
     try {
-      GameObject object = game.objects.firstWhere((element) => element.id == objectId);
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
       var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
       componentType.fields["values"]!.value = value;
     } catch (e) {
