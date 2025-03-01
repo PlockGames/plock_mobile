@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 
+import '../component_fields/image/media_select.dart';
 import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
@@ -29,6 +30,9 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
   /// The texture of the image.
   XFile? image;
 
+  /// The selected tile of the image.
+  Future<Rect> rect;
+
   /// The scale of the image.
   Vector2 initScale;
 
@@ -42,6 +46,7 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
     super.position,
     super.size,
     this.image,
+    required this.rect,
     required this.componentType,
     required this.initScale,
   }) {
@@ -53,7 +58,8 @@ class ComponentFlameImage extends SpriteComponent with TapCallbacks, DragCallbac
     super.onLoad();
     if (image != null) {
       var img = await decodeImageFromList(await image!.readAsBytes());
-      sprite = Sprite(img);
+      var loadedRect = await rect;
+      sprite = Sprite(img, srcPosition: Vector2(loadedRect.left, loadedRect.top), srcSize: Vector2(loadedRect.width, loadedRect.height));
     }
     double sizeX = sprite?.image.width.toDouble() ?? 0;
     double sizeY = sprite?.image.height.toDouble() ?? 0;

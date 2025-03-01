@@ -49,21 +49,18 @@ class _SpriteEditorPageLoadedState extends State<TilemapEditorPageLoaded> {
   @override
   Widget build(BuildContext context) {
     List<ui.Image?> uiImages = List<ui.Image?>.empty(growable: true);
-    List<Image?> images = List<Image?>.empty(growable: true);
     for (int i = 0; i < widget.loadedMedias.length; i++) {
       if (widget.loadedMedias[i] != null) {
         uiImages.add(widget.loadedMedias[i]!.uiImage);
-        images.add(widget.loadedMedias[i]!.image);
       } else {
         uiImages.add(null);
-        images.add(null);
       }
     }
 
     return Column(
           children: [
-            TilemapEditorTopBar(tiles: widget.tiles, loadedMedias: images, selectedTile: widget.selectedTile, onTap: onTapOnTileBar),
-            TilemapEditor(tiles: widget.tiles, loadedMedias: uiImages, selectedTile: widget.selectedTile, tilemap: widget.tilemap, controller: widget.controller, setPos: setPos),
+            TilemapEditorTopBar(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, onTap: onTapOnTileBar),
+            TilemapEditor(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, tilemap: widget.tilemap, controller: widget.controller, setPos: setPos),
           ],
         );
   }

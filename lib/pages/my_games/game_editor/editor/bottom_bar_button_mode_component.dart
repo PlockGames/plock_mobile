@@ -41,7 +41,6 @@ class BottomBarbuttonModeComponent extends PositionComponent with TapCallbacks {
     for (var mode in EditorMode.values) {
       svgInstances[mode] = await Svg.load(svgPathes[mode]!);
     }
-    print(svgInstances);
     svgComponent = SvgComponent(
       svg: svgInstances[EditorMode.edit]!,
       size: Vector2(40, 40),

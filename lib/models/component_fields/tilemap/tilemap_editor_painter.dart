@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'loaded_media_tile.dart';
 import 'tile.dart';
 import 'tilemap.dart';
 import 'tilemap_editor_controller.dart';
@@ -11,13 +12,13 @@ import 'tilemap_editor_controller.dart';
 class TilemapEditorPainter extends CustomPainter {
   final TilemapEditorController controller;
   final List<Tile> tiles;
-  final List<ui.Image?> loadedMedias;
+  final List<LoadedMediaTile> loadedMediasTiles;
   final Tilemap tilemap;
 
   TilemapEditorPainter({
     required this.controller,
     required this.tiles,
-    required this.loadedMedias,
+    required this.loadedMediasTiles,
     required this.tilemap,
   });
 
@@ -29,17 +30,18 @@ class TilemapEditorPainter extends CustomPainter {
     for (int i = 0; i < tilemap.height; i++) {
       for (int j = 0; j < tilemap.width; j++) {
         int tileIndex = tilemap.map[j][i];
-        if (tileIndex >= 0 && tileIndex < tiles.length) {
-          Tile tile = tiles[tileIndex];
-          ui.Image? loadedMedia = loadedMedias[tileIndex];
+        if (tileIndex >= 0 && tileIndex < loadedMediasTiles.length) {
+          LoadedMediaTile tile = loadedMediasTiles[tileIndex];
+          ui.Image? loadedMedia = tile.loadedMedia?.uiImage;
+          ui.Rect? rect = tile.loadedMedia?.media.getTileRectPreSized(tile.index, tile.loadedMedia!.fullSize);
 
           if (controller.x + j * controller.tileSize < -controller.tileSize || controller.x + j * controller.tileSize > size.width || controller.y + i * controller.tileSize < -controller.tileSize || controller.y + i * controller.tileSize > size.height) {
             continue;
           }
-          if (loadedMedia != null) {
+          if (loadedMedia != null && rect != null) {
             canvas.drawImageRect(
               loadedMedia,
-              Rect.fromLTWH(0, 0, loadedMedia.width!.toDouble(), loadedMedia.height!.toDouble()),
+              rect,
               Rect.fromLTWH(j * controller.tileSize.toDouble() + controller.x.toDouble(), i * controller.tileSize.toDouble() + controller.y.toDouble(), controller.tileSize.toDouble(), controller.tileSize.toDouble()),
               Paint(),
             );

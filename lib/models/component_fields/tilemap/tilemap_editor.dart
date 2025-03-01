@@ -2,16 +2,18 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_page.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_painter.dart';
 
 import '../../utils/Vector2.dart';
+import 'loaded_media_tile.dart';
 import 'tile.dart';
 import 'tilemap.dart';
 import 'tilemap_editor_controller.dart';
 
 class TilemapEditor extends StatefulWidget {
   final List<Tile> tiles;
-  final List<ui.Image?> loadedMedias;
+  final List<LoadedMedia?> loadedMedias;
   final int selectedTile;
   final Tilemap tilemap;
   final int tileSize = 32;
@@ -50,6 +52,23 @@ class _TilemapEditorState extends State<TilemapEditor> {
 
   @override
   Widget build(BuildContext context) {
+
+    int count = 0;
+    List<LoadedMediaTile> loadedMediasTiles = List<LoadedMediaTile>.empty(growable: true);
+
+    for (int i = 0; i < widget.loadedMedias.length; i++) {
+      if (widget.loadedMedias[i] != null) {
+        count += widget.loadedMedias[i]!.count;
+
+        for (int j = 0; j < widget.loadedMedias[i]!.count; j++) {
+          loadedMediasTiles.add(LoadedMediaTile(loadedMedia: widget.loadedMedias[i], index: j));
+        }
+
+      } else {
+        count += 1;
+      }
+    }
+
 
     GestureDetector buildGestureDetector(RepaintBoundary boundary) {
 
@@ -122,7 +141,7 @@ class _TilemapEditorState extends State<TilemapEditor> {
                   painter: TilemapEditorPainter(
                     controller: widget.controller,
                     tiles: widget.tiles,
-                    loadedMedias: widget.loadedMedias,
+                    loadedMediasTiles: loadedMediasTiles,
                     tilemap: widget.tilemap,
                   ),
                   size: Size.infinite,

@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/component_field_Image.dart';
-import 'package:plock_mobile/models/component_fields/component_field_text.dart';
+import 'package:plock_mobile/models/component_fields/image/media_select.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
@@ -14,7 +14,7 @@ class ComponentImage extends ComponentType {
 
   ComponentImage() {
     fields["size"] = ComponentFieldNumber(value: 1.0);
-    fields["texture"] = ComponentFieldImage(value: "");
+    fields["texture"] = ComponentFieldImage(value: MediaSelect());
   }
 
   @override
@@ -47,7 +47,7 @@ class ComponentImage extends ComponentType {
 
     try {
       media = medias.firstWhere((element) => element.name ==
-          fields["texture"]!.value);
+          fields["texture"]!.value.name);
     } catch (e) {
       print("Error: $e");
     }
@@ -63,6 +63,7 @@ class ComponentImage extends ComponentType {
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
         image: media.file,
+        rect: media.getTileRect(fields["texture"]!.value.index),
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         componentType: this
@@ -86,7 +87,7 @@ class ComponentImage extends ComponentType {
     try {
       print(medias);
       media = medias.firstWhere((element) => element.name ==
-          fields["texture"]!.value);
+          fields["texture"]!.value.name);
     } catch (e) {
       print("Error: $e");
     }
@@ -104,6 +105,7 @@ class ComponentImage extends ComponentType {
       onDragUpdateCallback: onDragUpdateCallback,
       initScale: Vector2(size, size),
       image: media.file,
+      rect: media.getTileRect(fields["texture"]!.value.index),
       componentType: this
     );
   }

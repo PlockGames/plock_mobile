@@ -7,12 +7,17 @@ import 'package:plock_mobile/models/component_fields/tilemap/tilemap.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_page_loaded.dart';
 
 import '../../games/media.dart';
+import '../../utils/Vector2.dart';
 
 class LoadedMedia {
-  final Image image;
+  final Media media;
+  final Uint8List image;
   final ui.Image uiImage;
+  final Vector2 size;
+  final Vector2 fullSize;
+  final int count;
 
-  LoadedMedia({required this.image, required this.uiImage});
+  LoadedMedia({required this.image, required this.uiImage, required this.size, required this.fullSize, required this.count, required this.media});
 }
 
 class TilemapEditorPage extends StatefulWidget {
@@ -76,7 +81,10 @@ class _SpriteEditorPageState extends State<TilemapEditorPage> {
           List<LoadedMedia?> loadedMedias = List<LoadedMedia?>.empty(growable: true);
           for (int i = 0; i < tiles.length; i++) {
             if (tiles[i] != null) {
-              loadedMedias.add(LoadedMedia(image: images[i]!, uiImage: uiImages[i]!));
+              final fullSize = await tilesMedia[i]!.getFullSize();
+              final size = await tilesMedia[i]!.getSize();
+              final count = await tilesMedia[i]!.getNbTiles();
+              loadedMedias.add(LoadedMedia(image: tiles[i]!, uiImage: uiImages[i]!, size: size, fullSize: fullSize, count: count, media: tilesMedia[i]!));
             } else {
               loadedMedias.add(null);
             }

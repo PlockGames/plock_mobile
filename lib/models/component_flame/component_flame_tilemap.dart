@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
+import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
@@ -70,11 +70,18 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
       try {
         final Media media = medias.firstWhere((element) => element.name == tiles[i].media);
         final Uint8List? image = await media.file?.readAsBytes();
-        if (image != null) {
-          final img = await decodeImageFromList(image);
-          sprites.add(Sprite(img));
-        } else {
-          sprites.add(await Sprite.load("empty.png"));
+        final ui.Image? img = image != null ? await decodeImageFromList(image) : null;
+
+        for (int j = 0; j < await media.getNbTiles(); j++) {
+
+          Rect rect = await media.getTileRect(j);
+
+          if (img != null) {
+            sprites.add(Sprite(img, srcPosition: Vector2(rect.left, rect.top), srcSize: Vector2(rect.width, rect.height)));
+          } else {
+            sprites.add(await Sprite.load("empty.png"));
+          }
+
         }
       } catch (e) {
         sprites.add(await Sprite.load("empty.png"));

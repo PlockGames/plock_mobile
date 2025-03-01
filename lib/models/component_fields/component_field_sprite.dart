@@ -101,7 +101,7 @@ class _ComponentFieldSpriteFieldState extends State<ComponentFieldSpriteField> {
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SpriteEditorPage(sprite: animation, onUpdate: widget.onUpdate)));
+                  builder: (context) => SpriteEditorPage(sprite: animation, onUpdate: widget.onUpdate, medias: widget.medias,)));
             },
           ),
         SizedBox(height: 10),

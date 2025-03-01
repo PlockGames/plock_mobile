@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_editor_page.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tile.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_page.dart';

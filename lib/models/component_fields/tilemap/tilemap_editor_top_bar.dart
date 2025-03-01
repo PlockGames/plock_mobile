@@ -2,13 +2,16 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_fields/image/part_image.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tile.dart';
+import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_page.dart';
 
 import '../../games/media.dart';
+import 'loaded_media_tile.dart';
 
 class TilemapEditorTopBar extends StatelessWidget {
   final List<Tile> tiles;
-  final List<Image?> loadedMedias;
+  final List<LoadedMedia?> loadedMedias;
   final int selectedTile;
   final Function(int) onTap;
 
@@ -20,13 +23,28 @@ class TilemapEditorTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int count = 0;
+    List<LoadedMediaTile> loadedMediasTiles = List<LoadedMediaTile>.empty(growable: true);
+
+    for (int i = 0; i < loadedMedias.length; i++) {
+      if (loadedMedias[i] != null) {
+        count += loadedMedias[i]!.count;
+
+        for (int j = 0; j < loadedMedias[i]!.count; j++) {
+          loadedMediasTiles.add(LoadedMediaTile(loadedMedia: loadedMedias[i], index: j));
+        }
+
+      } else {
+        count += 1;
+      }
+    }
 
     return ListTile(
       title: Container(
         height: 50,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: tiles.length + 2,
+          itemCount: count + 2,
           itemBuilder: (context, index) {
             if (index == 0) {
               return GestureDetector(
@@ -81,10 +99,14 @@ class TilemapEditorTopBar extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: loadedMedias[index - 2] == null
+                  child: loadedMediasTiles[index - 2].loadedMedia == null
                       ? Container()
-                      : Image(
-                          image: loadedMedias[index - 2]!.image,
+                      : PartImage(
+                          loadedMediasTiles[index - 2].loadedMedia!.image,
+                      loadedMediasTiles[index - 2].loadedMedia!.media.getTileRectPreSized(loadedMediasTiles[index - 2].index, loadedMediasTiles[index - 2].loadedMedia!.fullSize),
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.contain,
                         ),
                 ),
               );

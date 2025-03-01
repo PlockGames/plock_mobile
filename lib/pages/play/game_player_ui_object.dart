@@ -77,7 +77,7 @@ class GamePlayerUiObject extends PositionComponent {
     List<String> alreadyDisplayed = [];
 
     // Update the components that are already instancied
-    print(this.children);
+    //print(this.children);
     for (var component in this.children) {
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;

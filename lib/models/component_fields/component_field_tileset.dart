@@ -164,6 +164,16 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                           ),
                         )
                         ),
+                        FutureBuilder(
+                            future: tilesMedia[i] != null ? tilesMedia[i]!.getNbTiles() : Future.value(0),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                return Text(snapshot.data.toString());
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            }
+                        ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {

@@ -9,6 +9,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_comp
 
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
+import '../../../models/games/media/media_set.dart';
 import 'media_editor_page.dart';
 
 /// The page to add a component to an object.
@@ -37,6 +38,14 @@ class _MediasPageState extends State<MediasPage> {
       }
     }
     return images;
+  }
+
+  MediaSet convertToSet(Media media) {
+    int i = widget.game.medias.indexWhere((element) => element.id == media.id);
+    setState(() {
+        widget.game.medias[i] = widget.game.medias[i].toSet();
+    });
+    return widget.game.medias[i] as MediaSet;
   }
 
   @override
@@ -83,6 +92,7 @@ class _MediasPageState extends State<MediasPage> {
                           MaterialPageRoute(
                             builder: (context) => MediaEditorPage(
                               media: media,
+                              toSet: convertToSet,
                             ),
                           ),
                         );

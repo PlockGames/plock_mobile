@@ -58,6 +58,10 @@ class ComponentSprite extends ComponentType {
     }
     animation ??= animator.first;
 
+    if (animation.images.isEmpty) {
+      return DisplayComponents(display: null, select: null);
+    }
+
     ComponentFlameSprite display = ComponentFlameSprite(
         onDragStartCallback: onDragStartCallback,
         onTapeUpCallback: onTapeUpCallback,
