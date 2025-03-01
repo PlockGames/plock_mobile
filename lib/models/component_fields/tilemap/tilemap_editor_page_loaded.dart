@@ -16,6 +16,7 @@ class TilemapEditorPageLoaded extends StatefulWidget {
   final Function? onUpdate;
 
   int selectedTile = 0;
+  int selectedLayer = 0;
   TilemapEditorController controller = TilemapEditorController(tileSize: 32);
 
   TilemapEditorPageLoaded({required this.tilemap, required this.onUpdate, required this.tiles, required this.loadedMedias});
@@ -39,6 +40,12 @@ class _SpriteEditorPageLoadedState extends State<TilemapEditorPageLoaded> {
     });
   }
 
+  void onTapOnLayerBar(int index) {
+    setState(() {
+      widget.selectedLayer = index;
+    });
+  }
+
   void setPos(int x, int y) {
     setState(() {
       widget.controller.x = x;
@@ -59,8 +66,8 @@ class _SpriteEditorPageLoadedState extends State<TilemapEditorPageLoaded> {
 
     return Column(
           children: [
-            TilemapEditorTopBar(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, onTap: onTapOnTileBar),
-            TilemapEditor(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, tilemap: widget.tilemap, controller: widget.controller, setPos: setPos),
+            TilemapEditorTopBar(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, onTap: onTapOnTileBar, selectedLayer: widget.selectedLayer, onTapLayer: onTapOnLayerBar),
+            TilemapEditor(tiles: widget.tiles, loadedMedias: widget.loadedMedias, selectedTile: widget.selectedTile, tilemap: widget.tilemap, controller: widget.controller, setPos: setPos, selectedLayer: widget.selectedLayer),
           ],
         );
   }

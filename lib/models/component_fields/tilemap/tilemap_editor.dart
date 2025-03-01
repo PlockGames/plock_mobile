@@ -15,12 +15,13 @@ class TilemapEditor extends StatefulWidget {
   final List<Tile> tiles;
   final List<LoadedMedia?> loadedMedias;
   final int selectedTile;
+  final int selectedLayer;
   final Tilemap tilemap;
   final int tileSize = 32;
   final Function setPos;
   final TilemapEditorController controller;
 
-  TilemapEditor({required this.tiles, this.selectedTile = 0, required this.tilemap, required this.loadedMedias, required this.controller, required this.setPos});
+  TilemapEditor({required this.tiles, this.selectedTile = 0, required this.tilemap, required this.loadedMedias, required this.controller, required this.setPos, required this.selectedLayer});
 
   @override
   _TilemapEditorState createState() => _TilemapEditorState();
@@ -104,7 +105,7 @@ class _TilemapEditorState extends State<TilemapEditor> {
               int x = ((details.localPosition.dx ~/ widget.tileSize) - (widget.controller.x / widget.tileSize)).toInt();
               int y = (details.localPosition.dy ~/ widget.tileSize) - (widget.controller.y / widget.tileSize).toInt();
               if (x >= 0 && x < widget.tilemap.width && y >= 0 && y < widget.tilemap.height) {
-                widget.tilemap.map[x][y] = widget.selectedTile;
+                widget.tilemap.map[widget.selectedLayer][x][y] = widget.selectedTile;
               } else {
                 int dx = widget.tilemap.width;
                 int dy = widget.tilemap.height;
@@ -119,7 +120,7 @@ class _TilemapEditorState extends State<TilemapEditor> {
                   widget.controller.y -= dy * widget.tileSize;
                   y = 0;
                 }
-                widget.tilemap.map[x][y] = widget.selectedTile;
+                widget.tilemap.map[widget.selectedLayer][x][y] = widget.selectedTile;
               }
             });
           }

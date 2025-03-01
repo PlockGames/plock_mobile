@@ -10,13 +10,11 @@ import '../games/media.dart';
 
 /// A field that contain a Blockly (lua code) value.
 class ComponentFieldBlockly extends ComponentField {
-
   /// The initial state of blockly.
   static const Map<String, dynamic> initialJson = {
     'blocks': {
       'languageVersion': 0,
-      'blocks': [
-      ],
+      'blocks': [],
     },
   };
 
@@ -27,8 +25,6 @@ class ComponentFieldBlockly extends ComponentField {
   Map<String, dynamic> _value = initialJson;
 
   Map<String, dynamic> debugData_ = {};
-
-
 
   ComponentFieldBlockly({value, value_js}) {
     if (value != null) {
@@ -48,7 +44,8 @@ class ComponentFieldBlockly extends ComponentField {
   String get type => 'ComponentFieldBlocky';
 
   @override
-  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
+  Widget getField(String name, bool debug, List<Media> medias,
+      Map<String, ComponentField> fields) {
     const Blocky.Theme blockyTheme = Blocky.Theme(
       name: 'classic',
       fontStyle: Blocky.BlocklyFontStyle(
@@ -62,21 +59,19 @@ class ComponentFieldBlockly extends ComponentField {
       theme: blockyTheme,
       css: true,
       move: const Blocky.MoveOptions(
-        drag: true,
-        wheel: true,
-        scrollbars: Blocky.ScrollbarOptions(
-          horizontal: true,
-          vertical: true,
-        )
-      ),
+          drag: true,
+          wheel: true,
+          scrollbars: Blocky.ScrollbarOptions(
+            horizontal: true,
+            vertical: true,
+          )),
       toolbox: Blocky.ToolboxInfo.fromJson(initialToolbox.toJson()),
       horizontalLayout: true,
       collapse: false,
       trashcan: false,
     );
 
-    void onInject(Blocky.BlocklyData data) {
-    }
+    void onInject(Blocky.BlocklyData data) {}
 
     void onChange(Blocky.BlocklyData data) {
       debugData_ = data.toolbox!;
@@ -105,24 +100,25 @@ class ComponentFieldBlockly extends ComponentField {
 
     final addons = getAddons();
 
-    return FutureBuilder(future: addons, builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done) {
-        return Expanded(child:
-          BlocklyEditorWidget(
-          workspaceConfiguration: workspaceConfiguration,
-          initial: _value,
-          onInject: onInject,
-          onChange: onChange,
-          onDispose: onDispose,
-          onError: onError,
-          addons: snapshot.data,
-          debug: false,
-        )
-        );
-      } else {
-        return CircularProgressIndicator();
-      }
-    });
+    return FutureBuilder(
+        future: addons,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Expanded(
+                child: BlocklyEditorWidget(
+              workspaceConfiguration: workspaceConfiguration,
+              initial: _value,
+              onInject: onInject,
+              onChange: onChange,
+              onDispose: onDispose,
+              onError: onError,
+              addons: snapshot.data,
+              debug: false,
+            ));
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
   @override

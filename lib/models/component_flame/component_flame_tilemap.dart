@@ -96,21 +96,23 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
     this.size = Vector2(tilemap.width * initScale.x, tilemap.height * initScale.y);
 
     await loadSprites();
-    for (int x = 0; x < tilemap.width; x++) {
-      for (int y = 0; y < tilemap.height; y++) {
-        final int tile = tilemap.map[x][y];
-        if (tile < 0 || tile >= sprites.length) {
-          continue;
+    for (int i = 0; i < tilemap.map.length; i++) {
+      for (int x = 0; x < tilemap.width; x++) {
+        for (int y = 0; y < tilemap.height; y++) {
+          final int tile = tilemap.map[i][x][y];
+          if (tile < 0 || tile >= sprites.length) {
+            continue;
+          }
+          final SpriteComponent spriteComponent = SpriteComponent(
+            priority: i,
+            sprite: sprites[tile],
+            size: Vector2(initScale.x + 0.005, initScale.y + 0.005),
+          );
+          spriteComponent.position = Vector2(x * initScale.x, y * initScale.y);
+          spriteComponents.add(spriteComponent);
+          add(spriteComponent);
         }
-        final SpriteComponent spriteComponent = SpriteComponent(
-          sprite: sprites[tile],
-          size: Vector2(initScale.x + 0.005, initScale.y + 0.005),
-        );
-        spriteComponent.position = Vector2(x * initScale.x, y * initScale.y);
-        spriteComponents.add(spriteComponent);
-        add(spriteComponent);
       }
-
     }
 
   }
