@@ -38,6 +38,9 @@ class GamePlayer extends Forge2DGame {
   /// Only use it in test mode !
   final Function? uploadGame;
 
+  /// Set to true when all components are loaded. to start the game.
+  bool isAllObjectsLoaded = false;
+
   GamePlayer({required this.game, this.isTest = false, this.exitGame, this.uploadGame});
 
   void exitGameCallback() {
@@ -72,6 +75,7 @@ class GamePlayer extends Forge2DGame {
     // Generate all the game objects of the game
     for (var object in game.scenes[game.currentSceneIndex].objects) {
       Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
+
       components.add(newComponent);
     }
 
@@ -80,26 +84,7 @@ class GamePlayer extends Forge2DGame {
       uiComponents.add(newComponent);
     }
 
-    // set parenting for all the objects
-    for (var comp in components) {
-      GamePlayerObject object = comp as GamePlayerObject;
-
-      if (object.gameObject.parent == null) {
-        //add(comp);
-        world.add(comp);
-        continue;
-      }
-
-      GamePlayerObject? parent;
-      try {
-        parent = components.firstWhere((element) => (element as GamePlayerObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerObject;
-      } catch (e) {
-        parent = null;
-      }
-      if (parent != null) {
-        parent.add(comp);
-      }
-    }
+    addObjectsToWorld();
 
     // set parenting for all the ui objects
     for (var comp in uiComponents) {
@@ -123,46 +108,86 @@ class GamePlayer extends Forge2DGame {
 
   }
 
+  void addObjectsToWorld() {
+    // set parenting for all the objects
+    for (var comp in components) {
+      GamePlayerObject object = comp as GamePlayerObject;
+
+      if (object.gameObject.parent == null) {
+        //add(comp);
+        world.add(comp);
+        continue;
+      }
+
+      GamePlayerObject? parent;
+      try {
+        parent = components.firstWhere((element) => (element as GamePlayerObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerObject;
+      } catch (e) {
+        parent = null;
+      }
+      if (parent != null) {
+        parent.add(comp);
+      }
+    }
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
-    game.deltaTime = dt;
 
-    // If game is dirty, update all the components and objects
-    if (game.isDirty) {
-      game.isDirty = false;
+    if (!isAllObjectsLoaded) {
+      world.gravity = Vector2(0, 0);
 
-      // Update all the components
-      for (int i = 0; i < components.length; i++) {
-        GamePlayerObject object = components[i] as GamePlayerObject;
-
-        if (!game.scenes[game.currentSceneIndex].objects.contains(object.gameObject)) {
-          components.remove(object);
-          world.remove(object);
-          i--;
-        } else {
-          object.updateDisplay();
-          object.updatePhysic();
-          object.updateEvents();
-          object.updateObjectData();
+      for (var object in components) {
+        GamePlayerObject gameObject = (object as GamePlayerObject);
+        if (!gameObject.isLoaded || !gameObject.isAllComponentsLoaded) {
+          return;
         }
 
       }
 
-      // Update all the ui components
-      for (int i = 0; i < uiComponents.length; i++) {
-        GamePlayerUiObject object = uiComponents[i] as GamePlayerUiObject;
+      isAllObjectsLoaded = true;
+    } else {
 
-        if (!game.scenes[game.currentSceneIndex].uiObjects.contains(object.gameObject)) {
-          uiComponents.remove(object);
-          camera.viewport.remove(object);
-          i--;
-        } else {
-          object.updateDisplay();
-          object.updateEvents();
+      game.deltaTime = dt;
+      world.gravity = Vector2(0, 10);
+
+      // If game is dirty, update all the components and objects
+      if (game.isDirty) {
+        game.isDirty = false;
+
+        // Update all the components
+        for (int i = 0; i < components.length; i++) {
+          GamePlayerObject object = components[i] as GamePlayerObject;
+
+          if (!game.scenes[game.currentSceneIndex].objects.contains(
+              object.gameObject)) {
+            components.remove(object);
+            world.remove(object);
+            i--;
+          } else {
+            object.updateDisplay();
+            object.updatePhysic();
+            object.updateEvents();
+            object.updateObjectData();
+          }
+        }
+
+        // Update all the ui components
+        for (int i = 0; i < uiComponents.length; i++) {
+          GamePlayerUiObject object = uiComponents[i] as GamePlayerUiObject;
+
+          if (!game.scenes[game.currentSceneIndex].uiObjects.contains(
+              object.gameObject)) {
+            uiComponents.remove(object);
+            camera.viewport.remove(object);
+            i--;
+          } else {
+            object.updateDisplay();
+            object.updateEvents();
+          }
         }
       }
-
     }
   }
 

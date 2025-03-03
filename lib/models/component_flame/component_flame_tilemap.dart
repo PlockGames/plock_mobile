@@ -3,9 +3,11 @@ import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap.dart';
+import 'package:plock_mobile/models/component_flame/component_flame_tile.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 
@@ -13,7 +15,7 @@ import '../component_fields/tilemap/tile.dart';
 import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
-class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
+class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
 
   /// Callback : When the user tap up on the component.
   final Function onTapeUpCallback;
@@ -44,8 +46,17 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
   /// List of all the sprite components of each tiles
   List<SpriteComponent> spriteComponents = [];
 
+  /// List of all the collisions of the tilemap
+  List<bool> collisions = [];
+
+  /// List of all the bodies components of each tiles
+  List<BodyComponent> bodyComponents = [];
+
   /// The scale of the image.
   Vector2 initScale;
+
+  /// The size of the component
+  Vector2 size;
 
 
   ComponentFlameTilemap({
@@ -54,15 +65,28 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
-    super.position,
-    super.size,
+    required this.size,
     required this.tilemap,
     required this.tiles,
     required this.componentType,
     required this.initScale,
     required this.medias,
   }) {
-    anchor = Anchor.center;
+    fixtureDefs = [
+      FixtureDef(
+        PolygonShape()..setAsBoxXY(1, 1),
+        restitution: 0.0,
+        density: 1.0,
+        friction: 0.0,
+        isSensor: true,
+      ),
+    ];
+
+    bodyDef = BodyDef(
+      position: Vector2(0,0),
+      angle: 0.0,
+      type: BodyType.static,
+    );
   }
 
   Future<void> loadSprites() async {
@@ -78,21 +102,22 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
 
           if (img != null) {
             sprites.add(Sprite(img, srcPosition: Vector2(rect.left, rect.top), srcSize: Vector2(rect.width, rect.height)));
+            collisions.add(tiles[i].collision[j]);
           } else {
             sprites.add(await Sprite.load("empty.png"));
+            collisions.add(false);
           }
 
         }
       } catch (e) {
         sprites.add(await Sprite.load("empty.png"));
+        collisions.add(false);
       }
     }
   }
 
   @override
-  FutureOr<void> onLoad() async {
-    super.onLoad();
-
+  Future<void> onLoad() async {
     this.size = Vector2(tilemap.width * initScale.x, tilemap.height * initScale.y);
 
     await loadSprites();
@@ -103,18 +128,74 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
           if (tile < 0 || tile >= sprites.length) {
             continue;
           }
-          final SpriteComponent spriteComponent = SpriteComponent(
+
+          final ComponentFlameTile spriteComponent = ComponentFlameTile(
+            onDragCancelCallback: onDragCancelCallback,
+            onDragEndCallback: onDragEndCallback,
+            onDragStartCallback: onDragStartCallback,
+            onDragUpdateCallback: onDragUpdateCallback,
+            onTapeUpCallback: onTapeUpCallback,
             priority: i,
             sprite: sprites[tile],
             size: Vector2(initScale.x + 0.005, initScale.y + 0.005),
+            tileX: x,
+            tileY: y,
+            anchor: Anchor.center,
           );
-          spriteComponent.position = Vector2(x * initScale.x, y * initScale.y);
+
+          if (collisions[tile]) {
+            final BodyComponent bodyComponent = BodyComponent(
+              fixtureDefs: [
+                FixtureDef(PolygonShape()..setAsBoxXY((initScale.x + 0.005) / 2, (initScale.y + 0.005) / 2),
+                  restitution: 0.0,
+                  density: 1.0,
+                  friction: 0.0,
+                  userData: Vector2(x.toDouble(), y.toDouble()),
+                ),
+              ],
+              bodyDef: BodyDef(
+                position: Vector2(x * initScale.x, y * initScale.y),
+                angle: 0.0,
+                type: BodyType.static,
+              ),
+              renderBody: false,
+              children: [spriteComponent],
+            );
+
+            bodyComponents.add(bodyComponent);
+            bodyComponent.bodyDef!.position += Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
+            world.add(bodyComponent);
+            //add(bodyComponent);
+          } else {
+            final BodyComponent bodyComponent = BodyComponent(
+              fixtureDefs: [
+                FixtureDef(PolygonShape()..setAsBoxXY(initScale.x + 0.005, initScale.y + 0.005),
+                  restitution: 0.0,
+                  density: 1.0,
+                  friction: 0.0,
+                  isSensor: true,
+                  userData: Vector2(x.toDouble(), y.toDouble()),
+                ),
+              ],
+              bodyDef: BodyDef(
+                position: Vector2(x * initScale.x, y * initScale.y),
+                angle: 0.0,
+                type: BodyType.static,
+              ),
+              renderBody: false,
+              children: [spriteComponent],
+            );
+            bodyComponents.add(bodyComponent);
+            bodyComponent.bodyDef!.position += Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
+            world.add(bodyComponent);
+          }
+
           spriteComponents.add(spriteComponent);
-          add(spriteComponent);
         }
       }
     }
 
+    await super.onLoad();
   }
 
   @override
@@ -153,6 +234,49 @@ class ComponentFlameTilemap extends PositionComponent with TapCallbacks, DragCal
   @override
   ComponentType getComponentType() {
     return componentType;
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    for (final bodyComponent in bodyComponents) {
+      world.remove(bodyComponent);
+    }
+  }
+
+  @override
+  void move(double x, double y) {
+
+    if (this.isLoaded) {
+      this.position.x = x;
+      this.position.y = y;
+    } else {
+      this.bodyDef!.position.x = x;
+      this.bodyDef!.position.y = y;
+    }
+
+    for (final bodyComponent in bodyComponents) {
+      int tileX = (bodyComponent.fixtureDefs![0].userData as Vector2).x.toInt();
+      int tileY = (bodyComponent.fixtureDefs![0].userData as Vector2).y.toInt();
+
+      bodyComponent.position.x = x + tileX * initScale.x;
+      bodyComponent.position.y = y + tileY * initScale.y;
+    }
+  }
+
+  @override
+  bool isFullyLoaded() {
+    if (!isLoaded) {
+      return false;
+    }
+
+    for (final spriteComponent in spriteComponents) {
+      if (!spriteComponent.isLoaded) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
 }

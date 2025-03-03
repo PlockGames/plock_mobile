@@ -67,7 +67,7 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
     final String currentImageName = animation.images[currentFrame].name;
     try {
       final Media media = medias.firstWhere((element) => element.name == currentImageName);
-      final image = await media.getLoadedImage(animation.images[currentFrame]);
+      final image = await media.getLoadedImage(index: animation.images[currentFrame].index);
       if (image != null) {
         final img = await decodeImageFromList(image.data);
         sprite = Sprite(img, srcPosition: Vector2(image.bounds.left, image.bounds.top), srcSize: Vector2(image.bounds.width, image.bounds.height));
@@ -132,6 +132,16 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
   @override
   ComponentType getComponentType() {
     return componentType;
+  }
+
+  @override
+  void move(double x, double y) {
+
+  }
+
+  @override
+  bool isFullyLoaded() {
+    return isLoaded;
   }
 
 }

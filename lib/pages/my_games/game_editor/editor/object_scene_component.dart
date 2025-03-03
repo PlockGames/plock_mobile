@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import 'package:plock_mobile/models/games/game.dart' as Plock;
@@ -135,7 +136,11 @@ class ObjectSceneComponent extends BodyComponent
 
     // Empty the display component list
     for (var component in displayComponents) {
-      remove(component);
+      if (component is BodyComponent) {
+        world.remove(component);
+      } else {
+        remove(component);
+      }
     }
     displayComponents = [];
 
@@ -150,7 +155,13 @@ class ObjectSceneComponent extends BodyComponent
           onDragCancelCallback);
       if (displayComponent.display != null && gameObject.visible && gameObject.enabled) {
         displayComponents.add(displayComponent.display!);
-        add(displayComponent.display!);
+        if (displayComponent.display is BodyComponent) {
+          final bc = displayComponent.display as BodyComponent;
+          bc.bodyDef!.position = Vector2(_gameObject.position.x, _gameObject.position.y);
+          world.add(displayComponent.display!);
+        } else {
+          add(displayComponent.display!);
+        }
       }
 
       if (displayComponent.select != null) {
@@ -209,12 +220,22 @@ class ObjectSceneComponent extends BodyComponent
 
     if (getMode() == EditorMode.edit) {
       if (!_gameObject.locked) {
+
         // update position if object is dragged taking in account the rotation
         var rotationRadians = _gameObject.rotation * pi / 180;
         _gameObject.position.x += event.localDelta.x * cos(rotationRadians) - event.localDelta.y * sin(rotationRadians);
         _gameObject.position.y += event.localDelta.x * sin(rotationRadians) + event.localDelta.y * cos(rotationRadians);
+
+        for (var component in displayComponents) {
+          if (component is ComponentFlame) {
+            final componentFlame = component as ComponentFlame;
+            componentFlame.move(_gameObject.position.x, _gameObject.position.y);
+          }
+        }
+
         position.x = _gameObject.position.x;
         position.y = _gameObject.position.y;
+
       }
     } else if (getMode() == EditorMode.move) {
       moveCamera(event.localDelta);

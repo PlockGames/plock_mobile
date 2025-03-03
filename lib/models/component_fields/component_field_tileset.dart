@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_editor_page.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tile.dart';
+import 'package:plock_mobile/models/component_fields/tileset/tileset_editor_page.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
 import '../games/media.dart';
@@ -35,8 +34,9 @@ class ComponentFieldTileset extends ComponentField {
     for (int i = 0; i < _value.length; i++) {
       Tile tile = Tile();
       tile.media = _value[i].media;
-      tile.layer = _value[i].layer;
-      tile.collision = _value[i].collision;
+      for (int j = 0; j < _value[i].collision.length; j++) {
+        tile.collision.add(_value[i].collision[j]);
+      }
       instanceValue.add(tile);
     }
     return ComponentFieldTileset(value: instanceValue, onUpdate: onUpdate);
@@ -97,6 +97,15 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
         if (!focusNode.hasFocus) {
           setState(() {
             widget.field.value[i].media = controllers[i].text;
+
+            try {
+              Media media = widget.medias.firstWhere((element) => element.name == widget.field.value[i].media);
+              media.getNbTiles().then( (value) {
+                widget.field.value[i].collision = List<bool>.filled(value, false, growable: true);
+              });
+            } catch (e) {
+              widget.field.value[i].collision = List<bool>.empty(growable: true);
+            }
 
             if (widget.onUpdate != null) {
               widget.onUpdate!();
@@ -173,6 +182,15 @@ class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField>
                                 return const CircularProgressIndicator();
                               }
                             }
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => TilesetEditorPage(tile: widget.field.value[i], medias: widget.medias)),
+                            );
+                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

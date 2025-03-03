@@ -78,4 +78,14 @@ class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallb
     return componentType;
   }
 
+  @override
+  void move(double x, double y) {
+
+  }
+
+  @override
+  bool isFullyLoaded() {
+    return isLoaded;
+  }
+
 }

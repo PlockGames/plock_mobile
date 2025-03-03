@@ -1,15 +1,17 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 
+import '../component_fields/image/media_select.dart';
 import '../games/media.dart';
 
-/// A flame component used in the editor to represent a circle component.
-class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
+/// A flame component used in the editor to represent a rect component.
+class ComponentFlameTile extends SpriteComponent with TapCallbacks, DragCallbacks {
 
   /// Callback : When the user tap up on the component.
   final Function onTapeUpCallback;
@@ -22,23 +24,36 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
   /// Callback : When the drag is cancelled.
   final Function onDragCancelCallback;
 
-  /// The linked component, only with game player
-  final ComponentType componentType;
+  /// the tile X position in the tilemap
+  int tileX;
+  /// the tile Y position in the tilemap
+  int tileY;
 
-
-  ComponentFlameCircle({
+  ComponentFlameTile({
     required this.onDragStartCallback,
     required this.onTapeUpCallback,
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
-    required Color color,
+    required this.tileX,
+    required this.tileY,
     super.position,
-    super.radius,
-    required this.componentType
-  }) {
-    this.paint = Paint()..color = color;
-    anchor = Anchor.center;
+    super.size,
+    super.anchor,
+    super.angle,
+    super.autoResize,
+    super.children,
+    super.key,
+    super.nativeAngle,
+    super.paint,
+    super.priority,
+    super.scale,
+    super.sprite,
+  });
+
+  @override
+  void update(double dt) {
+    super.update(dt);
   }
 
   @override
@@ -67,21 +82,6 @@ class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallba
   void onDragCancel(DragCancelEvent event) {
     super.onDragCancel(event);
     onDragCancelCallback(event);
-  }
-
-  @override
-  ComponentType getComponentType() {
-    return componentType;
-  }
-
-  @override
-  void move(double x, double y) {
-
-  }
-
-  @override
-  bool isFullyLoaded() {
-    return isLoaded;
   }
 
 }

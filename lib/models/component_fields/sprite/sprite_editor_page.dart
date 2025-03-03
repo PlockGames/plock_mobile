@@ -39,7 +39,7 @@ class _SpriteEditorPageState extends State<SpriteEditorPage> {
       List<Future<LoadedImage?>> loadedImages = [];
       for (int i = 0; i < images.length; i++) {
         if (images[i] != null) {
-          loadedImages.add(images[i]!.getLoadedImage(widget.sprite.images[i]));
+          loadedImages.add(images[i]!.getLoadedImage(index: widget.sprite.images[i].index));
         } else {
           loadedImages.add(Future.value(null));
         }

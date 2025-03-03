@@ -53,6 +53,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   /// lock rotation rotation
   double lockRotationValue = 0;
 
+  /// true when all components are loaded
+  bool isAllComponentsLoaded = false;
+
   GamePlayerObject({
     required this.gameObject,
     required this.plockGame,
@@ -60,8 +63,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
-
     // Set the object data
     renderBody = false;
 
@@ -113,6 +114,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       }
     }
 
+    await super.onLoad();
   }
 
   /// Update the display components.
@@ -122,7 +124,11 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     if (!gameObject.enabled) {
       for (var component in this.children) {
         if (component is ComponentFlame) {
-          remove(component);
+          if (component is BodyComponent) {
+            world.remove(component);
+          } else {
+            remove(component);
+          }
         }
       }
       return;
@@ -154,7 +160,12 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
             onDragEnd,
             onDragCancel);
           if (comp != null) {
-            add(comp);
+            if (comp is BodyComponent) {
+              comp.bodyDef!.position = Vector2(gameObject.position.x, gameObject.position.y);
+              world.add(comp);
+            } else {
+              add(comp);
+            }
             ComponentFlame componentFlame = comp as ComponentFlame;
             if (componentFlame.getComponentType() == null) {
               continue;
@@ -229,6 +240,18 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   @override
   void update(double dt) {
     super.update(dt);
+
+    for (var comp in displayComponents) {
+      if (comp is ComponentFlame) {
+        final cf = comp as ComponentFlame;
+        if (!cf.isFullyLoaded()) {
+          print("Not fully loaded");
+          return;
+        }
+      }
+    }
+
+    isAllComponentsLoaded = true;
 
     if (lockX) {
       body.linearVelocity = Vector2(0, body.linearVelocity.y);

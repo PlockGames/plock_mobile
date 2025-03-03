@@ -54,6 +54,8 @@ class ComponentTilemap extends ComponentType {
         onDragUpdateCallback: onDragUpdateCallback,
         tilemap: fields["map"]!.value,
         tiles: fields["tiles"]!.value,
+        size: Vector2(
+            fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         componentType: this,
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
@@ -85,6 +87,8 @@ class ComponentTilemap extends ComponentType {
         tilemap: fields["map"]!.value,
         tiles: fields["tiles"]!.value,
         componentType: this,
+        size: Vector2(
+            fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
         medias: medias

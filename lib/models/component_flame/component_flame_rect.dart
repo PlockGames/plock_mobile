@@ -1,13 +1,10 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/body_component.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 
-import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
 class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
@@ -78,6 +75,16 @@ class ComponentFlameRect extends RectangleComponent with TapCallbacks, DragCallb
   @override
   ComponentType getComponentType() {
     return componentType;
+  }
+
+  @override
+  void move(double x, double y) {
+
+  }
+
+  @override
+  bool isFullyLoaded() {
+    return isLoaded;
   }
 
 }

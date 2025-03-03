@@ -31,10 +31,12 @@ class ComponentFieldTilemap extends ComponentField {
 
   @override
   ComponentFieldTilemap instance() {
-    Tilemap instanceValue = Tilemap(_value.map.length, _value.map[0].length);
-    for (int i = 0; i < _value.map.length; i++) {
+    Tilemap instanceValue = Tilemap(_value.map[0].length, _value.map[0][0].length);
+    for (int i = 0; i < Tilemap.NB_LAYERS; i++) {
       for (int j = 0; j < _value.map[i].length; j++) {
-        instanceValue.map[i][j] = _value.map[i][j];
+        for (int k = 0; k < _value.map[i][j].length; k++) {
+          instanceValue.map[i][j][k] = _value.map[i][j][k];
+        }
       }
     }
     return ComponentFieldTilemap(value: instanceValue, onUpdate: onUpdate);

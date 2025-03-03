@@ -59,9 +59,9 @@ class Media {
     return Rect.fromLTWH(0, 0, size.x, size.y);
   }
 
-  Future<LoadedImage?> getLoadedImage(MediaSelect selection) async {
+  Future<LoadedImage?> getLoadedImage({int index = 0}) async {
     final Uint8List? image = await file?.readAsBytes();
-    final rect = await getTileRect(selection.index);
+    final rect = await getTileRect(index);
 
     if (image == null) {
       return null;
