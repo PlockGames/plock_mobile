@@ -1,0 +1,12 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - flutter test --coverage
+    - sed -i 's|\\|/|g' coverage/lcov-report/lcov.info
+    - genhtml coverage/lcov-report/lcov.info -o coverage/html
+  artifacts:
+    paths:
+      - coverage/html
