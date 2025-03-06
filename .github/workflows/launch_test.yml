@@ -35,13 +35,13 @@ jobs:
         run: flutter test --coverage || true
 
       - name: Fix Slashes in Coverage File
-        run: sed -i 's|\\|/|g' coverage/lcov-report/lcov.info || true
+        run: sed -i 's|\\|/|g' coverage/lcov.info || true
 
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
 
       - name: Generate Coverage HTML Report
-        run: genhtml coverage/lcov-report/lcov.info -o coverage/html || true
+        run: genhtml coverage/lcov.info -o coverage/html || true
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
