@@ -3,14 +3,13 @@ name: CI For Plock Mobile
 on:
   push:
     branches:
-      - '**'  # S'exécute pour toutes les branches
+      - '**'
   pull_request:
     branches:
-      - '**'  # S'exécute pour toutes les branches
+      - '**'
 
 jobs:
   test:
-    name: Run Flutter Tests and Generate Coverage Report
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +34,7 @@ jobs:
         run: genhtml coverage/lcov-report/lcov.info -o coverage/html
 
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: coverage/html
