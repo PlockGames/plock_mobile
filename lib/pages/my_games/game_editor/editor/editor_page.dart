@@ -9,11 +9,10 @@ import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
-import 'Editor.dart';
+import 'editor.dart';
 
 /// The editor page.
 class EditorPage extends StatefulWidget {
-
   /// The game to edit.
   final Plock.Game game;
 
@@ -31,7 +30,6 @@ class EditorPage extends StatefulWidget {
 }
 
 class _EditorPageState extends State<EditorPage> {
-
   _EditorPageState();
 
   /// Open the object editor.
@@ -70,7 +68,8 @@ class _EditorPageState extends State<EditorPage> {
         tags: [],
         playTime: "0",
         gameType: "test",
-        thumbnailUrl: "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+        thumbnailUrl:
+            "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
         contentGame: widget.game.toJson(),
       ));
       print(upload.body);
@@ -85,14 +84,22 @@ class _EditorPageState extends State<EditorPage> {
         for (var component in object.components) {
           if (component is ComponentEvent) {
             ComponentEvent event = component;
-            event.fields['event']!.value = event.fields['event']!.value.replaceAll('\n', ' ');
-            event.fields['event']!.value = event.fields['event']!.value.replaceAll('\\"', '"');
+            event.fields['event']!.value =
+                event.fields['event']!.value.replaceAll('\n', ' ');
+            event.fields['event']!.value =
+                event.fields['event']!.value.replaceAll('\\"', '"');
           }
         }
       }
-      Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(
-          game: GamePlayer(game: tempGame, isTest: true, exitGame: goBack(context), uploadGame: uploadGame(context))
-      )));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GameWidget(
+                  game: GamePlayer(
+                      game: tempGame,
+                      isTest: true,
+                      exitGame: goBack(context),
+                      uploadGame: uploadGame(context)))));
     };
   }
 
@@ -105,23 +112,22 @@ class _EditorPageState extends State<EditorPage> {
   @override
   Widget build(BuildContext context) {
     EditorCallbacks callbacks = EditorCallbacks(
-      openEditor: openEditor(context),
-      addGameObject: addGameObject,
-      removeGameObject: removeGameObject,
-      updateGameObject: updateGameObject,
-      testGame: testGame(context),
-      goBack: goBack(context)
-    );
+        openEditor: openEditor(context),
+        addGameObject: addGameObject,
+        removeGameObject: removeGameObject,
+        updateGameObject: updateGameObject,
+        testGame: testGame(context),
+        goBack: goBack(context));
 
     return Column(
       children: <Widget>[
         Expanded(
           child: GameWidget(
-              key: Key("editor_game"),
-              game: Editor(
-                  game: widget.game,
-                  editorCallbacks: callbacks,
-              ),
+            key: Key("editor_game"),
+            game: Editor(
+              game: widget.game,
+              editorCallbacks: callbacks,
+            ),
           ),
         ),
       ],
