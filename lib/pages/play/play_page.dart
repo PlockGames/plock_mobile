@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -45,6 +46,20 @@ class PlayPageState extends State<PlayPage> {
       if (loadedGame == null) {
         continue;
       }
+
+      loadedGame.uuid = game['id'];
+      final mediasResponse = await ApiService.getMedias(game['id']);
+      final mediasJson = jsonDecode(mediasResponse.body);
+
+      for (var media in mediasJson['data']) {
+        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
+        if (index != -1) {
+          final fileRes = await http.get(Uri.parse(media['filename']));
+          final file = XFile.fromData(fileRes.bodyBytes);
+          loadedGame.medias[index].file = file;
+        }
+      }
+
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;

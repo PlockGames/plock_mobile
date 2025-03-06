@@ -160,6 +160,19 @@ class Game {
     String json = "{";
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
+    json += "\"firstScene\": $firstScene,";
+
+    // add medias
+    json += "\"medias\": [";
+    medias.forEach((element) {
+      json += element.toJson();
+      if (medias.indexOf(element) != medias.length - 1) {
+        json += ",";
+      }
+    });
+    json += "],";
+
+    // add scenes
     json += "\"scenes\": [";
     scenes.forEach((element) {
       json += element.toJson();
@@ -169,6 +182,7 @@ class Game {
     });
     json += "]";
     json += "}";
+    print(json);
     return json;
   }
 
@@ -188,6 +202,11 @@ class Game {
         game.scenes.add(Plock.Scene.fromJson(scene));
       }
 
+      var jsonMedias = json['medias'];
+      for (var media in jsonMedias) {
+        game.medias.add(Media.fromJson(media));
+      }
+
       return game;
     } catch (e) {
       print(e);
@@ -195,3 +214,4 @@ class Game {
     }
   }
 }
+

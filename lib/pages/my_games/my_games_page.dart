@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/services/api.dart';
 import '../../models/games/game.dart';
@@ -32,14 +33,33 @@ class _MyGamesPageState extends State<MyGamesPage> {
     List<Game> allGameWithData = <Game>[];
     for (var game in allGames) {
       var gameData = await http.get(Uri.parse(game['gameUrl']));
-      var json = jsonDecode(gameData.body);
-      //print(game);
+      late dynamic json;
+      try {
+        json = jsonDecode(gameData.body);
+      } catch (e) {
+        continue;
+      }
       Game? loadedGame = await Game.jsonToGame(name: game['title'], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
+
       if (loadedGame == null) {
         continue;
       }
 
       loadedGame.uuid = game['id'];
+      final mediasResponse = await ApiService.getMedias(game['id']);
+      final mediasJson = jsonDecode(mediasResponse.body);
+
+      for (var media in mediasJson['data']) {
+        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
+        if (index != -1) {
+          final fileRes = await http.get(Uri.parse(media['filename']));
+          final file = XFile.fromData(fileRes.bodyBytes);
+          loadedGame.medias[index].file = file;
+        }
+      }
+
+
+
       if (game["creatorId"] == dotenv.env['USER_ID']) {
         allGameWithData.add(loadedGame);
       }

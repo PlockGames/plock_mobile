@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
@@ -9,6 +11,7 @@ import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 
 import '../../../../models/games/game.dart' as Plock;
+import '../../../../models/games/media.dart';
 import '../../../../models/games/scene.dart';
 import '../assets_page.dart';
 import '../medias_page.dart';
@@ -124,24 +127,54 @@ class _EditorPageState extends State<EditorPage> {
               "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
           contentGame: widget.game.toJson(),
         ));
-        widget.game.uuid = "test";
-        Navigator.popUntil(context, ModalRoute.withName('/'));
+        var json = jsonDecode(upload.body);
+        final String uuid = json['data']['id'];
+        widget.game.uuid = uuid;
       } else {
         // Update the game
         var upload = await ApiService.updateGame(
             widget.game.uuid,
-            CreateGameDto(
-              title: "${widget.game.name}_",
+            UpdateGameDto(
+              title: "${widget.game.name}",
               tags: [],
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
-                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
               contentGame: widget.game.toJson(),
+              id: widget.game.uuid,
             ));
-        print(upload.body);
-        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
+
+        // upload images
+        List<Media> medias = widget.game.medias;
+        for (var media in medias) {
+          if (media.file != null) {
+            var res = await ApiService.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
+            final json = jsonDecode(res.body);
+            final String uuid = json['data'][0]['id'];
+            media.uuid = uuid;
+          }
+        }
+
+        // reupdate game with new ids
+      final finalRes = await ApiService.updateGame(
+          widget.game.uuid,
+          UpdateGameDto(
+            title: "${widget.game.name}",
+            tags: [],
+            playTime: "0",
+            gameType: "test",
+            thumbnailUrl:
+            "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+            contentGame: widget.game.toJson(),
+            id: widget.game.uuid,
+          ));
+
+        print(finalRes.body);
+
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+
     };
   }
 

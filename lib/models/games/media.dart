@@ -9,6 +9,7 @@ import '../utils/Vector2.dart';
 import 'media/media_set.dart';
 
 class Media {
+  String uuid = "";
   final int id;
   String name;
   XFile? file;
@@ -76,5 +77,20 @@ class Media {
   Future<int> getNbTiles() async {
     return 1;
   }
+
+  String toJson() {
+    return """
+    {
+      "id": $id,
+      "name": "$name",
+      "uuid": "$uuid"
+    }
+    """;
+  }
+
+  Media.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        uuid = json['uuid'];
 
 }

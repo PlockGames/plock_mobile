@@ -46,12 +46,18 @@ class ComponentFieldImage extends ComponentField {
 
   @override
   String toJson() {
-    return "\"$_value\"";
+    String mediaSelect =  "{";
+    mediaSelect += "\"name\": \"${_value.name}\",";
+    mediaSelect += "\"index\": ${_value.index}";
+    mediaSelect += "}";
+    return mediaSelect;
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as MediaSelect;
+    _value = MediaSelect();
+    _value.name = jsonVal['name'];
+    _value.index = jsonVal['index'];
   }
 
 }

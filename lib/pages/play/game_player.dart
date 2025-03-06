@@ -1,9 +1,9 @@
-import 'dart:ui';
 import 'package:flame/camera.dart';
 import 'package:flame_forge2d/forge2d_game.dart';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
 import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
@@ -40,6 +40,9 @@ class GamePlayer extends Forge2DGame {
 
   /// Set to true when all components are loaded. to start the game.
   bool isAllObjectsLoaded = false;
+
+  /// The loading screen component
+  Component? loadingScreen;
 
   GamePlayer({required this.game, this.isTest = false, this.exitGame, this.uploadGame});
 
@@ -106,6 +109,20 @@ class GamePlayer extends Forge2DGame {
       }
     }
 
+    // Add the loading screen
+    loadingScreen = TextComponent(
+      text: "Loading...",
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontSize: 20,
+        ),
+      ),
+      position: Vector2(size.x / 2, size.y / 2),
+      anchor: Anchor.center,
+    );
+    add(loadingScreen!);
+
   }
 
   void addObjectsToWorld() {
@@ -146,6 +163,7 @@ class GamePlayer extends Forge2DGame {
 
       }
 
+      remove(loadingScreen!);
       isAllObjectsLoaded = true;
     } else {
 
