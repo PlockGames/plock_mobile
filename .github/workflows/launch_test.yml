@@ -1,12 +1,41 @@
-stages:
-  - test
+name: CI For Plock Mobile
 
-test:
-  stage: test
-  script:
-    - flutter test --coverage
-    - sed -i 's|\\|/|g' coverage/lcov-report/lcov.info
-    - genhtml coverage/lcov-report/lcov.info -o coverage/html
-  artifacts:
-    paths:
-      - coverage/html
+on:
+  push:
+    branches:
+      - '**'  # S'exécute pour toutes les branches
+  pull_request:
+    branches:
+      - '**'  # S'exécute pour toutes les branches
+
+jobs:
+  test:
+    name: Run Flutter Tests and Generate Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: stable
+          flutter-version: '3.24.0'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Flutter Tests
+        run: flutter test --coverage
+
+      - name: Fix Slashes in Coverage File
+        run: sed -i 's|\\|/|g' coverage/lcov-report/lcov.info
+
+      - name: Generate Coverage HTML Report
+        run: genhtml coverage/lcov-report/lcov.info -o coverage/html
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage/html
