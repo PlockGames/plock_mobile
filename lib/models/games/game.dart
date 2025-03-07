@@ -160,7 +160,16 @@ class Game {
     String json = "{";
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
+    json += "\"assetCount\": $assetCount,";
     json += "\"firstScene\": $firstScene,";
+
+    json += "\"assets\": [";
+    assets.forEach((element) {
+      json += element.toJson();
+      if (assets.indexOf(element) != assets.length - 1) {
+        json += ",";
+      }
+    });
 
     // add medias
     json += "\"medias\": [";
