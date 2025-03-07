@@ -52,12 +52,43 @@ class ComponentFieldTilemap extends ComponentField {
 
   @override
   String toJson() {
-    return "\"$_value\"";
+    String res = "{";
+    res += "\"map\": [";
+    for (int i = 0; i < _value.map.length; i++) {
+      res += "[";
+      for (int j = 0; j < _value.map[i].length; j++) {
+        res += "[";
+        for (int k = 0; k < _value.map[i][j].length; k++) {
+          res += "${_value.map[i][j][k]}";
+          if (k < _value.map[i][j].length - 1) {
+            res += ",";
+          }
+        }
+        res += "]";
+        if (j < _value.map[i].length - 1) {
+          res += ",";
+        }
+      }
+      res += "]";
+      if (i < _value.map.length - 1) {
+        res += ",";
+      }
+    }
+    res += "]";
+    res += "}";
+    return res;
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as Tilemap;
+    _value = Tilemap(jsonVal['map'][0].length, jsonVal['map'][0][0].length);
+    for (int i = 0; i < jsonVal['map'].length; i++) {
+      for (int j = 0; j < jsonVal['map'][i].length; j++) {
+        for (int k = 0; k < jsonVal['map'][i][j].length; k++) {
+          _value.map[i][j][k] = jsonVal['map'][i][j][k];
+        }
+      }
+    }
   }
 
 }

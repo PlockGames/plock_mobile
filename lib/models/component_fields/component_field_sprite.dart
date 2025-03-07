@@ -41,12 +41,23 @@ class ComponentFieldSprite extends ComponentField {
 
   @override
   String toJson() {
-    return "\"$_value\"";
+    String res = "[";
+    for (int i = 0; i < _value.length; i++) {
+      res += _value[i].toJson();
+      if (i != _value.length - 1) {
+        res += ",";
+      }
+    }
+    res += "]";
+    return res;
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as List<PlockSpriteAnimation>;
+    _value = [];
+    for (var json in jsonVal) {
+      _value.add(PlockSpriteAnimation.fromJson(json));
+    }
   }
 
 }

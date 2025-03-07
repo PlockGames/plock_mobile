@@ -52,12 +52,38 @@ class ComponentFieldTileset extends ComponentField {
 
   @override
   String toJson() {
-    return "\"$_value\"";
+    String res = "[";
+    for (int i = 0; i < _value.length; i++) {
+      res += "{";
+      res += "\"media\": \"${_value[i].media}\",";
+      res += "\"collision\": [";
+      for (int j = 0; j < _value[i].collision.length; j++) {
+        res += "${_value[i].collision[j]}";
+        if (j < _value[i].collision.length - 1) {
+          res += ",";
+        }
+      }
+      res += "]";
+      res += "}";
+      if (i < _value.length - 1) {
+        res += ",";
+      }
+    }
+    res += "]";
+    return res;
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as List<Tile>;
+    _value = List<Tile>.empty(growable: true);
+    for (int i = 0; i < jsonVal.length; i++) {
+      Tile tile = Tile();
+      tile.media = jsonVal[i]['media'];
+      for (int j = 0; j < jsonVal[i]['collision'].length; j++) {
+        tile.collision.add(jsonVal[i]['collision'][j]);
+      }
+      _value.add(tile);
+    }
   }
 
 }
