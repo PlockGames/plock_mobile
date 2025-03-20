@@ -8,7 +8,15 @@ class AuthService {
   static const String signupUrl = "$baseUrl/signup";
   static const String completeSignupUrl = "$baseUrl/signup/complete";
 
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final FlutterSecureStorage _storage;
+  final http.Client _client;
+
+  AuthService({
+    FlutterSecureStorage? storage,
+    http.Client? client,
+  }) :
+        _storage = storage ?? const FlutterSecureStorage(),
+        _client = client ?? http.Client();
 
   // Fonction de log simple
   void _log(String message) {
@@ -96,7 +104,7 @@ class AuthService {
     try {
       _log('Tentative de connexion pour: $email');
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse(loginUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -146,7 +154,7 @@ class AuthService {
       // Ajout d'un délai pour s'assurer que la requête est bien envoyée
       await Future.delayed(Duration(milliseconds: 500));
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse(signupUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(signupData),
@@ -226,7 +234,7 @@ class AuthService {
         };
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse(completeSignupUrl),
         headers: {
           'Content-Type': 'application/json',
