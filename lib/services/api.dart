@@ -24,6 +24,55 @@ class ApiService {
     return res;
   }
 
+  /// Get the profile of the currently authenticated user.
+  static Future<http.Response> getUserProfile() async {
+    final response = await http.get(
+      Uri.parse("$url/auth/me"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Accept": "application/json",
+      },
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+  /// Met à jour le profil de l'utilisateur actuellement authentifié.
+  static Future<http.Response> updateUserProfile({
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? birthDate,
+    String? username,
+    String? password,
+  }) async {
+    // Créer un objet contenant uniquement les champs non-null
+    final Map<String, dynamic> updateData = {};
+    if (email != null) updateData['email'] = email;
+    if (firstName != null) updateData['firstName'] = firstName;
+    if (lastName != null) updateData['lastName'] = lastName;
+    if (phoneNumber != null) updateData['phoneNumber'] = phoneNumber;
+    if (birthDate != null) updateData['birthDate'] = birthDate;
+    if (username != null) updateData['username'] = username;
+    if (password != null) updateData['password'] = password;
+
+    final response = await http.put(
+      Uri.parse("$url/user/profile/me"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: jsonEncode(updateData),
+    );
+
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
+    return response;
+  }
+
   /// Return a list of the game with the given [id].
   static Future<http.Response> getGame(String id) async {
     return await http.get(Uri.parse("$url/game/$id"), headers: {
