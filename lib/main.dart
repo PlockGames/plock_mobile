@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          const PlayPage(),
+          PlayPage(),
           const MyGamesPage(),
         ],
       ),
