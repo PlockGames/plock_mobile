@@ -144,13 +144,6 @@ class ApiService {
     });
   }
 
-  static Future<http.Response> deleteGame(String id) async {
-    final res = await http.delete(Uri.parse("$url/game/$id"), headers: {
-      "Authorization": "Bearer $apiKey"
-    });
-    return res;
-  }
-
   static Future<http.Response> uploadMedia(String gameId, Uint8List data) async {
     http.MultipartFile file = http.MultipartFile.fromBytes('images', data, filename: "image.png", contentType: http.MediaType("image", "png"));
     final body = http.MultipartRequest("POST", Uri.parse("$url/game/$gameId/images"));

@@ -62,7 +62,7 @@ class Game {
   }
 
   Game instance() {
-    Game instance = Game(id: id, name: name);
+    Game instance = Game(name: name);
     instance.screenSize = screenSize;
     instance.objectCount = objectCount;
     instance.assetCount = assetCount;
@@ -156,7 +156,7 @@ class Game {
   /// Convert the game to a JSON string.
   String toJson() {
     String json = "{";
-    json += "\"id\": \"$id\","; // This can be null, so ensure you handle it accordingly
+    json += "\"id\": \"$uuid\","; // This can be null, so ensure you handle it accordingly
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
     json += "\"assetCount\": $assetCount,";
@@ -169,6 +169,7 @@ class Game {
         json += ",";
       }
     });
+    json += "],";
 
     // add medias
     json += "\"medias\": [";
@@ -190,6 +191,7 @@ class Game {
     });
     json += "]";
     json += "}";
+
     print(json);
     return json;
   }

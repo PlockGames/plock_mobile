@@ -44,7 +44,10 @@ class ComponentFieldBool extends ComponentField {
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value = jsonVal as bool;
+    if (jsonVal is String) {
+      _value = jsonVal == "true";
+      return;
+    }
   }
 
 }

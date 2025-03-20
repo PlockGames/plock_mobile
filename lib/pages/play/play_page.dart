@@ -13,7 +13,9 @@ String? url = dotenv.env['API_URL'];
 
 /// The page where the games are played.
 class PlayPage extends StatefulWidget {
-  const PlayPage({Key? key}) : super(key: key);
+  bool scrollEnabled = true;
+
+  PlayPage({Key? key, this.scrollEnabled = true}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,16 +37,16 @@ class PlayPageState extends State<PlayPage> {
   Future<void> _initializeFavoriteStatus() async {
     List<plock.Game> allGames = await getAllGamesWithData();
     for (var game in allGames) {
-      var rep = await ApiService.getGame(game.id);
+      var rep = await ApiService.getGame(game.uuid);
       var jsonResponse = jsonDecode(rep.body);
       var likes = jsonResponse['data']['likes'];
 
-      var response = await ApiService.getGameLike(game.id);
+      var response = await ApiService.getGameLike(game.uuid);
       dynamic decoded = jsonDecode(response.body);
       bool isLiked = decoded['totalLikes'] > 0;
       setState(() {
-        favoriteStatus[game.id] = jsonResponse['data']['hasLiked'];
-        countLike[game.id] = likes.toString();
+        favoriteStatus[game.uuid] = jsonResponse['data']['hasLiked'];
+        countLike[game.uuid] = likes.toString();
         print("-------------------------------");
         print(rep);
         print("-------------------------------");
@@ -57,7 +59,6 @@ class PlayPageState extends State<PlayPage> {
    //   print("-------------is liked ?--------------");
     }
   }
-
 
   /// Get all the games with their game data.
   Future<List<plock.Game>> getAllGamesWithData() async {
@@ -92,6 +93,8 @@ class PlayPageState extends State<PlayPage> {
         }
       }
 
+      print('Game loaded: ${loadedGame.name}');
+
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;
@@ -117,7 +120,7 @@ class PlayPageState extends State<PlayPage> {
                 child: PageView(
                   scrollDirection: Axis.vertical,
                   children: snapshot.data!.map((game) {
-                    bool isFavorite = favoriteStatus[game.id] ?? false;
+                    bool isFavorite = favoriteStatus[game.uuid] ?? false;
                     return Stack(
                       children: [
                         // Widget principal du jeu
@@ -139,19 +142,19 @@ class PlayPageState extends State<PlayPage> {
                                 ),
                                 onPressed: () {
                                   if (isFavorite) {
-                                    unlikeGame(game.id).then((_) {
+                                    unlikeGame(game.uuid).then((_) {
                                       setState(() {
-                                        favoriteStatus[game.id] = false;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
+                                        favoriteStatus[game.uuid] = false;
+                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
+                                        countLike[game.uuid] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
                                       });
                                     });
                                   } else {
-                                    likeGame(game.id).then((_) {
+                                    likeGame(game.uuid).then((_) {
                                       setState(() {
-                                        favoriteStatus[game.id] = true;
-                                        int currentLikes = int.parse(countLike[game.id] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.id] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
+                                        favoriteStatus[game.uuid] = true;
+                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
+                                        countLike[game.uuid] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
                                       });
                                     });
                                   }
@@ -159,7 +162,7 @@ class PlayPageState extends State<PlayPage> {
                               ),
                               SizedBox(height: 8.0), // Space between button and text
                               Text(
-                                countLike[game.id] ?? '0', // Fournir '0' si countLike[game.id] est null
+                                countLike[game.uuid] ?? '0', // Fournir '0' si countLike[game.id] est null
                                 style: TextStyle(
                                   color: Colors.white, // Ajuster la couleur du texte
                                   fontSize: 16.0,
@@ -178,7 +181,7 @@ class PlayPageState extends State<PlayPage> {
                                 ),
                                 onPressed: () {
                                   // Générer le lien de partage
-                                  final shareLink = "$url/games/${game.id}";
+                                  final shareLink = "$url/games/${game.uuid}";
 
                                   // Copier dans le presse-papiers
                                   Clipboard.setData(ClipboardData(text: shareLink));

@@ -21,7 +21,7 @@ class ComponentPhysicsCircle extends ComponentType {
     fields["lock move X"] = ComponentFieldBool(value: false);
     fields["lock move Y"] = ComponentFieldBool(value: false);
     fields["is sensor"] = ComponentFieldBool(value: false);
-    fields["type"] = ComponentFieldDropDown(value: "static", options: {
+    fields["bodyType"] = ComponentFieldDropDown(value: "static", options: {
       "static": "Static",
       "dynamic": "Dynamic",
       "kinematic": "Kinematic"

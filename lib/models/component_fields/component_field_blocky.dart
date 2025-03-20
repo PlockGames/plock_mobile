@@ -136,7 +136,21 @@ class ComponentFieldBlockly extends ComponentField {
 
   @override
   String toJson() {
-    return "\"$_value_js\"";
+    var json = _value_js;
+
+    for (int i = 0; i < json.length; i++) {
+      if (json[i] == "\"") {
+        json = "${json.substring(0, i)}\\${json.substring(i)}";
+        i++;
+      }
+      if (json[i] == "\n") {
+        json = "${json.substring(0, i-1)};${json.substring(i+1)}";
+        i++;
+      }
+    }
+
+    json = "\"$json\"";
+    return json;
   }
 
   @override
