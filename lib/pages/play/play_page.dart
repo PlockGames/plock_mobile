@@ -11,7 +11,9 @@ import 'package:plock_mobile/services/api.dart';
 
 /// The page where the games are played.
 class PlayPage extends StatefulWidget {
-  const PlayPage({Key? key}) : super(key: key);
+  bool scrollEnabled = true;
+
+  PlayPage({Key? key, this.scrollEnabled = true}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -25,6 +27,12 @@ class PlayPageState extends State<PlayPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  chengeScrollEnabled(bool enabled) {
+    setState(() {
+      widget.scrollEnabled = enabled;
+    });
   }
 
   /// Get all the games with their game data.
@@ -60,6 +68,8 @@ class PlayPageState extends State<PlayPage> {
         }
       }
 
+      print('Game loaded: ${loadedGame.name}');
+
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;
@@ -69,12 +79,18 @@ class PlayPageState extends State<PlayPage> {
   Widget build(BuildContext context) {
     return StreamBuilder<List<plock.Game>>(stream: getAllGamesWithData().asStream(), builder: (context, snapshot) {
       if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-        var games = snapshot.data!.map((game) => GameWidget(game: GamePlayer(game: game))).toList();
+        List<Widget> games = List<Widget>.empty(growable: true);
+
+        for (var game in snapshot.data!) {
+          games.add(GameWidget(game: GamePlayer(game: game)));
+        }
+
 
         return Column(
           children: [Expanded(child: PageView(
             scrollDirection: Axis.vertical,
             children: games,
+            physics: widget.scrollEnabled ? PageScrollPhysics() : NeverScrollableScrollPhysics(),
           ))],
         );
       } else if (snapshot.data != null && snapshot.data!.isEmpty) {

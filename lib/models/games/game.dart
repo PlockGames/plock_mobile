@@ -170,6 +170,7 @@ class Game {
         json += ",";
       }
     });
+    json += "],";
 
     // add medias
     json += "\"medias\": [";
@@ -191,6 +192,7 @@ class Game {
     });
     json += "]";
     json += "}";
+
     print(json);
     return json;
   }

@@ -98,6 +98,9 @@ class GameObject {
     gameObject.position = Vector2.fromJson(json['position']);
     for (var component in json['components']) {
       var componentModel = ComponentList.getByName(component["type"]);
+      if (componentModel == null) {
+        continue;
+      }
       var comp = componentModel.instance();
       comp.fields.forEach((key, value) {
         value.updateFromJson(component[key]);

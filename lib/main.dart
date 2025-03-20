@@ -24,13 +24,15 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  bool isScrollEnabled = true;
+
+  MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -49,6 +51,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            widget.isScrollEnabled = !widget.isScrollEnabled;
+          });
+        },
+        child: Icon(widget.isScrollEnabled ? Icons.lock : Icons.lock_open),
+      ),
       bottomNavigationBar: TabBar(
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
@@ -60,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          const PlayPage(),
+          PlayPage(scrollEnabled: widget.isScrollEnabled),
           const MyGamesPage(),
         ],
       ),
