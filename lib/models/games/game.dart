@@ -9,7 +9,6 @@ import 'scene.dart' as Plock;
 
 /// A game.
 class Game {
-
   /// The scenes of the game.
   List<Plock.Scene> scenes = List<Plock.Scene>.empty(growable: true);
 
@@ -40,7 +39,7 @@ class Game {
   /// If the game is dirty.
   bool isDirty = false;
 
-  /// Object count, used to assign id
+  /// Object count, used to assign id.
   int objectCount = 0;
 
   /// Asset count, used to assign id
@@ -55,7 +54,6 @@ class Game {
   Vector2 lastTouchPosition = Vector2(0, 0);
 
   /// The game player.
-  ///
   /// Set at runtime when the game is played, used to spawn and destroy objects.
   GamePlayer? gamePlayer;
 
@@ -143,7 +141,7 @@ class Game {
 
     GamePlayerObject? object = gamePlayer!.components.firstWhere((element) {
       return (element as GamePlayerObject).gameObject.id == id;
-      }) as GamePlayerObject?;
+    }) as GamePlayerObject?;
     if (object != null) {
       scenes[currentSceneIndex].objects.remove(object.gameObject);
       for (var component in object.displayComponents) {
@@ -158,6 +156,7 @@ class Game {
   /// Convert the game to a JSON string.
   String toJson() {
     String json = "{";
+    json += "\"id\": \"$uuid\","; // This can be null, so ensure you handle it accordingly
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
     json += "\"assetCount\": $assetCount,";
@@ -225,4 +224,3 @@ class Game {
     }
   }
 }
-

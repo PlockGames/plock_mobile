@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
+import 'package:plock_mobile/pages/my_games/my_profile_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
 
 /// The main function of the application.
@@ -44,8 +45,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 2, vsync: this, initialIndex: 0);
+    controller = TabController(length: 3, vsync: this, initialIndex: 1);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
         tabs: const <Widget>[
+          Tab(icon: Icon(Icons.account_circle)),
           Tab(icon: Icon(Icons.play_arrow)),
           Tab(icon: Icon(Icons.create)),
         ],
@@ -70,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          PlayPage(scrollEnabled: widget.isScrollEnabled),
+          const ProfilePage(),
+          PlayPage(),
           const MyGamesPage(),
         ],
       ),
