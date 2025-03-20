@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final AuthService? authService;
+
+  const RegisterPage({super.key, this.authService});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -18,10 +20,24 @@ class _RegisterPageState extends State<RegisterPage> {
   final phoneController = TextEditingController();
   final dateOfBirthController = TextEditingController();
   final usernameController = TextEditingController();
-  final authService = AuthService();
+  late final AuthService authService;
 
   bool _isLoading = false;
   String _debugInfo = '';
+
+  final firstNameKey = const Key('firstNameField');
+  final lastNameKey = const Key('lastNameField');
+  final emailKey = const Key('emailField');
+  final passwordKey = const Key('passwordField');
+  final phoneKey = const Key('phoneField');
+  final dateOfBirthKey = const Key('dateOfBirthField');
+  final usernameKey = const Key('usernameField');
+
+  @override
+  void initState() {
+    super.initState();
+    authService = widget.authService ?? AuthService();
+  }
 
   void _updateDebugInfo(String info) {
     setState(() {
@@ -61,13 +77,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
           _updateDebugInfo("Navigation vers /home après inscription réussie");
 
-          // Attendre avant de naviguer
-          Future.delayed(const Duration(seconds: 2), () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/home',
-                    (Route<dynamic> route) => false  // Supprime toutes les routes précédentes
-            );
-          });
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/home',
+                  (Route<dynamic> route) => false  // Supprime toutes les routes précédentes
+          );
 
         } else {
           _updateDebugInfo("Échec étape 2: ${completeResult['message']}");
@@ -193,6 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   // Champs du formulaire
                   TextField(
+                    key: firstNameKey,
                     controller: firstNameController,
                     decoration: const InputDecoration(
                       labelText: 'First Name',
@@ -200,6 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    key: lastNameKey,
                     controller: lastNameController,
                     decoration: const InputDecoration(
                       labelText: 'Last Name',
@@ -207,6 +222,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    key: usernameKey,
                     controller: usernameController,
                     decoration: const InputDecoration(
                       labelText: 'Username',
@@ -217,6 +233,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Expanded(
                         child: TextField(
+                          key: dateOfBirthKey,
                           controller: dateOfBirthController,
                           decoration: const InputDecoration(
                             labelText: 'Date of Birth (YYYY-MM-DD)',
@@ -246,6 +263,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    key: emailKey,
                     controller: emailController,
                     decoration: const InputDecoration(
                       labelText: 'Email',
@@ -254,6 +272,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    key: phoneKey,
                     controller: phoneController,
                     decoration: const InputDecoration(
                       labelText: 'Phone Number (Optional)',
@@ -262,6 +281,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    key: passwordKey,
                     controller: passwordController,
                     decoration: const InputDecoration(
                       labelText: 'Password',

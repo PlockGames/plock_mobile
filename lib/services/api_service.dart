@@ -4,7 +4,15 @@ import 'auth_service.dart';
 
 class ApiService {
   static const String baseUrl = "https://plock-dev.strangled.net/api";
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
+  final http.Client _client;
+
+  ApiService({
+    AuthService? authService,
+    http.Client? client,
+  }) :
+        _authService = authService ?? AuthService(),
+        _client = client ?? http.Client();
 
   // GET request avec token d'authentification
   Future<Map<String, dynamic>> get(String endpoint) async {
@@ -15,7 +23,7 @@ class ApiService {
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
       );
@@ -39,7 +47,7 @@ class ApiService {
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
         body: json.encode(data),
@@ -64,7 +72,7 @@ class ApiService {
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      final response = await http.put(
+      final response = await _client.put(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
         body: json.encode(data),
@@ -89,7 +97,7 @@ class ApiService {
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      final response = await http.delete(
+      final response = await _client.delete(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
       );
@@ -113,7 +121,7 @@ class ApiService {
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-      final response = await http.patch(
+      final response = await _client.patch(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
         body: json.encode(data),
