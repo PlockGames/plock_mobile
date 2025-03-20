@@ -26,12 +26,108 @@ class ApiService {
     return res;
   }
 
+  /// Get the profile of the currently authenticated user.
+  static Future<http.Response> getUserProfile() async {
+    final response = await http.get(
+      Uri.parse("$url/auth/me"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Accept": "application/json",
+      },
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+  /// Met à jour le profil de l'utilisateur actuellement authentifié.
+  static Future<http.Response> updateUserProfile({
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? birthDate,
+    String? username,
+    String? password,
+  }) async {
+    // Créer un objet contenant uniquement les champs non-null
+    final Map<String, dynamic> updateData = {};
+    if (email != null) updateData['email'] = email;
+    if (firstName != null) updateData['firstName'] = firstName;
+    if (lastName != null) updateData['lastName'] = lastName;
+    if (phoneNumber != null) updateData['phoneNumber'] = phoneNumber;
+    if (birthDate != null) updateData['birthDate'] = birthDate;
+    if (username != null) updateData['username'] = username;
+    if (password != null) updateData['password'] = password;
+
+    final response = await http.put(
+      Uri.parse("$url/user/profile/me"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: jsonEncode(updateData),
+    );
+
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
+    return response;
+  }
+
   /// Return a list of the game with the given [id].
   static Future<http.Response> getGame(String id) async {
     return await http.get(Uri.parse("$url/game/$id"), headers: {
       "Authorization": "Bearer $apiKey"
     });
   }
+  /// Retourne le nombre total de likes pour un jeu donné [gameId].
+  static Future<http.Response> getGameLike(String gameId) async {
+    final response = await http.get(
+      Uri.parse("$url/like/count/$gameId"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Accept": "application/json",
+      },
+    );
+    print("gameId: ${gameId}");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
+    return response;
+  }
+
+
+  /// Supprime le like d'un jeu donné par son [id].
+  static Future<http.Response> deleteGame(String gameId) async {
+    final response = await http.delete(
+      Uri.parse("$url/like/$gameId"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+      },
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+  static Future<http.Response> addLikeGame(String gameId) async {
+    final response = await http.post(
+      Uri.parse("$url/like"),
+      headers: {
+        "Authorization": "Bearer $apiKey",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "gameId": gameId,
+      }),
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    return response;
+  }
+
+
+
 
   /// Create a new game with the given [data].
   static Future<http.Response> createGame(CreateGameDto data) async {
