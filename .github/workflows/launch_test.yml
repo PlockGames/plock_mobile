@@ -1,4 +1,4 @@
-name: CI For Plock Mobile
+name: Test For Plock Mobile
 
 on:
   push:
