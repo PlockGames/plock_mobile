@@ -1,0 +1,4 @@
+enum EditorCanvas {
+  ui,
+  scene
+}

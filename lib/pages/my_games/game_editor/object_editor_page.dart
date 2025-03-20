@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/games/game_object.dart';
+import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_component.dart';
+import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import '../../../models/games/component_type.dart';
+import '../../../models/games/media.dart';
 import 'edit_component_page.dart';
+import 'editor/editor_canvas.dart';
+import 'editor/object_component.dart';
+import 'object_select_parent_page.dart';
 
 /// The page to edit an object.
 class ObjectEditorPage extends StatefulWidget {
 
   /// The object to edit.
-  late ObjectComponent object;
+  final ObjectComponent object;
 
-  ObjectEditorPage({super.key, required this.object});
+  /// All the objects of the game.
+  final List<GameObject> objects;
+
+  /// All the media of the game.
+  final List<Media> medias;
+
+  /// The canvas of the object.
+  final EditorCanvas canvas;
+
+  ObjectEditorPage({super.key, required this.object, required this.objects, required this.medias, required this.canvas});
 
   @override
   State<StatefulWidget> createState() {
@@ -31,7 +46,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     setState(() {
       ComponentType instance = component.instance();
       instance.setOnUpdate(widget.object.updateDisplay);
-      widget.object.gameObject.components.add(instance);
+      widget.object.getGameObject().components.add(instance);
       widget.object.updateDisplay();
     });
   }
@@ -41,86 +56,198 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
   /// The [component] is removed from the object and the display is updated.
   void removeComponent(ComponentType component) {
     setState(() {
-      widget.object.gameObject.components.remove(component);
+      widget.object.getGameObject().components.remove(component);
       widget.object.updateDisplay();
     });
+  }
+
+  /// Convert an asset to an object
+  void convertAssetToObject() {
+    setState(() {
+      widget.object.getGameObject().type = GameObjectType.object;
+      widget.object.getGameObject().assetId = null;
+    });
+  }
+
+  void setParent() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            ObjectSelectParentPage(
+              objects: widget.objects,
+              object: widget.object,
+            ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController =
-        TextEditingController(text: widget.object.gameObject.name);
+    TextEditingController(text: widget.object.getGameObject().name);
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Row(
-            children: [
-              Text('Object Editor'),
-            ],
+    if (widget.object.getGameObject().type == GameObjectType.asset) {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Row(
+              children: [
+                Text('Object Editor'),
+              ],
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const Text("Assets can't be edited. Please edit the asset in the asset editor."),
+                // Add button to convert asset to object
+                ElevatedButton(onPressed: convertAssetToObject, child: Text("Convert to Object"))
+              ],
+            )
+          )
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Row(
+              children: [
+                Text('Object Editor'),
+              ],
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: ListView(
 
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("id : ${widget.object.gameObject.id}"),
-                ],
-              ),
-              TextField(
-                controller: nameController,
-                onChanged: (value) {
-                  widget.object.gameObject.name = value;
-                },
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                  border: OutlineInputBorder(),
-                  label: Text('Name'),
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("id : ${widget.object.getGameObject().id}"),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 40),
-              for (var component in widget.object.gameObject.components)
+                TextField(
+                  controller: nameController,
+                  onChanged: (value) {
+                    widget.object.getGameObject().name = value;
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Name',
+                    border: OutlineInputBorder(),
+                    label: Text('Name'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().layer.toString()),
+                  onChanged: (value) {
+                    widget.object.getGameObject().layer = int.parse(value);
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Layer',
+                    border: OutlineInputBorder(),
+                    label: Text('Layer'),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    Text(component.name),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => EditComponentPage(
-                              component: component,
-                            ),
-                          ),
-                        );
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.x.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.x = double.parse(value);
+                        widget.object.updateDisplay();
                       },
+                      decoration: const InputDecoration(
+                        hintText: 'X',
+                        border: OutlineInputBorder(),
+                        label: Text('X'),
+                      ),
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.y.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.y = double.parse(value);
+                        widget.object.updateDisplay();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Y',
+                        border: OutlineInputBorder(),
+                        label: Text('Y'),
+                      ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        removeComponent(component);
-                      },
                     ),
                   ],
-                )
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AddComponentPage(
-                  onAddComponent: addComponent,
                 ),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ));
+                const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().rotation.toString()),
+                  onChanged: (value) {
+                    try {
+                      widget.object.getGameObject().rotation = double.parse(value);
+                    } catch (e) {
+                      widget.object.getGameObject().rotation = 0;
+                    }
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Rotation',
+                    border: OutlineInputBorder(),
+                    label: Text('Rotation'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton(onPressed: setParent, child: Text(widget.object.getGameObject().parent != null ? "Parent: ${widget.object.getGameObject().parent!.name}" : "Parent: None")),
+                const SizedBox(height: 40),
+                for (var component in widget.object.getGameObject().components)
+                  Row(
+                    children: [
+                      Text(component.name),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditComponentPage(
+                                    component: component,
+                                    medias: widget.medias,
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          removeComponent(component);
+                        },
+                      ),
+                    ],
+                  )
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddComponentPage(
+                        onAddComponent: addComponent,
+                        canvas: widget.canvas,
+                      ),
+                ),
+              );
+            },
+            child: const Icon(Icons.add),
+          ));
+    }
+
   }
 }

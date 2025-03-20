@@ -14,6 +14,11 @@ class ComponentEvent extends ComponentType {
       "ON_START": "0n Start",
       "ON_UPDATE": "On Update",
       "ON_TAP": "On Tap",
+      "ON_START_DRAG": "On Start Drag",
+      "ON_DRAG": "On Drag",
+      "ON_END_DRAG": "On End Drag",
+      "ON_BEGIN_COLLISION": "On begin Collision",
+      "ON_END_COLLISION": "On End Collision",
     });
     fields["event"] = ComponentFieldBlockly();
   }

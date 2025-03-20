@@ -21,7 +21,10 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
   final Function onDragCancelCallback;
 
   /// The linked component, only with game player
-  final ComponentType? componentType;
+  final ComponentType componentType;
+
+  /// the size of the font
+  final double fontSize;
 
 
   ComponentFlameText({
@@ -31,13 +34,15 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
     required Color color,
+    required this.fontSize,
     super.position,
     super.text,
-    this.componentType
+    required this.componentType
   }) {
     this.textRenderer = TextPaint(
       style: TextStyle(
         color: color,
+        fontSize: fontSize,
       ),
     );
   }
@@ -71,8 +76,18 @@ class ComponentFlameText extends TextComponent with TapCallbacks, DragCallbacks 
   }
 
   @override
-  ComponentType? getComponentType() {
+  ComponentType getComponentType() {
     return componentType;
+  }
+
+  @override
+  void move(double x, double y) {
+
+  }
+
+  @override
+  bool isFullyLoaded() {
+    return isLoaded;
   }
 
 }

@@ -6,40 +6,37 @@ import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:flutter_blockly_plus/flutter_blockly_plus.dart' as Blocky;
 
 import '../../data/initial_toolbox.dart';
+import '../games/media.dart';
 
 /// A field that contain a Blockly (lua code) value.
 class ComponentFieldBlockly extends ComponentField {
-
   /// The initial state of blockly.
   static const Map<String, dynamic> initialJson = {
     'blocks': {
       'languageVersion': 0,
-      'blocks': [
-      ],
+      'blocks': [],
     },
   };
 
   /// The value of the field.
-  String _value_lua = "";
+  String _value_js = "";
 
   /// The saved json of the blockly.
   Map<String, dynamic> _value = initialJson;
 
   Map<String, dynamic> debugData_ = {};
 
-
-
-  ComponentFieldBlockly({value, value_lua}) {
+  ComponentFieldBlockly({value, value_js}) {
     if (value != null) {
       _value = value;
     } else {
       _value = initialJson;
     }
 
-    if (value_lua != null) {
-      _value_lua = value_lua;
+    if (value_js != null) {
+      _value_js = value_js;
     } else {
-      _value_lua = "";
+      _value_js = "";
     }
   }
 
@@ -47,7 +44,8 @@ class ComponentFieldBlockly extends ComponentField {
   String get type => 'ComponentFieldBlocky';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias,
+      Map<String, ComponentField> fields) {
     const Blocky.Theme blockyTheme = Blocky.Theme(
       name: 'classic',
       fontStyle: Blocky.BlocklyFontStyle(
@@ -61,32 +59,28 @@ class ComponentFieldBlockly extends ComponentField {
       theme: blockyTheme,
       css: true,
       move: const Blocky.MoveOptions(
-        drag: true,
-        wheel: true,
-        scrollbars: Blocky.ScrollbarOptions(
-          horizontal: true,
-          vertical: true,
-        )
-      ),
+          drag: true,
+          wheel: true,
+          scrollbars: Blocky.ScrollbarOptions(
+            horizontal: true,
+            vertical: true,
+          )),
       toolbox: Blocky.ToolboxInfo.fromJson(initialToolbox.toJson()),
       horizontalLayout: true,
       collapse: false,
       trashcan: false,
     );
 
-    void onInject(Blocky.BlocklyData data) {
-    }
+    void onInject(Blocky.BlocklyData data) {}
 
     void onChange(Blocky.BlocklyData data) {
       debugData_ = data.toolbox!;
-      print("debug: " + debugData_.toString());
-      //debugPrint('onChange: ${data.lua}');
+      //print("debug: " + _value.toString());
       if (data.json == null) {
         _value = initialJson;
       } else {
         _value = data.json!;
-        _value_lua = data.lua!;
-        //print(data.lua);
+        _value_js = data.js!;
       }
     }
 
@@ -106,47 +100,48 @@ class ComponentFieldBlockly extends ComponentField {
 
     final addons = getAddons();
 
-    return FutureBuilder(future: addons, builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done) {
-        return Expanded(child:
-          BlocklyEditorWidget(
-          workspaceConfiguration: workspaceConfiguration,
-          initial: _value,
-          onInject: onInject,
-          onChange: onChange,
-          onDispose: onDispose,
-          onError: onError,
-          addons: snapshot.data,
-          debug: false,
-        )
-        );
-      } else {
-        return CircularProgressIndicator();
-      }
-    });
+    return FutureBuilder(
+        future: addons,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Expanded(
+                child: BlocklyEditorWidget(
+              workspaceConfiguration: workspaceConfiguration,
+              initial: _value,
+              onInject: onInject,
+              onChange: onChange,
+              onDispose: onDispose,
+              onError: onError,
+              addons: snapshot.data,
+              debug: false,
+            ));
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
   @override
   ComponentFieldBlockly instance() {
-    return ComponentFieldBlockly(value: _value, value_lua: _value_lua);
+    return ComponentFieldBlockly(value: _value, value_js: _value_js);
   }
 
   @override
-  List get value => [_value_lua, _value];
+  List get value => [_value_js, _value];
 
   @override
   set value(dynamic value) {
-    _value_lua = value;
+    _value_js = value;
   }
 
   @override
   String toJson() {
-    return "\"$_value_lua\"";
+    return "\"$_value_js\"";
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value_lua = jsonVal as String;
+    _value_js = jsonVal as String;
   }
 
   @override

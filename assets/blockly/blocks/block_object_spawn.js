@@ -22,9 +22,9 @@ javascript.javascriptGenerator.forBlock[type_os] = function (block, generator) {
     const value_name = javascript.javascriptGenerator.valueToCode(block, 'name', javascript.Order.ATOMIC) || "'my_object'";
     const input = block.getInputTargetBlock('name');
     if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-        return "spawnObject(toString(" + value_name + "));\n";
+        return "sendMessage(\"spawnObject\", JSON.stringify([toString(" + value_name + ")]));\n";
     }
-    return "spawnObject(" + value_name + ");\n";
+    return "sendMessage(\"spawnObject\", JSON.stringify([" + value_name + "]));\n";
 };
 dart.dartGenerator.forBlock[type_os] = function (block, generator) {
     const value_name = dart.dartGenerator.valueToCode(block, 'name', dart.Order.ATOMIC) || "'my_object'";

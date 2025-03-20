@@ -5,15 +5,19 @@ import 'package:flame/text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
+import '../component_fields/component_field_number.dart';
 import '../component_flame/component_flame_text.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a text.
 class ComponentText extends ComponentType {
 
   ComponentText() {
     fields["text"] = ComponentFieldText(value: "Text");
+    fields["size"] = ComponentFieldNumber(value: 1.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
@@ -34,6 +38,7 @@ class ComponentText extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -41,25 +46,30 @@ class ComponentText extends ComponentType {
       onDragCancelCallback
       ) {
     String text = fields["text"]!.value.toString();
+    double size = fields["size"]!.value.toDouble();
 
     TextComponent display = ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
       color: fields["color"]!.value,
+      fontSize: size,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
-      onDragUpdateCallback: onDragUpdateCallback
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
 
     RectangleComponent select = RectangleComponent(
-      size: display.absoluteScaledSize,
+      size: display.absoluteScaledSize * 20,
+      scale: Vector2(0.05, size < 1 ? 0.025 : 0.05),
       position: Vector2(0, 0),
+      anchor: size < 1 ? Anchor.centerLeft : Anchor.topLeft,
       paint: Paint()
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0,
     );
 
     display.add(select);
@@ -68,18 +78,21 @@ class ComponentText extends ComponentType {
 
   @override
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
       onDragEndCallback,
       onDragCancelCallback,) {
     String text = fields["text"]!.value.toString();
+    double size = fields["size"]!.value.toDouble();
 
 
     return ComponentFlameText(
       text: text,
       position: Vector2(0, 0),
       color: fields["color"]!.value,
+      fontSize: size,
       onTapeUpCallback: onTapeUpCallback,
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
@@ -90,15 +103,17 @@ class ComponentText extends ComponentType {
   }
 
   @override
-  void updateDisplay(Component? component) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     if (component is ComponentFlameText) {
       component.text = fields["text"]!.value;
       component.textRenderer = TextPaint(
         style: TextStyle(
           color: fields["color"]!.value,
+          fontSize: fields["size"]!.value.toDouble(),
         ),
       );
     }
+    return parent;
   }
 
 }

@@ -5,13 +5,15 @@ import 'package:plock_mobile/models/component_fields/component_field_number.dart
 import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
+import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../games/component_type.dart';
+import '../games/media.dart';
 
 /// A component that display a circle.
 class ComponentCircle extends ComponentType {
   ComponentCircle() {
-    fields["radius"] = ComponentFieldNumber(value: 20.0);
+    fields["radius"] = ComponentFieldNumber(value: 1.0);
     fields["color"] = ComponentFieldColour(value: Color(0xffffffff));
   }
 
@@ -32,6 +34,7 @@ class ComponentCircle extends ComponentType {
 
   @override
   DisplayComponents getDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -49,16 +52,20 @@ class ComponentCircle extends ComponentType {
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
-      onDragUpdateCallback: onDragUpdateCallback
+      onDragUpdateCallback: onDragUpdateCallback,
+      componentType: this
     );
 
     CircleComponent select = CircleComponent(
-      radius: radius,
+      radius: radius * 20,
+      scale: Vector2(0.05, 0.05),
       position: Vector2(0, 0),
       paint: Paint()
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round
         ..color = const Color(0x00F5D142)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0.01,
     );
 
     display.add(select);
@@ -67,6 +74,7 @@ class ComponentCircle extends ComponentType {
 
   @override
   Component? getGameDisplayComponent(
+      List<Media> medias,
       onTapeUpCallback,
       onDragStartCallback,
       onDragUpdateCallback,
@@ -89,11 +97,12 @@ class ComponentCircle extends ComponentType {
   }
 
   @override
-  void updateDisplay(Component? component) {
+  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
     if (component is ComponentFlameCircle) {
       component.radius = fields["radius"]!.value.toDouble();
       component.paint = Paint()..color = fields["color"]!.value;
     }
+    return parent;
   }
 
 }

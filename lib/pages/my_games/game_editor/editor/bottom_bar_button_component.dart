@@ -19,19 +19,20 @@ class BottomBarbuttonComponent extends PositionComponent with TapCallbacks {
   late Svg svgInstance;
 
   BottomBarbuttonComponent(this.svgPath, Vector2 pos, {this.tapAction}) {
+    priority = 10000;
     position = pos;
   }
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = Vector2(60, 60);
+    size = Vector2(40, 40);
 
     svgInstance = await Svg.load(svgPath);
     final svgComponent = SvgComponent(
       svg: svgInstance,
-      size: Vector2(60, 60),
-      position: Vector2(0, 0),
+      size: Vector2(40, 40),
+      position: Vector2(0, 10),
     );
 
     add(svgComponent);

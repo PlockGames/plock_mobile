@@ -3,7 +3,7 @@ const type_dt = 'delta_time';
 Blockly.defineBlocksWithJsonArray([
     {
         "type": type_dt,
-        "message0": "delta time %1",
+        "message0": "deltatime %1",
         "args0": [
             {
                 "type": "input_dummy",
@@ -16,7 +16,7 @@ Blockly.defineBlocksWithJsonArray([
     }
 ]);
 javascript.javascriptGenerator.forBlock[type_dt] = function (block, generator) {
-    return [`deltaTime()`, javascript.Order.ATOMIC];
+    return [`sendMessage("deltaTime", JSON.stringify([]))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_dt] = function (block, generator) {
     return [`deltaTime()`, dart.Order.ATOMIC];

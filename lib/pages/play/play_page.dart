@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -73,7 +74,24 @@ class PlayPageState extends State<PlayPage> {
     for (var game in allGames) {
       var gameData = await http.get(Uri.parse(game['gameUrl']));
       var json = jsonDecode(gameData.body);
-      plock.Game loadedGame = await plock.Game.jsonToGame(game['id'], json);
+      plock.Game? loadedGame = await plock.Game.jsonToGame(name: game["title"], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
+      if (loadedGame == null) {
+        continue;
+      }
+
+      loadedGame.uuid = game['id'];
+      final mediasResponse = await ApiService.getMedias(game['id']);
+      final mediasJson = jsonDecode(mediasResponse.body);
+
+      for (var media in mediasJson['data']) {
+        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
+        if (index != -1) {
+          final fileRes = await http.get(Uri.parse(media['filename']));
+          final file = XFile.fromData(fileRes.bodyBytes);
+          loadedGame.medias[index].file = file;
+        }
+      }
+
       allGameWithData.add(loadedGame);
     }
     return allGameWithData;

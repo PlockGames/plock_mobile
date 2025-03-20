@@ -42,7 +42,7 @@ javascript.javascriptGenerator.forBlock[type_oset] = function (block, generator)
     const value = block.getFieldValue('value');
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
     const new_value = javascript.javascriptGenerator.valueToCode(block, 'new_value', javascript.Order.ATOMIC) || 0;
-    return `setObjectValue(${object}, '${value}', ${new_value});\n`;
+    return `sendMessage("setObjectValue", JSON.stringify([${object}, '${value}', ${new_value}]));\n`;
 };
 dart.dartGenerator.forBlock[type_oset] = function (block, generator) {
     const value = block.getFieldValue('value');

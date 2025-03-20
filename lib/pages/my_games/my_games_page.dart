@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
+import 'package:plock_mobile/services/api.dart';
 import '../../models/games/game.dart';
+import 'package:http/http.dart' as http;
 
 /// The page that display the games created by the user
 class MyGamesPage extends StatefulWidget {
@@ -12,12 +18,68 @@ class MyGamesPage extends StatefulWidget {
 
 /// The state of the [MyGamesPage]
 class _MyGamesPageState extends State<MyGamesPage> {
-  /// The list of the games created by the user
-  /// TODO: Replace this with a real list of games
+
+  /// Get all the games with their game data.
+  Future<List<Game>> getAllGamesWithData() async {
+    var lastResponse = await ApiService.getAllGames(1);
+    dynamic decoded = jsonDecode(lastResponse.body);
+    var allGames = decoded['data']['data'];
+
+    for (int page = 2; 0 < decoded.length; page++) {
+      lastResponse = await ApiService.getAllGames(page);
+      decoded = jsonDecode(lastResponse.body)['data']['data'];
+      allGames.addAll(decoded);
+    }
+    List<Game> allGameWithData = <Game>[];
+    for (var game in allGames) {
+      var gameData = await http.get(Uri.parse(game['gameUrl']));
+      late dynamic json;
+      try {
+        json = jsonDecode(gameData.body);
+      } catch (e) {
+        continue;
+      }
+      Game? loadedGame = await Game.jsonToGame(name: game['title'], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
+
+      if (loadedGame == null) {
+        continue;
+      }
+
+      loadedGame.uuid = game['id'];
+      final mediasResponse = await ApiService.getMedias(game['id']);
+      final mediasJson = jsonDecode(mediasResponse.body);
+
+      for (var media in mediasJson['data']) {
+        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
+        if (index != -1) {
+          final fileRes = await http.get(Uri.parse(media['filename']));
+          final file = XFile.fromData(fileRes.bodyBytes);
+          loadedGame.medias[index].file = file;
+        }
+      }
+
+
+
+      if (game["creatorId"] == dotenv.env['USER_ID']) {
+        allGameWithData.add(loadedGame);
+      }
+    }
+
+    return allGameWithData;
+  }
+
+  Future<List<Game>> FuturProjects = Future.value([]);
   var projects = <Game>[];
 
-  Game addProject( String name) {
-    Game game = Game(id : "",name: name);
+  @override
+  void initState() {
+    super.initState();
+    FuturProjects = getAllGamesWithData();
+    projects = [];
+  }
+
+  Game addProject(String name) {
+    Game game = Game(name: name);
     setState(() {
       projects.add(game);
     });
@@ -26,52 +88,69 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
   void removeProject(Game game) {
     setState(() {
+      ApiService.deleteGame(game.uuid);
       projects.remove(game);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mes projets'),
+          title: const Text('My projects'),
           backgroundColor: Colors.grey[800],
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              for (var project in projects)
-                ListTile(
-                  title: Row(
-                    children: [
-                      Text(project.name),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditorPage(
-                                game: project,
-                                onGameObjectUpdated: (updatedGameObject) {},
-                              ),
-                              settings: const RouteSettings(name: '/editor'),
+          child: FutureBuilder<List<Game>>(
+            future: FuturProjects,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error : ${snapshot.error}'));
+              } else if (snapshot.hasData) {
+                projects = snapshot.data!;
+                projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
+                return Column(
+                  children: [
+                    for (var project in projects)
+                      ListTile(
+                        title: Row(
+                          children: [
+                            Text(project.name),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditorPage(
+                                      game: project,
+                                    ),
+                                    settings: const RouteSettings(name: '/editor'),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                _showGameDeletionDialog(context, project);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _showGameDeletionDialog(context, project);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
+                  ],
+                );
+              } else {
+                return const Center(child: Text('No games found'));
+              }
+            },
+          )
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -89,15 +168,15 @@ class _MyGamesPageState extends State<MyGamesPage> {
       builder: (_) {
         var nameController = TextEditingController();
         return AlertDialog(
-          title: const Text('Nouveau jeu'),
+          title: const Text('New game'),
           content: TextFormField(
             controller: nameController,
-            decoration: const InputDecoration(hintText: 'Nom'),
+            decoration: const InputDecoration(hintText: 'Name'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Retour'),
+              child: const Text('Back'),
             ),
             TextButton(
               onPressed: () {
@@ -112,13 +191,12 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   MaterialPageRoute(
                     builder: (context) => EditorPage(
                       game: game,
-                      onGameObjectUpdated: (updatedGameObject) {},
                     ),
                     settings: const RouteSettings(name: '/editor'),
                   ),
                 );
               },
-              child: const Text('Créer'),
+              child: const Text('Create'),
             ),
           ],
         );
@@ -133,19 +211,19 @@ class _MyGamesPageState extends State<MyGamesPage> {
       builder: (_) {
         String name = game.name;
         return AlertDialog(
-          title: const Text('Supprimer le jeu ?'),
-          content: Text('Voulez-vous vraiment supprimer le jeu $name ?'),
+          title: const Text('Delete game ?'),
+          content: Text('Do you really want to delete $name ?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annuler'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 removeProject(game);
                 Navigator.pop(context);
               },
-              child: const Text('Supprimer'),
+              child: const Text('Delete'),
             ),
           ],
         );

@@ -28,10 +28,6 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "variable",
                         "ComponentVariable"
-                    ],
-                    [
-                        "image",
-                        "ComponentImage"
                     ]
                 ]
             },
@@ -58,14 +54,10 @@ javascript.javascriptGenerator.forBlock[type_oac] = function (block, generator) 
     const object = javascript.javascriptGenerator.valueToCode(block, 'object', javascript.Order.ATOMIC) || 0;
     try {
         const event = javascript.javascriptGenerator.valueToCode(block, 'event', javascript.Order.ATOMIC) || "'my_event'";
-        const input = block.getInputTargetBlock('event');
-        if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-            return `addComponent(${object}, "${component}", String(${event}));\n`;
-        }
-        return `addComponent(${object}, "${component}", ${event});\n`;
+        return `sendMessage("addComponent", JSON.stringify([${object}, "${component}", ${event}]));\n`;
     }
     catch (e) {
-        return `addComponent(${object}, "${component}", "\'my_event\'");\n`;
+        return `sendMessage("addComponent", JSON.stringify([${object}, "${component}", "'my_event'"]));\n`;
     }
 };
 dart.dartGenerator.forBlock[type_oac] = function (block, generator) {

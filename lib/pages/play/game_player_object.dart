@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:lua_dardo_async/lua.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/pages/play/event_manager.dart';
@@ -10,14 +11,14 @@ import 'package:plock_mobile/pages/play/event_manager.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
-/// A flame object that represents a game object in te game engine.
-class GamePlayerObject extends PositionComponent {
+/// A flame object that represents a game object in the game engine.
+class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// The game object linked to this Flame object.
   late GameObject gameObject;
 
   /// The game data.
-  late Game game;
+  final Game plockGame;
 
   /// List of all the components that can be displayed.
   List<Component> displayComponents = [];
@@ -25,40 +26,115 @@ class GamePlayerObject extends PositionComponent {
   /// List of all the events components.
   List<ComponentType> eventComponents = [];
 
-  /// Lua state, used to execute events.
-  LuaState lua = LuaState.newState();
+  /// js state, used to execute events.
+  JavascriptRuntime js = getJavascriptRuntime();
+
+  /// A list of all untreated start contacts.
+  List<Contact> beginContacts = [];
+
+  /// A list of all untreated end contacts.
+  List<Contact> endContacts = [];
+
+  /// lock X position
+  bool lockX = false;
+
+  /// lock X position position
+  double lockXPosition = 0;
+
+  /// lock Y position
+  bool lockY = false;
+
+  /// lock Y position position
+  double lockYPosition = 0;
+
+  /// lock rotation
+  bool lockRotation = false;
+
+  /// lock rotation rotation
+  double lockRotationValue = 0;
+
+  /// true when all components are loaded
+  bool isAllComponentsLoaded = false;
 
   GamePlayerObject({
     required this.gameObject,
-    required this.game,
+    required this.plockGame,
   });
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
-
     // Set the object data
-    size = Vector2(0, 0);
-    position = Vector2(gameObject.position.x, gameObject.position.y);
+    renderBody = false;
 
-    await lua.openLibs();
-    EventManager.registerEvents(lua, game, gameObject.id);
+    // get object size
+    double width = 0;
+    double height = 0;
+    for (var component in gameObject.components) {
+      if (component.type == 'ComponentPhysics') {
+        width = component.fields['width']!.value;
+        height = component.fields['height']!.value;
+      }
+    }
+
+    bodyDef = BodyDef()
+      ..position = Vector2(gameObject.position.x, gameObject.position.y)
+      // rotation from degree to radian
+      ..angle = gameObject.rotation * 3.141592653589793 / 180.0
+      ..type = BodyType.static
+      ..userData = this;
+
+    fixtureDefs = [
+      FixtureDef(
+        PolygonShape()
+          ..setAsBoxXY((width / 2), (height / 2)),
+        density: 1.0,
+        friction: 0.3,
+        isSensor: true,
+      ),
+    ];
+
+    //await lua.openLibs();
+    EventManager.registerEvents(js, plockGame, gameObject.id);
 
     // Update the components
+    gameObject.isPhysicsDirty = true;
+    plockGame.isDirty = true;
     updateDisplay();
     updateEvents();
 
+    // init events
+    js.evaluate("let collider = \"\";");
+
     // Execute the start events
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_START') {
-        executeEvent(component.fields['event']!.value);
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_START') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
+
+    await super.onLoad();
   }
 
   /// Update the display components.
-  void updateDisplay() {
-    List<ComponentType> alreadyDisplayed = [];
+  Future<void> updateDisplay() async {
+    this.priority = gameObject.layer;
+
+    if (!gameObject.enabled) {
+      for (var component in this.children) {
+        if (component is ComponentFlame) {
+          if (component is BodyComponent) {
+            world.remove(component);
+          } else {
+            remove(component);
+          }
+        }
+      }
+      return;
+    }
+
+    List<String> alreadyDisplayed = [];
 
     // Update the components that are already instancied
     for (var component in this.children) {
@@ -68,29 +144,77 @@ class GamePlayerObject extends PositionComponent {
           continue;
         }
         ComponentType componentType = componentFlame.getComponentType()!;
-        componentType.updateDisplay(component);
-        alreadyDisplayed.add(componentFlame.getComponentType()!);
+        this.bodyDef = (await componentType.updateDisplay(component, this)).bodyDef;
+        alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
       }
     }
 
     // Add the new components
     for (var component in gameObject.components) {
-        if (!alreadyDisplayed.contains(component)) {
+        if (!alreadyDisplayed.contains(component.uuid)) {
           Component? comp = component.getGameDisplayComponent(
+            plockGame.medias,
             onTapUp,
             onDragStart,
             onDragUpdate,
             onDragEnd,
             onDragCancel);
           if (comp != null) {
-            add(comp);
+            if (comp is BodyComponent) {
+              comp.bodyDef!.position = Vector2(gameObject.position.x, gameObject.position.y);
+              world.add(comp);
+            } else {
+              add(comp);
+            }
+            ComponentFlame componentFlame = comp as ComponentFlame;
+            if (componentFlame.getComponentType() == null) {
+              continue;
+            }
+            ComponentType componentType = componentFlame.getComponentType()!;
+            this.bodyDef = (await componentType.updateDisplay(comp, this)).bodyDef;
           }
         }
     }
 
-    // Remove the components that are not in the game object
-    // TODO
+    if (gameObject.force != null) {
+      body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
+      gameObject.force = null;
+    }
 
+    if (gameObject.velocity != null) {
+      body.linearVelocity = Vector2(gameObject.velocity!.x, gameObject.velocity!.y);
+      gameObject.velocity = null;
+    }
+
+  }
+
+  void updatePhysic() {
+    if (gameObject.isPhysicsDirty && body.isAwake) {
+      gameObject.isPhysicsDirty = false;
+      Vector2 oldPos = this.body.position;
+      double oldAngle = this.body.angle;
+      if (gameObject.isPositionDirty) {
+        oldPos = Vector2(gameObject.position.x, gameObject.position.y);
+        gameObject.isPositionDirty = false;
+      }
+      world.destroyBody(body);
+      bodyDef!.position = oldPos;
+      bodyDef!.angle = oldAngle;
+      this.body = world.createBody(bodyDef!);
+      for (var fixtureDef in fixtureDefs!) {
+        body.createFixture(fixtureDef);
+      }
+    } else {
+      if (gameObject.isPositionDirty) {
+        gameObject.isPositionDirty = false;
+        body.setTransform(Vector2(gameObject.position.x, gameObject.position.y), body.angle);
+        for (var contact in body.contacts) {
+          Vector2 pos = contact.bodyB.position;
+          contact.bodyB.setTransform(pos, contact.bodyB.angle);
+          contact.bodyB.setAwake(true);
+        }
+      }
+    }
   }
 
   /// Update the event components list.
@@ -105,7 +229,7 @@ class GamePlayerObject extends PositionComponent {
 
   /// Update the object data.
   void updateObjectData() {
-    position = Vector2(gameObject.position.x, gameObject.position.y);
+    bodyDef?.position = Vector2(gameObject.position.x, gameObject.position.y);
   }
 
   @override
@@ -117,54 +241,172 @@ class GamePlayerObject extends PositionComponent {
   void update(double dt) {
     super.update(dt);
 
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_UPDATE') {
+    for (var comp in displayComponents) {
+      if (comp is ComponentFlame) {
+        final cf = comp as ComponentFlame;
+        if (!cf.isFullyLoaded()) {
+          print("Not fully loaded");
+          return;
+        }
+      }
+    }
 
-        executeEvent(component.fields['event']!.value);
+    isAllComponentsLoaded = true;
+
+    if (lockX) {
+      body.linearVelocity = Vector2(0, body.linearVelocity.y);
+      body.position.x = lockXPosition;
+    }
+
+    if (lockY) {
+      body.linearVelocity = Vector2(body.linearVelocity.x, 0);
+      body.position.y = lockYPosition;
+    }
+
+    if (lockRotation) {
+      body.angularVelocity = 0;
+      body.setTransform(body.position, lockRotationValue);
+    }
+
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_UPDATE') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
+      }
+
+      for (var contact in beginContacts) {
+        for (var component in eventComponents) {
+          if (component.fields['trigger']!.value == 'ON_BEGIN_COLLISION') {
+            GamePlayerObject contactObjectA = contact.bodyB
+                .userData as GamePlayerObject;
+            GamePlayerObject contactObjectB = contact.bodyA
+                .userData as GamePlayerObject;
+            GameObject contactGameObject = contactObjectA.gameObject.id ==
+                gameObject.id ? contactObjectB.gameObject : contactObjectA
+                .gameObject;
+            executeEvent(
+                component.fields['event']!.value[0], contactGameObject.id,
+                contactGameObject.name);
+          }
+        }
+      }
+      beginContacts = [];
+
+      for (var contact in endContacts) {
+        for (var component in eventComponents) {
+          if (component.fields['trigger']!.value == 'ON_END_COLLISION') {
+            GamePlayerObject contactObjectA = contact.bodyB
+                .userData as GamePlayerObject;
+            GamePlayerObject contactObjectB = contact.bodyA
+                .userData as GamePlayerObject;
+            GameObject contactGameObject = contactObjectA.gameObject.id ==
+                gameObject.id ? contactObjectB.gameObject : contactObjectA
+                .gameObject;
+            executeEvent(
+                component.fields['event']!.value[0], contactGameObject.id,
+                contactGameObject.name);
+          }
+        }
       }
     }
   }
 
   bool onTapUp(TapUpEvent info) {
-    for (var component in eventComponents) {
-      if (component.fields['trigger']!.value == 'ON_TAP') {
-
-        executeEvent(component.fields['event']!.value);
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_TAP') {
+          plockGame.lastTouchPosition =
+              Vector2(info.localPosition.x, info.localPosition.y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
       }
     }
     return true;
   }
 
   void onDragStart(DragStartEvent event) {
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_START_DRAG') {
+          double x = event.canvasPosition.x;
+          double y = event.canvasPosition.y;
+          plockGame.lastTouchPosition = Vector2(x, y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
+      }
+    }
   }
 
   void onDragUpdate(DragUpdateEvent event) {
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_DRAG') {
+          double x = event.canvasStartPosition.x + event.canvasDelta.x;
+          double y = event.canvasStartPosition.y + event.canvasDelta.y;
+          plockGame.lastTouchPosition = Vector2(x, y);
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
+      }
+    }
   }
 
   void onDragEnd(DragEndEvent event) {
+    if (gameObject.enabled) {
+      for (var component in eventComponents) {
+        if (component.fields['trigger']!.value == 'ON_END_DRAG') {
+          executeEvent(component.fields['event']!.value[0], -1, "");
+        }
+      }
+    }
   }
 
   void onDragCancel(DragCancelEvent event) {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event) async {
-    // fix until modules works as expected
-    event = event.replaceAll("math.", "");
-    event = event.replaceAll("table.", "");
-    event = event.replaceAll("string.", "");
-    event = event.replaceAll("#", "len ");
+  Future<void> executeEvent(String event, int collider, String colliderName) async {
+    if (!gameObject.enabled) {
+      return;
+    }
 
-    lua.loadString(event);
-    await lua.call(0, 0);
+    // add collider to the event
+    event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
+
+    //print(event);
+
+    JsEvalResult res = js.evaluate(event);
+
+    if (res.rawResult != null) {
+      //print(event);
+      print(res);
+    }
   }
 
   void stopEvents() {
     try {
-      lua.error();
+      //js.dispose();
     } catch (e) {
       print("Game interrupted");
     }
   }
 
+  @override
+  void beginContact(Object other, Contact contact) {
+    super.beginContact(other, contact);
+
+    if (other is GamePlayerObject) {
+      beginContacts.add(contact);
+    }
+  }
+
+  @override
+  void endContact(Object other, Contact contact) {
+    super.endContact(other, contact);
+
+    if (other is GamePlayerObject) {
+      endContacts.add(contact);
+    }
+  }
 }
+

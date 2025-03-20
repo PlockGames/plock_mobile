@@ -3,7 +3,7 @@ const type_o = 'object';
 Blockly.defineBlocksWithJsonArray([
     {
         "type": type_o,
-        "message0": "%1",
+        "message0": "%1 %2 %3",
         "args0": [
             {
                 "type": "field_dropdown",
@@ -23,30 +23,39 @@ Blockly.defineBlocksWithJsonArray([
                     ],
                 ]
             },
+            {
+                "type": "input_dummy"
+            },
+            {
+                "type": "input_value",
+                "name": "obj_name",
+                "check": ["String", "Number"],
+            }
         ],
         "output": "Number",
         "colour": 230,
-        "tooltip": "Spawn an object",
+        "tooltip": "Get an object ID",
         "helpUrl": "",
-        "extensions": ["ext_object_selector"]
+        "extensions": ["ext_object_selector"],
+        "inputsInline": true
     }
 ]);
 javascript.javascriptGenerator.forBlock[type_o] = function (block, generator) {
     const object = block.getFieldValue('object');
     if (object === 'THIS_OBJECT') {
-        return ["thisObject()", javascript.Order.ATOMIC];
+        return ["sendMessage(\"thisObject\", JSON.stringify([]))", javascript.Order.ATOMIC];
     }
     else if (object === 'LAST_OBJECT') {
-        return ["lastObject()", javascript.Order.ATOMIC];
+        return ["sendMessage(\"lastObject\", JSON.stringify([]))", javascript.Order.ATOMIC];
     }
     else if (object === 'OBJECT_NAME') {
         try {
-            const name = javascript.javascriptGenerator.valueToCode(block, 'name', javascript.Order.ATOMIC) || "'my_object'";
-            const input = block.getInputTargetBlock('name');
+            const name = javascript.javascriptGenerator.valueToCode(block, 'obj_name', javascript.Order.ATOMIC) || "'my_object'";
+            const input = block.getInputTargetBlock('obj_name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-                return ["objectByName(String(" + name + "))", javascript.Order.ATOMIC];
+                return ["sendMessage(\"objectByName\", JSON.stringify([String(" + name + ")]))", javascript.Order.ATOMIC];
             }
-            return ["objectByName(" + name + ")", javascript.Order.ATOMIC];
+            return ["sendMessage(\"objectByName\", JSON.stringify([" + name + "]))", javascript.Order.ATOMIC];
         }
         catch (e) {
         }
@@ -63,8 +72,8 @@ dart.dartGenerator.forBlock[type_o] = function (block, generator) {
     }
     else if (object === 'OBJECT_NAME') {
         try {
-            const name = dart.dartGenerator.valueToCode(block, 'name', dart.Order.ATOMIC) || "'my_object'";
-            const input = block.getInputTargetBlock('name');
+            const name = dart.dartGenerator.valueToCode(block, 'obj_name', dart.Order.ATOMIC) || "'my_object'";
+            const input = block.getInputTargetBlock('obj_name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
                 return ["objectByName(" + name + ".toString())", dart.Order.ATOMIC];
             }
@@ -86,8 +95,8 @@ lua.luaGenerator.forBlock[type_o] = function (block, generator) {
     }
     else if (object === 'OBJECT_NAME') {
         try {
-            const name = lua.luaGenerator.valueToCode(block, 'name', lua.Order.ATOMIC) || "'my_object'";
-            const input = block.getInputTargetBlock('name');
+            const name = lua.luaGenerator.valueToCode(block, 'obj_name', lua.Order.ATOMIC) || "'my_object'";
+            const input = block.getInputTargetBlock('obj_name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
                 return ["objectByName(tostring(" + name + "))", lua.Order.ATOMIC];
             }
@@ -109,8 +118,8 @@ php.phpGenerator.forBlock[type_o] = function (block, generator) {
     }
     else if (object === 'OBJECT_NAME') {
         try {
-            const name = php.phpGenerator.valueToCode(block, 'name', php.Order.ATOMIC) || "'my_object'";
-            const input = block.getInputTargetBlock('name');
+            const name = php.phpGenerator.valueToCode(block, 'obj_name', php.Order.ATOMIC) || "'my_object'";
+            const input = block.getInputTargetBlock('obj_name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
                 return ["objectByName(strval(" + name + "))", php.Order.ATOMIC];
             }
@@ -132,8 +141,8 @@ python.pythonGenerator.forBlock[type_o] = function (block, generator) {
     }
     else if (object === 'OBJECT_NAME') {
         try {
-            const name = python.pythonGenerator.valueToCode(block, 'name', python.Order.ATOMIC) || "'my_object'";
-            const input = block.getInputTargetBlock('name');
+            const name = python.pythonGenerator.valueToCode(block, 'obj_name', python.Order.ATOMIC) || "'my_object'";
+            const input = block.getInputTargetBlock('obj_name');
             if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
                 return ["objectByName(str(" + name + "))", python.Order.ATOMIC];
             }

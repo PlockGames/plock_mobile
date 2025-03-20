@@ -1,0 +1,261 @@
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/component_fields/tilemap/tile.dart';
+import 'package:plock_mobile/models/component_fields/tileset/tileset_editor_page.dart';
+import 'package:plock_mobile/models/games/component_field.dart';
+
+import '../games/media.dart';
+
+/// A Field that contain a Text value
+class ComponentFieldTileset extends ComponentField {
+
+  /// The value of the field
+   List<Tile> _value;
+
+   ComponentFieldTileset({
+    required List<Tile> value,
+    onUpdate,
+  }) : _value = value {
+    this.onUpdate = onUpdate;
+  }
+
+  @override
+  String get type => 'ComponentFieldTileset';
+
+  @override
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
+    return ComponentFieldTilesetField(field: this, name: name, medias: medias, onUpdate: onUpdate);
+  }
+
+  @override
+  ComponentFieldTileset instance() {
+    List<Tile> instanceValue = List<Tile>.empty(growable: true);
+    for (int i = 0; i < _value.length; i++) {
+      Tile tile = Tile();
+      tile.media = _value[i].media;
+      for (int j = 0; j < _value[i].collision.length; j++) {
+        tile.collision.add(_value[i].collision[j]);
+      }
+      instanceValue.add(tile);
+    }
+    return ComponentFieldTileset(value: instanceValue, onUpdate: onUpdate);
+  }
+
+  @override
+  List<Tile> get value => _value;
+
+  @override
+  set value(dynamic value) {
+    _value = value;
+  }
+
+  @override
+  String toJson() {
+    String res = "[";
+    for (int i = 0; i < _value.length; i++) {
+      res += "{";
+      res += "\"media\": \"${_value[i].media}\",";
+      res += "\"collision\": [";
+      for (int j = 0; j < _value[i].collision.length; j++) {
+        res += "${_value[i].collision[j]}";
+        if (j < _value[i].collision.length - 1) {
+          res += ",";
+        }
+      }
+      res += "]";
+      res += "}";
+      if (i < _value.length - 1) {
+        res += ",";
+      }
+    }
+    res += "]";
+    return res;
+  }
+
+  @override
+  void updateFromJson(dynamic jsonVal) {
+    _value = List<Tile>.empty(growable: true);
+    for (int i = 0; i < jsonVal.length; i++) {
+      Tile tile = Tile();
+      tile.media = jsonVal[i]['media'];
+      for (int j = 0; j < jsonVal[i]['collision'].length; j++) {
+        tile.collision.add(jsonVal[i]['collision'][j]);
+      }
+      _value.add(tile);
+    }
+  }
+
+}
+
+class ComponentFieldTilesetField extends StatefulWidget {
+  final ComponentFieldTileset field;
+  final String name;
+  final List<Media> medias;
+  final Function? onUpdate;
+
+  List<FocusNode> focusNodes = List<FocusNode>.empty(growable: true);
+
+  ComponentFieldTilesetField({
+    super.key,
+    required this.field,
+    required this.name,
+    required this.medias,
+    this.onUpdate,
+  });
+
+  @override
+  _ComponentFieldTilesetFieldState createState() => _ComponentFieldTilesetFieldState();
+}
+
+class _ComponentFieldTilesetFieldState extends State<ComponentFieldTilesetField> {
+  List<TextEditingController> controllers = List<TextEditingController>.empty(growable: true);
+
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNodes = List<FocusNode>.empty(growable: true);
+    controllers = List<TextEditingController>.empty(growable: true);
+    for (int i = 0; i < widget.field.value.length; i++) {
+      FocusNode focusNode = FocusNode();
+      focusNode.addListener(() {
+        if (!focusNode.hasFocus) {
+          setState(() {
+            widget.field.value[i].media = controllers[i].text;
+
+            try {
+              Media media = widget.medias.firstWhere((element) => element.name == widget.field.value[i].media);
+              media.getNbTiles().then( (value) {
+                widget.field.value[i].collision = List<bool>.filled(value, false, growable: true);
+              });
+            } catch (e) {
+              widget.field.value[i].collision = List<bool>.empty(growable: true);
+            }
+
+            if (widget.onUpdate != null) {
+              widget.onUpdate!();
+            }
+          });
+
+        }
+      });
+      widget.focusNodes.add(focusNode);
+
+      TextEditingController controller = TextEditingController(text: widget.field.value[i].media);
+      controllers.add(controller);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Media?> tilesMedia = List<Media?>.empty(growable: true);
+
+    for (int i = 0; i < widget.field.value.length; i++) {
+      try {
+        tilesMedia.add(widget.medias.firstWhere((element) => element.name == widget.field.value[i].media));
+      } catch (e) {
+        tilesMedia.add(null);
+      }
+    }
+
+    Future<List<Uint8List?>> loadTilesMedias() async {
+      List<Uint8List?> tiles = List<Uint8List?>.empty(growable: true);
+      for (int i = 0; i < widget.field.value.length; i++) {
+        if (tilesMedia[i] != null) {
+          tiles.add(await tilesMedia[i]!.file?.readAsBytes());
+        } else {
+          tiles.add(null);
+        }
+      }
+      return tiles;
+    }
+
+    Future<List<Uint8List?>?> future = loadTilesMedias();
+
+    return FutureBuilder<List<Uint8List?>?>(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return const Text('Error: failed to load tiles');
+          } else if (snapshot.hasData) {
+            return Column(
+              children: [
+                for (int i = 0; i < widget.field.value.length; i++)
+                  ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox.fromSize(
+                            size: const Size(50, 50),
+                            child: snapshot.data![i] != null ? Image.memory(snapshot.data![i]!) : const Text('')),
+                        Expanded(child:
+                        TextField(
+                          focusNode: widget.focusNodes[i],
+                          controller: controllers[i],
+                          decoration: const InputDecoration(
+                            labelText: 'Tile',
+                          ),
+                        )
+                        ),
+                        FutureBuilder(
+                            future: tilesMedia[i] != null ? tilesMedia[i]!.getNbTiles() : Future.value(0),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                return Text(snapshot.data.toString());
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            }
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => TilesetEditorPage(tile: widget.field.value[i], medias: widget.medias)),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              widget.field.value.remove(widget.field.value[i]);
+                              if (widget.field.onUpdate != null) {
+                                widget.field.onUpdate!();
+                              }
+                              widget.focusNodes.removeAt(i);
+                              controllers.removeAt(i);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(height: 10),
+                FilledButton(onPressed: () {
+                  setState(() {
+                    Tile tile = Tile();
+                    widget.focusNodes.add(FocusNode());
+                    controllers.add(TextEditingController(text: tile.media));
+                    widget.field.value.add(tile);
+                    if (widget.field.onUpdate != null) {
+                      widget.field.onUpdate!();
+                    }
+                  });
+                }, child: Icon(Icons.add)
+                ),
+              ],
+            );
+          } else {
+            return const Text('No data');
+          }
+        } else {
+          return const CircularProgressIndicator();
+        }
+      } ,
+    );
+  }
+}

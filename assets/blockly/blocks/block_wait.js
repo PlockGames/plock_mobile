@@ -20,7 +20,7 @@ Blockly.defineBlocksWithJsonArray([
 ]);
 javascript.javascriptGenerator.forBlock[type_w] = function (block, generator) {
     const time = javascript.javascriptGenerator.valueToCode(block, 'time', javascript.Order.ATOMIC) || 0;
-    return `wait(${time});\n`;
+    return `sendMessage("wait", JSON.stringify([${time}]));\n`;
 };
 dart.dartGenerator.forBlock[type_w] = function (block, generator) {
     const time = dart.dartGenerator.valueToCode(block, 'time', dart.Order.ATOMIC) || 0;

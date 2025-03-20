@@ -28,7 +28,7 @@ Blockly.defineBlocksWithJsonArray([
 ]);
 javascript.javascriptGenerator.forBlock[type_sg] = function (block, generator) {
     const value = block.getFieldValue('value');
-    return [`getScreenValue('${value}')`, javascript.Order.ATOMIC];
+    return [`sendMessage("getScreenValue", JSON.stringify(['${value}']))`, javascript.Order.ATOMIC];
 };
 dart.dartGenerator.forBlock[type_sg] = function (block, generator) {
     const value = block.getFieldValue('value');

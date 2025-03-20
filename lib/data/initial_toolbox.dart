@@ -43,8 +43,6 @@ import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_ind
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_is_empty.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_join.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_length.dart';
-import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_print.dart';
-import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_prompt_ext.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_replace.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_reverse.dart';
 import 'package:plock_mobile/models/component_fields/blocky/blocks/text/text_trim.dart';
@@ -52,21 +50,35 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_picker.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_random.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/colour/colour_rgb.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/math/to_number.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/asset_spawn.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_event_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/component_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/list_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/list_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_component.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_force.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_destroy.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set_force.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_spawn.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/variable_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/camera_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/camera_set.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider_name.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/screen_get.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/touch_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/wait.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/text/to_string.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
-
 
 /// The initial toolbox of the blockly.
 ///
@@ -98,6 +110,7 @@ final initialToolbox = Toolbox(categories: [
       name: "math",
       blocks: [
         ToolboxBlock(data: block_math_number),
+        ToolboxBlock(data: block_to_number),
         ToolboxBlock(data: block_math_arithmetic),
         ToolboxBlock(data: block_math_atan2),
         ToolboxBlock(data: block_math_modulo),
@@ -116,6 +129,7 @@ final initialToolbox = Toolbox(categories: [
       name: "text",
       blocks: [
         ToolboxBlock(data: block_text),
+        ToolboxBlock(data: block_to_string),
         ToolboxBlock(data: block_text_append),
         ToolboxBlock(data: block_text_change_case),
         ToolboxBlock(data: block_text_char_at),
@@ -162,8 +176,13 @@ final initialToolbox = Toolbox(categories: [
       name: "system",
       blocks: [
         ToolboxBlock(data: block_delta_time),
+        ToolboxBlock(data: block_collider),
+        ToolboxBlock(data: block_collider_name),
         ToolboxBlock(data: block_screen_get),
-        ToolboxBlock(data: block_wait)
+        ToolboxBlock(data: block_camera_get),
+        ToolboxBlock(data: block_camera_set),
+        ToolboxBlock(data: block_wait),
+        ToolboxBlock(data: block_touch_get)
       ]
   ),
   ToolboxCategory(
@@ -171,12 +190,20 @@ final initialToolbox = Toolbox(categories: [
       blocks: [
         ToolboxBlock(data: block_object),
         ToolboxBlock(data: block_component_get),
+        ToolboxBlock(data: block_variable_get),
+        ToolboxBlock(data: block_list_get),
         ToolboxBlock(data: block_component_set),
+        ToolboxBlock(data: block_variable_set),
+        ToolboxBlock(data: block_list_set),
+        ToolboxBlock(data: object_event_set),
         ToolboxBlock(data: block_object_add_component),
         ToolboxBlock(data: block_object_destroy),
         ToolboxBlock(data: block_object_get),
         ToolboxBlock(data: block_object_set),
-        ToolboxBlock(data: block_object_spawn)
+        ToolboxBlock(data: block_object_spawn),
+        ToolboxBlock(data: block_asset_spawn),
+        ToolboxBlock(data: block_object_add_force),
+        ToolboxBlock(data: block_object_set_force),
       ]
   ),
   ToolboxCategory(

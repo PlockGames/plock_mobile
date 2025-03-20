@@ -12,6 +12,34 @@ Blockly.defineBlocksWithJsonArray([
                     [
                         "width",
                         "WIDTH",
+                    ],
+                    [
+                        "height",
+                        "HEIGHT",
+                    ],
+                    [
+                        "radius",
+                        "RADIUS",
+                    ],
+                    [
+                        "text",
+                        "TEXT",
+                    ],
+                    [
+                        "variable",
+                        "VARIABLE",
+                    ],
+                    [
+                        "trigger",
+                        "TRIGGER",
+                    ],
+                    [
+                        "color",
+                        "COLOR",
+                    ],
+                    [
+                        "texture",
+                        "TEXTURE",
                     ]
                 ]
             },
@@ -36,8 +64,8 @@ Blockly.defineBlocksWithJsonArray([
                         "ComponentEvent"
                     ],
                     [
-                        "variable",
-                        "ComponentVariable"
+                        "image",
+                        "ComponentImage"
                     ]
                 ]
             },
@@ -76,20 +104,17 @@ function setComponentValue(block, generator, order) {
         }
         const input = block.getInputTargetBlock('newValue');
         if (input && input.outputConnection && input.outputConnection.getCheck()?.includes('Number')) {
-            return { object: object, component: component, value: value, newValue: newValue, toText: true };
+            return { object: object, component: component, value: value, newValue: newValue };
         }
-        return { object: object, component: component, value: value, newValue: newValue, toText: false };
+        return { object: object, component: component, value: value, newValue: newValue };
     }
     catch (e) {
-        return { object: object, component: component, value: value, newValue: 0, toText: false };
+        return { object: object, component: component, value: value, newValue: 0 };
     }
 }
 javascript.javascriptGenerator.forBlock[type_cs] = function (block, generator) {
     const { object, component, value, newValue, toText } = setComponentValue(block, generator, javascript.Order.ATOMIC);
-    if (toText) {
-        return `setComponentValue(${object}, '${component}', '${value}', toString(${newValue}))\n`;
-    }
-    return `setComponentValue(${object}, '${component}', '${value}', ${newValue})\n`;
+    return `sendMessage("setComponentValue", JSON.stringify([${object}, '${component}', '${value}', ${newValue}]))\n`;
 };
 dart.dartGenerator.forBlock[type_cs] = function (block, generator) {
     const { object, component, value, newValue, toText } = setComponentValue(block, generator, dart.Order.ATOMIC);

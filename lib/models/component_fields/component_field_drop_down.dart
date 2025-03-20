@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 
+import '../games/media.dart';
+
 /// A field that contain a dropdown value.
 class ComponentFieldDropDown extends ComponentField {
 
@@ -25,7 +27,7 @@ class ComponentFieldDropDown extends ComponentField {
   String get type => 'ComponentFieldDropDown';
 
   @override
-  Widget getField(String name, bool debug) {
+  Widget getField(String name, bool debug, List<Media> medias, Map<String, ComponentField> fields) {
     field ??= DropDownField(initialValue: _value, options: _options, onUpdate: onUpdate, updateValue: updateValue);
     return field!;
   }
