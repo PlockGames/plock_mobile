@@ -16,9 +16,6 @@ void main() async {
 
   group('Tests ApiService', () {
     // Débogage : imprimer l'URL de l'API
-    print("---------------");
-    print(dotenv.env['API_URL']);
-    print("---------------");
 
     test('Récupération de tous les jeux', () async {
       // Assure-toi que l'URL de l'API est correctement chargée
@@ -56,7 +53,7 @@ void main() async {
 
     test('Création d\'un jeu', () async {
       final gameData = CreateGameDto(
-        title: 'test15',
+        title: 'test18',
         tags: [],
         playTime: 'test1',
         gameType: 'test1',
@@ -102,37 +99,86 @@ void main() async {
       expect(likeResponse.statusCode, 201);
       expect(likeResponse.body, contains('Game liked successfully'));
     });
+
     test('Suppression d\'un jeu', () async {
       if (gameId.isEmpty) {
         fail('Le jeu n\'a pas été créé, impossible de le supprimer');
       }
 
-      // Effectuer la requête de suppression
+      // Effectuer la requête DELETE
       final deleteResponse = await ApiService.deleteGame(gameId);
 
       print('Status Code de la suppression: ${deleteResponse.statusCode}');
       print('Response Body de la suppression: ${deleteResponse.body}');
 
-      // Vérifiez que la suppression a bien eu lieu (code de statut 200)
+      // Vérifie que la suppression renvoie un code 200
       expect(deleteResponse.statusCode, 200);
 
-      // Vérifiez que la réponse ne contient pas de message sur le like
-      expect(deleteResponse.body, isNot(contains('Game liked')));
+      // Analyse la réponse JSON
+      final decodedResponse = jsonDecode(deleteResponse.body);
 
-      // Vérifiez que la réponse contient un message indiquant la suppression du jeu
-      expect(deleteResponse.body, contains('success'));
-      expect(deleteResponse.body, contains('Message example')); // Adapté selon le message renvoyé
-      expect(deleteResponse.body, contains('id'));
-      expect(deleteResponse.body, contains('title'));
+      // Vérifie que le statut est "success"
+      expect(decodedResponse['status'], equals('success'));
 
-      // Vérifiez que le jeu a bien été supprimé en effectuant une requête GET
+      // Vérifie que la clé "data" existe mais peut être null
+      expect(decodedResponse.containsKey('data'), isTrue);
+
+      // Vérifie que le jeu a bien été supprimé en effectuant une requête GET
       final getResponse = await ApiService.getGame(gameId);
 
-      // Si le jeu a été supprimé, vous devriez obtenir une réponse 404
+      // Normalement, le jeu ne devrait plus exister, donc un code 404 est attendu
       expect(getResponse.statusCode, 404);
     });
 
+    test('Tentative de récupération d\'un jeu inexistant', () async {
+      final nonExistentGameId = 'non-existent-game-id';
 
+      final response = await ApiService.getGame(nonExistentGameId);
+
+      // Vérifie que le code de statut est 404
+      expect(response.statusCode, 404);
+
+      // Vérifie que le corps de la réponse contient un message d'erreur
+      expect(response.body, contains('Game not found'));
+    });
+
+    // Test: Tentative de création d'un jeu avec des données invalides
+    test('Tentative de création d\'un jeu avec des données invalides', () async {
+      final invalidGameData = CreateGameDto(
+        title: '', // Titre vide, ce qui devrait entraîner une erreur
+        tags: [],
+        playTime: 'test1',
+        gameType: 'test1',
+        thumbnailUrl: 'test1',
+        contentGame: '{"test1": "test1"}',
+      );
+
+      final response = await ApiService.createGame(invalidGameData);
+
+      print('Status Code de la création invalide: ${response.statusCode}');
+      print('Response Body de la création invalide: ${response.body}');
+
+      // Vérifie que le statut est 400 (Bad Request) ou tout autre statut indiquant une erreur
+      expect(response.statusCode, 400);
+    });
+    test('Récupération du nombre de likes d\'un jeu', () async {
+      final gameId = 'fc9c6481-d9ec-4071-aa28-dcc9280e492c';
+
+      print('Test: Récupération du nombre de likes du jeu avec ID: $gameId');
+
+      // Appel de la méthode getGameLike
+      final likeResponse = await ApiService.getGameLike(gameId);
+
+      // Imprimer la réponse pour déboguer
+      print('Status Code du like: ${likeResponse.statusCode}');
+      print('Response Body du like: ${likeResponse.body}');
+
+      // Vérifie que la réponse a un code de statut 200
+      expect(likeResponse.statusCode, 200);
+
+      // Vérifie que la réponse contient des informations relatives au nombre de likes
+      expect(likeResponse.body, contains('like_count')); // Vous pouvez adapter cette vérification selon la structure exacte de la réponse
+    });
 
   });
 }
