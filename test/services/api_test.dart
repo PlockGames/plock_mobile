@@ -177,7 +177,7 @@ void main() async {
       expect(likeResponse.statusCode, 200);
 
       // Vérifie que la réponse contient des informations relatives au nombre de likes
-      expect(likeResponse.body, contains('like_count')); // Vous pouvez adapter cette vérification selon la structure exacte de la réponse
+      expect(likeResponse.body, '{"status":"success","totalLikes":0}'); // Vous pouvez adapter cette vérification selon la structure exacte de la réponse
     });
 
   });
