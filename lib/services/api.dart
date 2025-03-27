@@ -101,7 +101,7 @@ class ApiService {
   /// Supprime le like d'un jeu donné par son [id].
   static Future<http.Response> deleteGame(String gameId) async {
     final response = await http.delete(
-      Uri.parse("$url/like/$gameId"),
+      Uri.parse("$url/game/$gameId"),
       headers: {
         "Authorization": "Bearer $apiKey",
       },
