@@ -30,7 +30,7 @@ void main() {
     test('should return a valid DisplayComponents', () {
       final component = ComponentCircle();
       final displayComponent = component.getDisplayComponent(
-              () {},
+              (details) {},
               (details) {},
               (details) {},
               (details) {},
