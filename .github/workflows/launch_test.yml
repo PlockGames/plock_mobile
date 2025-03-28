@@ -42,6 +42,18 @@ jobs:
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
 
+      - name: Remove Unwanted Files from Coverage
+        run: |
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_empty.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_circle.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_image.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_rect.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_sprite.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_text.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tile.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tilemap.dart' -o coverage/lcov.info
+        continue-on-error: true
+
       - name: Generate Coverage HTML Report
         run: genhtml coverage/lcov.info -o coverage/html || true
 
