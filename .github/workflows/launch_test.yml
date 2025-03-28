@@ -5,10 +5,12 @@ on:
     branches:
       - develop
       - main
+      - feat/Plock-177
   pull_request:
     branches:
       - develop
       - main
+      - feat/Plock-177
 
 jobs:
   test:
