@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Run Flutter Tests
-        run: flutter test --coverage --timeout=5m || true
+        run: flutter test --coverage --timeout=5m --verbose || true
 
       - name: Fix Slashes in Coverage File
         run: sed -i 's|\\|/|g' coverage/lcov.info || true
