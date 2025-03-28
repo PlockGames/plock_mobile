@@ -15,30 +15,36 @@ void main() {
     expect(componentImage.type, 'ComponentImage');
     expect(componentImage.name, 'Image');
 
-    expect(componentImage.fields['size'], isA<ComponentFieldNumber>());
-    expect(componentImage.fields['size']!.value, 1.0);
+    // Test size field
+    final sizeField = componentImage.fields['size'];
+    expect(sizeField, isNotNull);
+    expect(sizeField, isA<ComponentFieldNumber>());
+    expect((sizeField as ComponentFieldNumber).value, 1.0);
 
-    expect(componentImage.fields['texture'], isA<ComponentFieldImage>());
-    expect(componentImage.fields['texture']!.value, isA<MediaSelect>());
+    // Test texture field
+    final textureField = componentImage.fields['texture'];
+    expect(textureField, isNotNull);
+    expect(textureField.runtimeType.toString(), 'ComponentFieldImage');
+    expect((textureField as dynamic).value, isA<MediaSelect>());
   });
 
   test('Instance method creates a new ComponentImage with copied fields', () {
-    // Modify fields with default MediaSelect constructor
-    componentImage.fields['size']!.value = 2.0;
-    componentImage.fields['texture']!.value = MediaSelect();
+    // Modify fields
+    (componentImage.fields['size'] as ComponentFieldNumber).value = 2.0;
+    (componentImage.fields['texture'] as dynamic).value = MediaSelect();
 
-    ComponentImage newInstance = componentImage.instance() as ComponentImage;
+    final newInstance = componentImage.instance() as ComponentImage;
 
     expect(newInstance, isA<ComponentImage>());
-    expect(newInstance.fields['size']!.value, 2.0);
-    expect(newInstance.fields['texture']!.value, isA<MediaSelect>());
+    expect((newInstance.fields['size'] as ComponentFieldNumber).value, 2.0);
+    expect((newInstance.fields['texture'] as dynamic).value, isA<MediaSelect>());
     expect(newInstance, isNot(same(componentImage)));
   });
 
-  test('getGameDisplayComponent method handles null texture', () {
+  test('getGameDisplayComponent returns null when no texture is provided', () {
     final result = componentImage.getGameDisplayComponent(
-        [], // empty media list
-        null, null, null, null, null
+      [], // empty media list
+      null, null, null, null, null,
     );
 
     expect(result, isNull);

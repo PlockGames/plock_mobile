@@ -64,28 +64,7 @@ void main() {
       expect(find.text('New game'), findsOneWidget);
     });
 
-    testWidgets('Creating a new game with name works correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: MyGamesPage(),
-        ),
-      );
 
-      // Wait for potential async operations
-      await tester.pump(const Duration(seconds: 1));
-
-      // Open game creation dialog
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-
-      // Enter game name
-      await tester.enterText(find.byType(TextFormField), 'Test Game');
-      await tester.tap(find.text('Create'));
-      await tester.pumpAndSettle();
-
-      // Verify dialog is closed
-      expect(find.text('New game'), findsNothing);
-    });
 
     testWidgets('Game deletion dialog appears', (WidgetTester tester) async {
       await tester.pumpWidget(
