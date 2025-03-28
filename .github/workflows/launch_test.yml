@@ -52,6 +52,23 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_text.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tile.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tilemap.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics_circle.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics.dart' -o coverage/lcov.info
+
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/loaded_media_tile.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_painter.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_top_bar.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart.dart' -o coverage/lcov.info
+          
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
+          
+          lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
+
         continue-on-error: true
 
       - name: Generate Coverage HTML Report
