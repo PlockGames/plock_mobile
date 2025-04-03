@@ -23,7 +23,7 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '3.24.0'
+          flutter-version: "3.24.0"
 
       - name: Install Dependencies
         run: flutter pub get
@@ -37,9 +37,8 @@ jobs:
 
       - name: Run Flutter Tests
         run: |
-          flutter test --timeout=5m --test-randomize-ordering-seed=random --verbose > test_output.log || true
-          echo "Tests completed or timed out"
-          grep -n "^test" test_output.log | tail -5
+          flutter test --verbose || true
+          echo "Tests completed or potentially failed"
 
       - name: Fix Slashes in Coverage File
         run: sed -i 's|\\|/|g' coverage/lcov.info || true
@@ -77,7 +76,6 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/pages/play/game_player.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/play/play_page.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/play/event_manager.dart'  -o coverage/lcov.info
-      
 
         continue-on-error: true
 
