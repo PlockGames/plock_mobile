@@ -1,3 +1,4 @@
+
 name: Test For Plock Mobile
 
 on:
@@ -24,7 +25,7 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '3.24.5'
+          flutter-version: '3.24.0'
 
       - name: Install Dependencies
         run: flutter pub get
@@ -38,15 +39,8 @@ jobs:
 
       # Run tests first without coverage to ensure they pass
       - name: Run Flutter Tests
-        run: flutter test --verbose --machine > test_output.log
-        timeout-minutes: 10  # Increased timeout
-
-      - name: Upload Test Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: test_output.log
+        run: flutter test --verbose
+        timeout-minutes: 5
 
       # Generate coverage separately with reduced concurrency
       - name: Generate Coverage
@@ -107,8 +101,3 @@ jobs:
           name: coverage-report
           path: coverage/html
         timeout-minutes: 1
-
-      - name: Clean
-        run: |
-          flutter clean
-          flutter pub get
