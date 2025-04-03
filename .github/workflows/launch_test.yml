@@ -36,9 +36,7 @@ jobs:
           fi
 
       - name: Run Flutter Tests
-        run: |
-          flutter test --coverage --verbose || true
-          echo "Tests completed or potentially failed"
+        run: flutter test --coverage --force-exit
 
       - name: Fix Slashes in Coverage File
         run: sed -i 's|\\|/|g' coverage/lcov.info || true
