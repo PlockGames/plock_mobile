@@ -36,7 +36,10 @@ jobs:
           fi
 
       - name: Run Flutter Tests
-        run: flutter test --coverage --timeout=5m --test-randomize-ordering-seed=random --no-pub --concurrency=4 || true
+        run: |
+          flutter test --coverage --timeout=5m --test-randomize-ordering-seed=random --no-pub --concurrency=4 --verbose > test_output.log || true
+          echo "Tests completed or timed out"
+          grep -n "^test" test_output.log | tail -5
 
       - name: Fix Slashes in Coverage File
         run: sed -i 's|\\|/|g' coverage/lcov.info || true
