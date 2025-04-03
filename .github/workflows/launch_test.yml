@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Flutter Tests
         run: |
-          flutter test --coverage --timeout=5m --test-randomize-ordering-seed=random --no-pub --concurrency=4 --verbose > test_output.log || true
+          flutter test --coverage --timeout=5m --test-randomize-ordering-seed=random --concurrency=4 --verbose > test_output.log || true
           echo "Tests completed or timed out"
           grep -n "^test" test_output.log | tail -5
 
