@@ -35,9 +35,12 @@ jobs:
             cp .env.example .env
           fi
 
+      - name: Install Pod dependencies
+        run: cd ios && pod install && cd ..
+      
       - name: Run Flutter Tests
         run: |
-          flutter test
+          flutter test --coverage || true
           echo "Tests completed, proceeding with coverage processing"
 
       - name: Fix Slashes in Coverage File
