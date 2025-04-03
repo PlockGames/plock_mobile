@@ -66,10 +66,16 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
+          
           lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
-      
+          
+          lcov --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/play/game_player_ui_object.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/play/game_player.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/play/play_page.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/play/event_manager.dart'  -o coverage/lcov.info
 
         continue-on-error: true
 
