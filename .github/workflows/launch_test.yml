@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Flutter Tests
         run: |
-          flutter test --coverage || true
+          flutter test --coverage
           echo "Tests completed, proceeding with coverage processing"
 
       - name: Fix Slashes in Coverage File
