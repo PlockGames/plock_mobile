@@ -23,7 +23,7 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: "3.24.0"
+          flutter-version: "3.25.0"
 
       - name: Install Dependencies
         run: flutter pub get
@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Run Flutter Tests  
-        run: xvfb-run flutter test --coverage
+        run: xvfb-run flutter test --coverage --verbose
 
       - name: Fix Slashes in Coverage File
         run: sed -i 's|\\|/|g' coverage/lcov.info || true
