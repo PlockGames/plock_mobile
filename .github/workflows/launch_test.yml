@@ -65,6 +65,9 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
+          
           lcov --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
