@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Create .env file
+        run: cp .env.example .env
+
       - name: Run tests with coverage
         run: flutter test --coverage # Generates coverage/lcov.info
 
