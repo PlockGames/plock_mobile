@@ -13,36 +13,29 @@ on:
       - feat/Plock-177
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  test_and_coverage:
+    name: Test & Coverage Report
+    runs-on: ubuntu-latest # Flutter tests run well on Linux
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4 # Use latest version
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2 # Use a stable version
         with:
-          channel: stable
-          flutter-version: "3.25.0"
+          channel: "stable" # Or specify a version if needed
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Ensure .env exists
-        run: |
-          if [ ! -f .env ]; then
-            echo ".env file missing, creating from .env.example"
-            cp .env.example .env
-          fi
-
-      - name: Run Flutter Tests  
-        run: xvfb-run flutter test --coverage --verbose
-
-      - name: Fix Slashes in Coverage File
-        run: sed -i 's|\\|/|g' coverage/lcov.info || true
+      - name: Run tests with coverage
+        run: flutter test --coverage # Generates coverage/lcov.info
 
       - name: Install lcov
+        # Installs lcov which includes the genhtml tool
         run: sudo apt-get update && sudo apt-get install -y lcov
+        # Requires sudo, runs on ubuntu-latest runner
 
       - name: Remove Unwanted Files from Coverage
         run: |
@@ -55,7 +48,7 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tile.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tilemap.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/flame/RoundedRectangleComponent.dart' -o coverage/lcov.info
-          
+
           lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics_circle.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/loaded_media_tile.dart' -o coverage/lcov.info
@@ -77,13 +70,13 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/pages/play/play_page.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/play/event_manager.dart'  -o coverage/lcov.info
 
-        continue-on-error: true
+      - name: Generate HTML coverage report
+        # Uses genhtml to convert lcov.info to HTML report
+        # -o specifies the output directory
+        run: genhtml coverage/lcov.info -o coverage/html
 
-      - name: Generate Coverage HTML Report
-        run: genhtml coverage/lcov.info -o coverage/html || true
-
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4 # Use latest version
         with:
-          name: coverage-report
-          path: coverage/html
+          name: coverage-report # Name of the artifact
+          path: coverage/html # Path to the directory to upload
