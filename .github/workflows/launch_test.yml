@@ -53,9 +53,9 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_sprite.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_text.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tile.dart' -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/models/games/component_flame.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tilemap.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/flame/RoundedRectangleComponent.dart' -o coverage/lcov.info
-          
           lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics_circle.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_types/component_physics.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/loaded_media_tile.dart' -o coverage/lcov.info
