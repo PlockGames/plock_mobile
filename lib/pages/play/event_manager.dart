@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js_plus/flutter_js.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
