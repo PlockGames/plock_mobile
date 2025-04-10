@@ -5,7 +5,6 @@ import 'package:flame/text.dart';
 
 /// A button to exit the game in test mode.
 class UploadButton extends TextComponent with TapCallbacks {
-
   /// Callback to exit the game.
   final Function uploadGame;
 

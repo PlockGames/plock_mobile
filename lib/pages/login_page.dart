@@ -6,6 +6,8 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("LoginPage build method called");
+
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final authService = AuthService();
@@ -22,7 +24,8 @@ class LoginPage extends StatelessWidget {
       }
 
       // Validate email format
-      final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+      final emailRegex =
+          RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
       if (email.isNotEmpty && !emailRegex.hasMatch(email)) {
         errorMessage = "Invalid email format.";
       }
@@ -49,7 +52,8 @@ class LoginPage extends StatelessWidget {
           const SnackBar(content: Text("Login successful!")),
         );
         // Navigate to home page
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
       } else {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(

@@ -17,8 +17,9 @@ import '../assets_page.dart';
 import '../medias_page.dart';
 import '../objects_page.dart';
 import '../scenes_page.dart';
-import 'Editor.dart';
+import 'editor.dart';
 import 'object_component.dart';
+import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 
 /// The editor page.
 class EditorPage extends StatefulWidget {
@@ -140,24 +141,25 @@ class _EditorPageState extends State<EditorPage> {
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
-              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
       }
 
-        // upload images
-        List<Media> medias = widget.game.medias;
-        for (var media in medias) {
-          if (media.file != null) {
-            var res = await ApiService.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
-            final json = jsonDecode(res.body);
-            final String uuid = json['data'][0]['id'];
-            media.uuid = uuid;
-          }
+      // upload images
+      List<Media> medias = widget.game.medias;
+      for (var media in medias) {
+        if (media.file != null) {
+          var res = await ApiService.uploadMedia(
+              widget.game.uuid, await media.file!.readAsBytes());
+          final json = jsonDecode(res.body);
+          final String uuid = json['data'][0]['id'];
+          media.uuid = uuid;
         }
+      }
 
-        // reupdate game with new ids
+      // reupdate game with new ids
       final finalRes = await ApiService.updateGame(
           widget.game.uuid,
           UpdateGameDto(
@@ -166,15 +168,21 @@ class _EditorPageState extends State<EditorPage> {
             playTime: "0",
             gameType: "test",
             thumbnailUrl:
-            "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
             contentGame: widget.game.toJson(),
             id: widget.game.uuid,
           ));
 
-        print(finalRes.body);
+      print(finalRes.body);
 
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-
+      // Navegar a la página my_games_page en lugar de simplemente volver a la raíz
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyGamesPage(),
+          settings: const RouteSettings(name: '/my_games'),
+        ),
+      );
     };
   }
 
