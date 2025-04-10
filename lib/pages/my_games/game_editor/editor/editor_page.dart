@@ -118,7 +118,7 @@ class _EditorPageState extends State<EditorPage> {
       if (widget.game.uuid.isEmpty) {
         // Create the game
 
-        var upload = await ApiService.createGame(CreateGameDto(
+        var upload = await Api.createGame(CreateGameDto(
           title: widget.game.name,
           tags: [],
           playTime: "0",
@@ -127,12 +127,12 @@ class _EditorPageState extends State<EditorPage> {
               "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
           contentGame: widget.game.toJson(),
         ));
-        var json = jsonDecode(upload.body);
+        var json = upload;
         final String uuid = json['data']['id'];
         widget.game.uuid = uuid;
       } else {
         // Update the game
-        var upload = await ApiService.updateGame(
+        var upload = await Api.updateGame(
             widget.game.uuid,
             UpdateGameDto(
               title: "${widget.game.name}",
@@ -150,15 +150,15 @@ class _EditorPageState extends State<EditorPage> {
         List<Media> medias = widget.game.medias;
         for (var media in medias) {
           if (media.file != null) {
-            var res = await ApiService.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
-            final json = jsonDecode(res.body);
+            var res = await Api.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
+            final json = res;
             final String uuid = json['data'][0]['id'];
             media.uuid = uuid;
           }
         }
 
         // reupdate game with new ids
-      final finalRes = await ApiService.updateGame(
+      final finalRes = await Api.updateGame(
           widget.game.uuid,
           UpdateGameDto(
             title: "${widget.game.name}",
@@ -171,7 +171,7 @@ class _EditorPageState extends State<EditorPage> {
             id: widget.game.uuid,
           ));
 
-        print(finalRes.body);
+        print(finalRes['data']);
 
         Navigator.popUntil(context, ModalRoute.withName('/'));
 

@@ -37,12 +37,12 @@ class PlayPageState extends State<PlayPage> {
   Future<void> _initializeFavoriteStatus() async {
     List<plock.Game> allGames = await getAllGamesWithData();
     for (var game in allGames) {
-      var rep = await ApiService.getGame(game.uuid);
-      var jsonResponse = jsonDecode(rep.body);
+      var rep = await Api.getGame(game.uuid);
+      var jsonResponse = jsonDecode(rep['data']);
       var likes = jsonResponse['data']['likes'];
 
-      var response = await ApiService.getGameLike(game.uuid);
-      dynamic decoded = jsonDecode(response.body);
+      var response = await Api.getGameLike(game.uuid);
+      dynamic decoded = jsonDecode(response['data']);
       bool isLiked = decoded['totalLikes'] > 0;
       setState(() {
         favoriteStatus[game.uuid] = jsonResponse['data']['hasLiked'];
@@ -62,13 +62,13 @@ class PlayPageState extends State<PlayPage> {
 
   /// Get all the games with their game data.
   Future<List<plock.Game>> getAllGamesWithData() async {
-    var lastResponse = await ApiService.getAllGames(1);
-    dynamic decoded = jsonDecode(lastResponse.body);
-    var allGames = decoded['data']['data'];
+    var lastResponse = await Api.getAllGames(1);
+    dynamic decoded = lastResponse['data']['data'];
+    var allGames = decoded;
 
     for (int page = 2; 0 < decoded.length; page++) {
-      lastResponse = await ApiService.getAllGames(page);
-      decoded = jsonDecode(lastResponse.body)['data']['data'];
+      lastResponse = await Api.getAllGames(page);
+      decoded = lastResponse['data']['data'];
       allGames.addAll(decoded);
     }
     List<plock.Game> allGameWithData = <plock.Game>[];
@@ -81,8 +81,7 @@ class PlayPageState extends State<PlayPage> {
       }
 
       loadedGame.uuid = game['id'];
-      final mediasResponse = await ApiService.getMedias(game['id']);
-      final mediasJson = jsonDecode(mediasResponse.body);
+      final mediasJson = await Api.getMedias(game['id']);
 
       for (var media in mediasJson['data']) {
         final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
@@ -101,11 +100,11 @@ class PlayPageState extends State<PlayPage> {
   }
 
   Future<void> likeGame(String gameId) async {
-    await ApiService.addLikeGame(gameId);
+    await Api.addLikeGame(gameId);
   }
 
   Future<void> unlikeGame(String gameId) async {
-    await ApiService.deleteGame(gameId);
+    await Api.deleteLikeGame(gameId);
   }
 
   @override

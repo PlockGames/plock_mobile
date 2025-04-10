@@ -29,9 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       print("Fetching user profile...");
 
-      final response = await ApiService.getUserProfile();
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
+      final response = await Api.getUserProfile();
+      if (response['success']) {
+        final Map<String, dynamic> jsonData = json.decode(response['data']);
 
         if (jsonData['status'] == 'success' ) {
           final userData = jsonData['data'];
@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       } else {
         // Gestion des erreurs
-        print("Erreur lors de la récupération du profil utilisateur: ${response.statusCode}");
+        print("Erreur lors de la récupération du profil utilisateur: ${response['message']}");
       }
     } catch (e) {
       print("Erreur: $e");
@@ -152,7 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   // Mise à jour via l'API
                   try {
-                    final response = await ApiService.updateUserProfile(
+                    final response = await Api.updateUserProfile(
                       username: updateData['username'],
                       email: updateData['email'],
                       password: updateData['password'],
@@ -160,13 +160,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       birthDate: updateData['birthDate'],
                     );
 
-                    if (response.statusCode == 200) {
+                    if (response['success']) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('$title mis à jour avec succès')));
                       _fetchUserProfile();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Erreur: ${response.statusCode}')));
+                          SnackBar(content: Text('Erreur: ${response['message']}')));
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(

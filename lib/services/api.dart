@@ -4,43 +4,39 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Service to interact with the API (plock backend)
-class ApiService {
+import 'api_service.dart';
 
-  static String? url = dotenv.env['API_URL'];
-  static String? apiKey = dotenv.env['API_KEY'];
+/// Service to interact with the API (plock backend)
+class Api {
+  static final ApiService _apiService = ApiService();
+
+  // Fonction de log simple
+  static void _log(String message) {
+    print("Api: $message");
+  }
 
   /// Return a list of all the games.
   ///
   /// If [page] is not null, it will return the games of that page only.
-  static Future<http.Response> getAllGames(int? page) async {
+  static Future<Map<String, dynamic>> getAllGames(int? page) async {
     if (page != null) {
-      http.Response res = await http.get(Uri.parse("$url/game?page=$page&perPage=3"), headers: {
-        "Authorization": "Bearer $apiKey",
-      });
+      _log("Getting all games with page: $page");
+      Map<String, dynamic> res = await _apiService.get("/game?page=$page&perPage=3");
       return res;
     }
-    http.Response res = await http.get(Uri.parse("$url/game"), headers: {
-      "Authorization": "Bearer $apiKey",
-    });
+    _log("Getting all games");
+    Map<String, dynamic> res = await _apiService.get("/game");
     return res;
   }
 
   /// Get the profile of the currently authenticated user.
-  static Future<http.Response> getUserProfile() async {
-    final response = await http.get(
-      Uri.parse("$url/auth/me"),
-      headers: {
-        "Authorization": "Bearer $apiKey",
-        "Accept": "application/json",
-      },
-    );
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+  static Future<Map<String, dynamic>> getUserProfile() async {
+    _log("Getting user profile");
+    final response = await _apiService.get("/auth/me");
     return response;
   }
   /// Met à jour le profil de l'utilisateur actuellement authentifié.
-  static Future<http.Response> updateUserProfile({
+  static Future<Map<String, dynamic>> updateUserProfile({
     String? email,
     String? firstName,
     String? lastName,
@@ -49,6 +45,7 @@ class ApiService {
     String? username,
     String? password,
   }) async {
+    _log("Updating user profile");
     // Créer un objet contenant uniquement les champs non-null
     final Map<String, dynamic> updateData = {};
     if (email != null) updateData['email'] = email;
@@ -59,110 +56,68 @@ class ApiService {
     if (username != null) updateData['username'] = username;
     if (password != null) updateData['password'] = password;
 
-    final response = await http.put(
-      Uri.parse("$url/user/profile/me"),
-      headers: {
-        "Authorization": "Bearer $apiKey",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: jsonEncode(updateData),
-    );
-
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    final response = await _apiService.put("/user/profile/me", updateData);
 
     return response;
   }
 
   /// Return a list of the game with the given [id].
-  static Future<http.Response> getGame(String id) async {
-    return await http.get(Uri.parse("$url/game/$id"), headers: {
-      "Authorization": "Bearer $apiKey"
-    });
+  static Future<Map<String, dynamic>> getGame(String id) async {
+    _log("Getting game with id: $id");
+    return await _apiService.get("/game/$id");
   }
+
   /// Retourne le nombre total de likes pour un jeu donné [gameId].
-  static Future<http.Response> getGameLike(String gameId) async {
-    final response = await http.get(
-      Uri.parse("$url/like/count/$gameId"),
-      headers: {
-        "Authorization": "Bearer $apiKey",
-        "Accept": "application/json",
-      },
-    );
-    print("gameId: ${gameId}");
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+  static Future<Map<String, dynamic>> getGameLike(String gameId) async {
+    _log("Getting the game like with id: $gameId");
+    final response = await _apiService.get("/like/count/$gameId");
 
     return response;
   }
-
 
   /// Supprime le like d'un jeu donné par son [id].
-  static Future<http.Response> deleteGame(String gameId) async {
-    final response = await http.delete(
-      Uri.parse("$url/like/$gameId"),
-      headers: {
-        "Authorization": "Bearer $apiKey",
-      },
-    );
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+  static Future<Map<String, dynamic>> deleteLikeGame(String gameId) async {
+    _log("Deleting like of game with id: $gameId");
+    final response = await _apiService.delete("/like/$gameId");
     return response;
   }
-  static Future<http.Response> addLikeGame(String gameId) async {
-    final response = await http.post(
-      Uri.parse("$url/like"),
-      headers: {
-        "Authorization": "Bearer $apiKey",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
+
+  /// Ajoute un like à un jeu donné par son [id].
+  static Future<Map<String, dynamic>> addLikeGame(String gameId) async {
+    _log("Adding like game with id: $gameId");
+    final response = await _apiService.post("/like",
+      {
         "gameId": gameId,
-      }),
+      }
     );
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
     return response;
   }
-
-
-
 
   /// Create a new game with the given [data].
-  static Future<http.Response> createGame(CreateGameDto data) async {
-    return await http.post(Uri.parse("$url/game"), body: data.toJson(), headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $apiKey"
-    });
+  static Future<Map<String, dynamic>> createGame(CreateGameDto data) async {
+    _log("Creating a game");
+    return await _apiService.post("/game", data.toJson());
   }
 
-  static Future<http.Response> updateGame(String id, UpdateGameDto data) async {
-    return await http.put(Uri.parse("$url/game/$id?id=$id"), body: data.toJson(), headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $apiKey"
-    });
+  /// Delete a game with the given [id].
+  static Future<Map<String, dynamic>> deleteGame(String id) async {
+    _log("Deleting game with id: $id");
+    return await _apiService.delete("/game/$id");
   }
 
-  static Future<http.Response> uploadMedia(String gameId, Uint8List data) async {
-    http.MultipartFile file = http.MultipartFile.fromBytes('images', data, filename: "image.png", contentType: http.MediaType("image", "png"));
-    final body = http.MultipartRequest("POST", Uri.parse("$url/game/$gameId/images"));
-    body.files.add(file);
-    body.headers.addAll({
-      "Authorization": "Bearer $apiKey",
-      "Content-Type": "multipart/form-data",
-    });
-    final res = await body.send();
-    final httpRes = await http.Response.fromStream(res);
-    print(httpRes.body);
-    return httpRes;
+  static Future<Map<String, dynamic>> updateGame(String id, UpdateGameDto data) async {
+    _log("Updating game with id: $id");
+    return await _apiService.put("/game/$id?id=$id", data.toJson());
   }
 
-  static Future<http.Response> getMedias(String gameId) async {
-    final res = await http.get(Uri.parse("$url/game/$gameId/images"), headers: {
-      "Authorization": "Bearer $apiKey"
-    });
-    return res;
+  static Future<Map<String, dynamic>> uploadMedia(String gameId, Uint8List data) async {
+    _log("Uploading media for game with id: $gameId");
+    return await _apiService.uploadMedia("/game/$gameId/images", data);
+  }
+
+  static Future<Map<String, dynamic>> getMedias(String gameId) async {
+    _log("Getting medias for game with id: $gameId");
+    return await _apiService.get("/game/$gameId/images");
   }
 }
 
@@ -184,17 +139,15 @@ class CreateGameDto {
   });
 
   /// Convert the object to a json string.
-  String toJson() {
-    const json = JsonEncoder();
-    var res = json.convert({
+  Map<String, dynamic> toJson() {
+    return {
       "title": title,
       "tags": tags,
       "playTime": playTime,
       "gameType": gameType,
       "thumbnailUrl": thumbnailUrl,
       "contentGame": jsonDecode(contentGame),
-    });
-    return res;
+    };
   }
 }
 
@@ -218,9 +171,8 @@ class UpdateGameDto {
   });
 
   /// Convert the object to a json string.
-  String toJson() {
-    const json = JsonEncoder();
-    var res = json.convert({
+  Map<String, dynamic> toJson() {
+    return {
       "id": id,
       "title": title,
       "tags": tags,
@@ -228,7 +180,6 @@ class UpdateGameDto {
       "gameType": gameType,
       "thumbnailUrl": thumbnailUrl,
       "contentGame": jsonDecode(contentGame),
-    });
-    return res;
+    };
   }
 }
