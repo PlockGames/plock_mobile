@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:plock_mobile/models/component_fields/component_field_color.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';

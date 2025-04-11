@@ -24,7 +24,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2 # Use a stable version
         with:
-          flutter-version: "3.24.0" # Specify the exact version
+          flutter-version: "3.24.5" # Specify the exact version
 
       - name: Install dependencies
         run: flutter pub get
@@ -33,7 +33,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Run tests with coverage
-        run: flutter test # Generates coverage/lcov.info
+        run: flutter test --coverage # Generates coverage/lcov.info
 
       - name: Install lcov
         # Installs lcov which includes the genhtml tool
