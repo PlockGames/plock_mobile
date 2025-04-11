@@ -69,7 +69,7 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_page.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_scene_component.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
-          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_component.dart'  -o coverage/lcov.info
+                                            
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
