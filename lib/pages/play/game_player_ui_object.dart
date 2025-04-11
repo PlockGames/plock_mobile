@@ -27,7 +27,10 @@ class GamePlayerUiObject extends PositionComponent {
   List<ComponentType> eventComponents = [];
 
   /// js state, used to execute events.
-  JavascriptRuntime js = getJavascriptRuntime();
+  JavascriptRuntime js = getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
+
+  /// does the gameObject need to abort the event ?
+  bool needAbort = false;
 
   GamePlayerUiObject({
     required this.gameObject,
@@ -42,6 +45,7 @@ class GamePlayerUiObject extends PositionComponent {
 
     //await lua.openLibs();
     EventManager.registerEvents(js, plockGame, gameObject.id);
+    js.onMessage("getNeedAbort", (args) => needAbort);
 
     // Update the components
     gameObject.isPhysicsDirty = false;
@@ -50,6 +54,8 @@ class GamePlayerUiObject extends PositionComponent {
 
     // init events
     js.evaluate("let collider = \"\";");
+    js.evaluate("let colliderName = \"\";");
+    js.evaluate("let needAbort = false;");
 
     if (gameObject.enabled) {
       // Execute the start events
@@ -84,6 +90,7 @@ class GamePlayerUiObject extends PositionComponent {
         if (componentFlame.getComponentType() == null) {
           continue;
         }
+        componentFlame.getComponentType().updateDisplayUi(component, this);
         alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
       }
     }
@@ -192,30 +199,51 @@ class GamePlayerUiObject extends PositionComponent {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event, int collider, String colliderName) async {
+  void executeEvent(String event, int collider, String colliderName) async {
     if (!gameObject.enabled) {
       return;
     }
 
+    // add break in while loops
+    event = event.replaceAll("while (", "while (!sendMessage(\"getNeedAbort\", JSON.stringify([])) && ");
+
     // add collider to the event
-    event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
+    event =
+        "collider = $collider\n"
+        "colliderName = \"$colliderName\"\n"
+        "async function event() {\n"
+        "  $event\n"
+        "}\n"
+        "event();\n";
 
     //print(event);
 
-    JsEvalResult res = js.evaluate(event);
+    js.evaluateAsync(event);
 
-    if (res.rawResult != null) {
-      //print(event);
-      print(res);
+  }
+
+  Future<void> handlePromises() async {
+    while (true) {
+      js.executePendingJob();
+      await Future.delayed(const Duration(milliseconds: 1));
     }
   }
 
   void stopEvents() {
     try {
+      print("Stopping events");
+      needAbort = true;
       //js.dispose();
     } catch (e) {
       print("Game interrupted");
     }
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    print("GamePlayerUiObject removed");
+    stopEvents();
   }
 
 }

@@ -128,6 +128,7 @@ class _EditorPageState extends State<EditorPage> {
           contentGame: widget.game.toJson(),
         ));
         var json = upload;
+        print(json);
         final String uuid = json['data']['id'];
         widget.game.uuid = uuid;
       } else {

@@ -45,7 +45,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   image_picker: ^1.0.0
   flame_forge2d: ^0.18.2+3
-  flutter_js_plus: ^0.0.2
+  flutter_js_plus: ^0.0.4
   gal: ^2.3.1
 
 dev_dependencies:

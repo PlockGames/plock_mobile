@@ -51,6 +51,7 @@ class Game {
   /// Store the delta time between two frames.
   double deltaTime = 0;
 
+  /// The last touch position.
   Vector2 lastTouchPosition = Vector2(0, 0);
 
   /// The game player.

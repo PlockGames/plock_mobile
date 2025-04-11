@@ -373,14 +373,17 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     // add collider to the event
     event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
 
-    //print(event);
-
-    JsEvalResult res = js.evaluate(event);
-
-    if (res.rawResult != null) {
-      //print(event);
-      print(res);
-    }
+    js.evaluateAsync(event).then(
+      (res) {
+        if (res.rawResult != null) {
+          print(res);
+        }
+      },
+      onError: (error) {
+        print("Error in event: $error");
+        print(event);
+      },
+    );
   }
 
   void stopEvents() {

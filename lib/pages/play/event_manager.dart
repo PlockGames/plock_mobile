@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter_js_plus/flutter_js.dart';
+import 'package:flutter_js_plus/quickjs/ffi.dart';
 import 'package:lua_dardo_async/lua.dart';
 import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
@@ -200,31 +201,42 @@ class EventManager {
     String value = args[3].toString();
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
-      var componentType = object.components.firstWhere((element) => element.type == component);
-      for (int i = 0; i < componentType.fields.length; i++) {
-        if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        object = game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+        component = "ComponentUi" + component.split("Component").last;
+      }
 
-          if (componentType.fields.values.elementAt(i) is ComponentFieldNumber) {
-            componentType.fields.values.elementAt(i).value = double.parse(value);
-            game.isDirty = true;
-          } else if (componentType.fields.values.elementAt(i) is ComponentFieldText) {
-            componentType.fields.values.elementAt(i).value = value;
-            game.isDirty = true;
-          } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
-            value = "ff${value!.substring(4)}";
-            Color color = Color(int.parse(value, radix: 16));
-            componentType.fields.values.elementAt(i).value = color;
-            game.isDirty = true;
-          } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
-            componentType.fields.values.elementAt(i).value = value!;
-            game.isDirty = true;
-          } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
-            componentType.fields.values.elementAt(i).value[0] = value!;
-            game.isDirty = true;
+        if (object == null) {
+          print("Object not found");
+          return;
+        }
+
+        var componentType = object.components.firstWhere((element) => element.type == component);
+
+        for (int i = 0; i < componentType.fields.length; i++) {
+          if (componentType.fields.keys.elementAt(i) == property.toLowerCase()) {
+
+            if (componentType.fields.values.elementAt(i) is ComponentFieldNumber) {
+              componentType.fields.values.elementAt(i).value = double.parse(value);
+              game.isDirty = true;
+            } else if (componentType.fields.values.elementAt(i) is ComponentFieldText) {
+              componentType.fields.values.elementAt(i).value = value;
+              game.isDirty = true;
+            } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
+              value = "ff${value!.substring(4)}";
+              Color color = Color(int.parse(value, radix: 16));
+              componentType.fields.values.elementAt(i).value = color;
+              game.isDirty = true;
+            } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
+              componentType.fields.values.elementAt(i).value = value!;
+              game.isDirty = true;
+            } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
+              componentType.fields.values.elementAt(i).value[0] = value!;
+              game.isDirty = true;
+            }
           }
         }
-      }
     } catch (e) {
       print("Error(setComponentValue): $e");
     }

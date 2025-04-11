@@ -6,6 +6,7 @@ import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
 import '../../pages/play/game_player_object.dart';
+import '../../pages/play/game_player_ui_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../component_fields/component_field_number.dart';
 import '../component_flame/component_flame_text.dart';
@@ -102,7 +103,7 @@ class ComponentUiText extends ComponentType {
   }
 
   @override
-  Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
+  Future<GamePlayerUiObject> updateDisplayUi(Component? component, GamePlayerUiObject parent) async {
     if (component is ComponentFlameText) {
       component.text = fields["text"]!.value;
       component.textRenderer = TextPaint(

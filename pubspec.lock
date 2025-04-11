@@ -327,10 +327,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_js_plus
-      sha256: b86526acb8cfcb2d935da805c3641bdab62bc4906892b16d4060a284006c4c31
+      sha256: ac3b468186f333a1725e6c097edbfd6fad6f5dab878ae783fed117d44752a064
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.4"
   flutter_lints:
     dependency: "direct dev"
     description:

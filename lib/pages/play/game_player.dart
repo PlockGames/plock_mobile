@@ -44,6 +44,9 @@ class GamePlayer extends Forge2DGame {
   /// The loading screen component
   Component? loadingScreen;
 
+  /// do the game need to abort the events ?
+  bool needAbort = false;
+
   GamePlayer({required this.game, this.isTest = false, this.exitGame, this.uploadGame});
 
   void exitGameCallback() {
@@ -51,6 +54,7 @@ class GamePlayer extends Forge2DGame {
       GamePlayerObject gameObject = (object as GamePlayerObject);
       gameObject.stopEvents();
     }
+    needAbort = true;
     exitGame!();
   }
 
@@ -212,6 +216,22 @@ class GamePlayer extends Forge2DGame {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+  }
+
+  @override
+  void onDetach() {
+    super.onDetach();
+    needAbort = true;
+    for (var object in components) {
+      if (object is GamePlayerObject) {
+        object.stopEvents();
+      }
+    }
+    for (var object in uiComponents) {
+      if (object is GamePlayerUiObject) {
+        object.stopEvents();
+      }
+    }
   }
 
 }

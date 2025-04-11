@@ -6,6 +6,7 @@ import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';
 
+import '../../pages/play/game_player_ui_object.dart';
 import 'media.dart';
 
 /// A component that can be added to a game object.
@@ -60,6 +61,10 @@ class ComponentType {
   }
 
   Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
+    return parent;
+  }
+
+  Future<GamePlayerUiObject> updateDisplayUi(Component? component, GamePlayerUiObject parent) async {
     return parent;
   }
 
