@@ -33,7 +33,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Run tests with coverage
-        run: flutter test --coverage # Generates coverage/lcov.info
+        run: flutter test # Generates coverage/lcov.info
 
       - name: Install lcov
         # Installs lcov which includes the genhtml tool
@@ -67,6 +67,13 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_page.dart'  -o coverage/lcov.info
+          
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_scene_component.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_component.dart'  -o coverage/lcov.info
+          lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
           
           lcov --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
