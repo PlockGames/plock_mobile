@@ -61,7 +61,6 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_painter.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_top_bar.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart' -o coverage/lcov.info
-          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
@@ -69,12 +68,10 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_page.dart'  -o coverage/lcov.info
-          
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_scene_component.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_component.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
-          
           lcov --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
