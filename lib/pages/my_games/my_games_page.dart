@@ -8,6 +8,8 @@ import 'package:plock_mobile/services/api.dart';
 import '../../models/games/game.dart';
 import 'package:http/http.dart' as http;
 
+import '../../services/auth_service.dart';
+
 /// The page that display the games created by the user
 class MyGamesPage extends StatefulWidget {
   const MyGamesPage({super.key});
@@ -59,8 +61,13 @@ class _MyGamesPageState extends State<MyGamesPage> {
       }
 
 
+      final profile = await Api.getUserProfile();
 
-      if (game["creatorId"] == dotenv.env['USER_ID']) {
+      if (profile["status"] == false) {
+        return [];
+      }
+
+      if (game["creatorId"] == profile['data']['id']) {
         allGameWithData.add(loadedGame);
       }
     }
