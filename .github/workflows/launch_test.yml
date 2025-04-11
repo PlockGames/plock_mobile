@@ -60,7 +60,6 @@ jobs:
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_painter.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_top_bar.dart' -o coverage/lcov.info
-          lcov --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart' -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
           lcov --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
