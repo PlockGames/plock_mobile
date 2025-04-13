@@ -29,6 +29,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   /// js state, used to execute events.
   JavascriptRuntime js = getJavascriptRuntime();
 
+  /// does the gameObject need to abort the event ?
+  bool needAbort = false;
+
   /// A list of all untreated start contacts.
   List<Contact> beginContacts = [];
 
@@ -95,6 +98,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
     //await lua.openLibs();
     EventManager.registerEvents(js, plockGame, gameObject.id);
+    js.onMessage("getNeedAbort", (args) => needAbort);
+    handlePromises();
 
     // Update the components
     gameObject.isPhysicsDirty = true;
@@ -104,6 +109,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
     // init events
     js.evaluate("let collider = \"\";");
+    js.evaluate("let colliderName = \"\";");
+    js.evaluate("let needAbort = false;");
 
     // Execute the start events
     if (gameObject.enabled) {
@@ -370,27 +377,40 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       return;
     }
 
-    // add collider to the event
-    event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
+    // add break in while loops
+    event = event.replaceAll("while (", "while (!sendMessage(\"getNeedAbort\", JSON.stringify([])) && ");
+
+    // add collider to the event an wrap it in a function
+    event =
+    "collider = $collider\n"
+        "colliderName = \"$colliderName\"\n"
+        "async function event() {\n"
+        "  $event\n"
+        "}\n"
+        "event();\n";
 
     js.evaluateAsync(event).then(
-      (res) {
-        if (res.rawResult != null) {
-          print(res);
+          (JsEvalResult jsResult) {
+        if (jsResult.isError) {
+          print("Error in event: ${jsResult.stringResult}");
         }
       },
-      onError: (error) {
-        print("Error in event: $error");
-        print(event);
-      },
-    );
+    ).catchError((error) {
+      print("Error in event: $error");
+    });
   }
 
   void stopEvents() {
-    try {
-      //js.dispose();
-    } catch (e) {
-      print("Game interrupted");
+    needAbort = true;
+  }
+
+  Future<void> handlePromises() async {
+    while (true) {
+      js.executePendingJob();
+      if (needAbort) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 1));
     }
   }
 

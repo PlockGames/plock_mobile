@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blockly_plus/flutter_blockly_plus.dart';
@@ -75,7 +77,6 @@ class ComponentFieldBlockly extends ComponentField {
 
     void onChange(Blocky.BlocklyData data) {
       debugData_ = data.toolbox!;
-      //print("debug: " + _value.toString());
       if (data.json == null) {
         _value = initialJson;
       } else {
@@ -150,12 +151,24 @@ class ComponentFieldBlockly extends ComponentField {
     }
 
     json = "\"$json\"";
+
+    // add the json to allow editing
+    var json2 = jsonEncode(_value);
+
+    json = "{\"json\": $json2, \"js\": $json}";
+
     return json;
   }
 
   @override
   void updateFromJson(dynamic jsonVal) {
-    _value_js = jsonVal as String;
+    if (jsonVal == null) {
+      _value = initialJson;
+      _value_js = "";
+      return;
+    }
+    _value = jsonVal['json'] as Map<String, dynamic>;
+    _value_js = jsonVal['js'] as String;
   }
 
   @override

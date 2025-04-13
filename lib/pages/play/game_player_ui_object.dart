@@ -206,7 +206,7 @@ class GamePlayerUiObject extends PositionComponent {
     // add break in while loops
     event = event.replaceAll("while (", "while (!sendMessage(\"getNeedAbort\", JSON.stringify([])) && ");
 
-    // add collider to the event
+    // add collider to the event an wrap it in a function
     event =
         "collider = $collider\n"
         "colliderName = \"$colliderName\"\n"
