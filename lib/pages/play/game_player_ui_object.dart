@@ -54,7 +54,6 @@ class GamePlayerUiObject extends PositionComponent {
     // init events
     js.evaluate("let collider = \"\";");
     js.evaluate("let colliderName = \"\";");
-    js.evaluate("let needAbort = false;");
 
     if (gameObject.enabled) {
       // Execute the start events
@@ -84,6 +83,7 @@ class GamePlayerUiObject extends PositionComponent {
     // Update the components that are already instancied
     //print(this.children);
     for (var component in this.children) {
+      component.priority = gameObject.layer;
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
         if (componentFlame.getComponentType() == null) {
@@ -105,12 +105,13 @@ class GamePlayerUiObject extends PositionComponent {
             onDragEnd,
             onDragCancel);
           if (comp != null) {
+            comp.priority = gameObject.layer;
             add(comp);
             ComponentFlame componentFlame = comp as ComponentFlame;
             if (componentFlame.getComponentType() == null) {
               continue;
             }
-            ComponentType componentType = componentFlame.getComponentType()!;
+            ComponentType componentType = componentFlame.getComponentType();
           }
         }
     }

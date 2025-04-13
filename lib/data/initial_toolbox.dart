@@ -80,6 +80,8 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
 
+import '../models/component_fields/blocky/custom_blocks/system/change_scene.dart';
+
 /// The initial toolbox of the blockly.
 ///
 /// A list of all the blocks that can be used in the blockly.
@@ -182,7 +184,8 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_camera_get),
         ToolboxBlock(data: block_camera_set),
         ToolboxBlock(data: block_wait),
-        ToolboxBlock(data: block_touch_get)
+        ToolboxBlock(data: block_touch_get),
+        ToolboxBlock(data: block_change_scene),
       ]
   ),
   ToolboxCategory(

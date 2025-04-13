@@ -64,6 +64,7 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
       return;
     }
     currentFrame = ((currentFrame + 1) % animation.images.length);
+
     final String currentImageName = animation.images[currentFrame].name;
     try {
       final Media media = medias.firstWhere((element) => element.name == currentImageName);

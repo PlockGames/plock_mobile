@@ -223,7 +223,9 @@ class Editor extends Forge2DGame with DragCallbacks {
     }
 
     for (var object in uiObjects) {
-      camera.viewport.remove(object);
+      if (camera.viewport.contains(object)) {
+        camera.viewport.remove(object);
+      }
     }
 
     objects = [];

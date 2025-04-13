@@ -5,6 +5,7 @@ import 'package:plock_mobile/models/games/media.dart';
 import '../../pages/play/game_player.dart';
 import '../../pages/play/game_player_object.dart';
 import 'game_object.dart';
+import 'media/media_set.dart';
 import 'scene.dart' as Plock;
 
 /// A game.
@@ -217,7 +218,11 @@ class Game {
 
       var jsonMedias = json['medias'];
       for (var media in jsonMedias) {
-        game.medias.add(Media.fromJson(media));
+        if (media['isSet'] == true) {
+          game.medias.add(MediaSet.fromJson(media));
+        } else {
+          game.medias.add(Media.fromJson(media));
+        }
       }
 
       return game;

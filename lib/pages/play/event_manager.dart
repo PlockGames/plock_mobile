@@ -17,6 +17,7 @@ import '../../models/games/component_type.dart';
 import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 import '../../models/utils/Vector2.dart' as PVector2;
+import 'game_player_ui_object.dart';
 
 typedef EventAsync = Future<int> Function(LuaState lua);
 typedef Event = int Function(LuaState lua);
@@ -39,6 +40,7 @@ class EventManager {
       js.onMessage("setCameraValue", (args) => _setCameraValue(game, thisObjectId, args));
       js.onMessage("deltaTime", (args) => _deltaTime(game, thisObjectId, args));
       js.onMessage("getTouch", (args) => _getTouch(game, thisObjectId, args));
+      js.onMessage("changeScene", (args) => _changeScene(game, thisObjectId, args));
       // Objects
       js.onMessage("thisObject", (args) => _thisObject(game, thisObjectId, args));
       js.onMessage("lastObject", (args) => _lastObject(game, thisObjectId, args));
@@ -84,6 +86,42 @@ class EventManager {
   static Future<void> _wait(Game game, int thisObjectId, dynamic args) async {
     int time = args[0];
     await Future.delayed(Duration(milliseconds: time));
+  }
+
+  /// Change the scene.
+  static void _changeScene(Game game, int thisObjectId, dynamic args) {
+    String sceneName = args[0];
+    int sceneIndex = game.scenes.indexWhere((element) => element.name == sceneName);
+    if (sceneIndex != -1) {
+      game.currentSceneIndex = sceneIndex;
+
+      for (var object in game.gamePlayer!.components) {
+        if (object is GamePlayerObject) {
+          game.gamePlayer!.world.remove(object);
+        }
+      }
+      game.gamePlayer!.components.clear();
+
+      for (var object in game.gamePlayer!.uiComponents) {
+        if (object is GamePlayerUiObject) {
+          game.gamePlayer!.camera.viewport.remove(object);
+        }
+      }
+      game.gamePlayer!.uiComponents.clear();
+
+      game.gamePlayer!.components.addAll(game.scenes[sceneIndex].objects.map((e) => GamePlayerObject(gameObject: e, plockGame: game)));
+      game.gamePlayer!.uiComponents.addAll(game.scenes[sceneIndex].uiObjects.map((e) => GamePlayerUiObject(gameObject: e, plockGame: game)));
+
+      game.gamePlayer!.components.forEach((element) {
+        game.gamePlayer!.world.add(element);
+      });
+
+      game.gamePlayer!.uiComponents.forEach((element) {
+        game.gamePlayer!.camera.viewport.add(element);
+      });
+
+      game.isDirty = true;
+    }
   }
 
   static String? _rgbToColor(Game game, int thisObjectId, dynamic args) {

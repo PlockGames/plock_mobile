@@ -27,6 +27,7 @@ class UploadButton extends TextComponent with TapCallbacks {
         fontSize: 20.0,
       ),
     );
+    this.priority = 10000;
   }
 
   @override

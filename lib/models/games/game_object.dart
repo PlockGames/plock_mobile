@@ -78,6 +78,7 @@ class GameObject {
     String json = "{";
     json += "\"id\": $id,";
     json += "\"name\": \"$name\",";
+    json += "\"layer\": $layer,";
     json += "\"components\": [";
     components.forEach((element) {
       json += element.toJson();
@@ -96,6 +97,7 @@ class GameObject {
   static GameObject fromJson(Map<String, dynamic> json) {
     GameObject gameObject = GameObject(id: json['id'], name: json['name']);
     gameObject.position = Vector2.fromJson(json['position']);
+    gameObject.layer = json['layer'];
     for (var component in json['components']) {
       var componentModel = ComponentList.getByName(component["type"]);
       if (componentModel == null) {

@@ -174,7 +174,8 @@ class _EditorPageState extends State<EditorPage> {
 
         print(finalRes['data']);
 
-        Navigator.popUntil(context, ModalRoute.withName('/'));
+        //Navigator.popUntil(context, ModalRoute.withName('/'));
+        //Navigator.pop(context);
 
     };
   }

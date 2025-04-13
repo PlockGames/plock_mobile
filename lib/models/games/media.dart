@@ -81,6 +81,7 @@ class Media {
   String toJson() {
     return """
     {
+      "isSet": false,
       "id": $id,
       "name": "$name",
       "uuid": "$uuid"

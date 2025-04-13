@@ -59,4 +59,31 @@ class MediaSet extends Media {
 
     return set;
   }
+
+  @override
+  String toJson() {
+    String json = "{";
+    json += "\"isSet\": true,";
+    json += "\"id\": $id,";
+    json += "\"name\": \"$name\",";
+    json += "\"uuid\": \"$uuid\",";
+    json += "\"tileWidth\": $tileWidth,";
+    json += "\"tileHeight\": $tileHeight,";
+    json += "\"offsetX\": $offsetX,";
+    json += "\"offsetY\": $offsetY,";
+    json += "\"gapX\": $gapX,";
+    json += "\"gapY\": $gapY";
+    json += "}";
+    return json;
+  }
+
+  @override
+  MediaSet.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+    tileWidth = json['tileWidth'];
+    tileHeight = json['tileHeight'];
+    offsetX = json['offsetX'];
+    offsetY = json['offsetY'];
+    gapX = json['gapX'];
+    gapY = json['gapY'];
+  }
 }

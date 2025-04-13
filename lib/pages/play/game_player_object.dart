@@ -110,7 +110,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     // init events
     js.evaluate("let collider = \"\";");
     js.evaluate("let colliderName = \"\";");
-    js.evaluate("let needAbort = false;");
 
     // Execute the start events
     if (gameObject.enabled) {
