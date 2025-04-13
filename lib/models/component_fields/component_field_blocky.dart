@@ -144,7 +144,7 @@ class ComponentFieldBlockly extends ComponentField {
         i++;
       }
       if (json[i] == "\n") {
-        json = "${json.substring(0, i-1)};${json.substring(i+1)}";
+        json = "${json.substring(0, i)};${json.substring(i)}";
         i++;
       }
     }

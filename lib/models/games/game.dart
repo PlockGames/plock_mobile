@@ -193,6 +193,8 @@ class Game {
     json += "]";
     json += "}";
 
+    json = json.replaceAll("\n", "");
+
     print(json);
     return json;
   }

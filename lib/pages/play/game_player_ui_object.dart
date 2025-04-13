@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter_js_plus/flutter_js.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
@@ -27,7 +26,7 @@ class GamePlayerUiObject extends PositionComponent {
   List<ComponentType> eventComponents = [];
 
   /// js state, used to execute events.
-  JavascriptRuntime js = getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
+  JavascriptRuntime js = getJavascriptRuntime(forceJavascriptCoreOnAndroid: false);
 
   /// does the gameObject need to abort the event ?
   bool needAbort = false;
@@ -43,9 +42,9 @@ class GamePlayerUiObject extends PositionComponent {
 
     super.position = Vector2(gameObject.position.x, gameObject.position.y);
 
-    //await lua.openLibs();
     EventManager.registerEvents(js, plockGame, gameObject.id);
     js.onMessage("getNeedAbort", (args) => needAbort);
+    handlePromises();
 
     // Update the components
     gameObject.isPhysicsDirty = false;
@@ -216,33 +215,34 @@ class GamePlayerUiObject extends PositionComponent {
         "}\n"
         "event();\n";
 
-    //print(event);
-
-    js.evaluateAsync(event);
-
+    js.evaluateAsync(event).then(
+      (JsEvalResult jsResult) {
+        if (jsResult.isError) {
+          print("Error in event: ${jsResult.stringResult}");
+        }
+      },
+    ).catchError((error) {
+      print("Error in event: $error");
+    });
   }
 
   Future<void> handlePromises() async {
     while (true) {
       js.executePendingJob();
+      if (needAbort) {
+        break;
+      }
       await Future.delayed(const Duration(milliseconds: 1));
     }
   }
 
   void stopEvents() {
-    try {
-      print("Stopping events");
-      needAbort = true;
-      //js.dispose();
-    } catch (e) {
-      print("Game interrupted");
-    }
+    needAbort = true;
   }
 
   @override
   void onRemove() {
     super.onRemove();
-    print("GamePlayerUiObject removed");
     stopEvents();
   }
 

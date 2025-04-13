@@ -31,7 +31,6 @@ class ApiService {
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
       );
-
       return _processResponse(response);
     } catch (e) {
       return {
