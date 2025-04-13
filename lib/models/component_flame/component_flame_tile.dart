@@ -17,19 +17,12 @@ class ComponentFlameTile extends SpriteComponent with TapCallbacks, DragCallback
   /// Callback : When the drag is cancelled.
   final Function onDragCancelCallback;
 
-  /// the tile X position in the tilemap
-  int tileX;
-  /// the tile Y position in the tilemap
-  int tileY;
-
   ComponentFlameTile({
     required this.onDragStartCallback,
     required this.onTapeUpCallback,
     required this.onDragCancelCallback,
     required this.onDragEndCallback,
     required this.onDragUpdateCallback,
-    required this.tileX,
-    required this.tileY,
     super.position,
     super.size,
     super.anchor,

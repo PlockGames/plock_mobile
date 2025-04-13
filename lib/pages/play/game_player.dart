@@ -169,10 +169,10 @@ class GamePlayer extends Forge2DGame {
 
       remove(loadingScreen!);
       isAllObjectsLoaded = true;
+      world.gravity = Vector2(0, 10);
     } else {
 
       game.deltaTime = dt;
-      world.gravity = Vector2(0, 10);
 
       // If game is dirty, update all the components and objects
       if (game.isDirty) {

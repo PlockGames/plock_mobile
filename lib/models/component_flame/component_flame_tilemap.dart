@@ -44,7 +44,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
   List<Sprite> sprites = [];
 
   /// List of all the sprite components of each tiles
-  List<SpriteComponent> spriteComponents = [];
+  late SpriteComponent spriteComponent;
 
   /// List of all the collisions of the tilemap
   List<bool> collisions = [];
@@ -155,7 +155,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
     this.size = Vector2(tilemap.width * initScale.x, tilemap.height * initScale.y);
 
     Sprite map = await convertTilemapToImage();
-    final ComponentFlameTile spriteComponent = ComponentFlameTile(
+    spriteComponent = ComponentFlameTile(
       onDragCancelCallback: onDragCancelCallback,
       onDragEndCallback: onDragEndCallback,
       onDragStartCallback: onDragStartCallback,
@@ -164,11 +164,8 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
       priority: 0,
       sprite: map,
       size: Vector2(tilemap.width * initScale.x, tilemap.height * initScale.y),
-      tileX: 0,
-      tileY: 0,
       anchor: Anchor.topLeft,
     );
-    spriteComponents.add(spriteComponent);
 
     for (int i = 0; i < tilemap.map.length; i++) {
       for (int x = 0; x < tilemap.width; x++) {
@@ -282,10 +279,8 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
       return false;
     }
 
-    for (final spriteComponent in spriteComponents) {
-      if (!spriteComponent.isLoaded) {
-        return false;
-      }
+    if (!spriteComponent.isLoaded) {
+      return false;
     }
 
     return true;

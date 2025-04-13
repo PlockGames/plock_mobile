@@ -152,6 +152,16 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       }
     }
 
+    // update the components that are already instancied in world
+    for (var component in this.world.children) {
+      if (component is ComponentFlame) {
+        ComponentFlame componentFlame = component as ComponentFlame;
+        ComponentType componentType = componentFlame.getComponentType();
+        this.bodyDef = (await componentType.updateDisplay(component, this)).bodyDef;
+        alreadyDisplayed.add(componentFlame.getComponentType().uuid);
+      }
+    }
+
     // Add the new components
     for (var component in gameObject.components) {
         if (!alreadyDisplayed.contains(component.uuid)) {
@@ -162,6 +172,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
             onDragUpdate,
             onDragEnd,
             onDragCancel);
+          //print(comp);
           if (comp != null) {
             if (comp is BodyComponent) {
               comp.bodyDef!.position = Vector2(gameObject.position.x, gameObject.position.y);
