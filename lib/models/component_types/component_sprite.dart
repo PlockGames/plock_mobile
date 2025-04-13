@@ -1,7 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
-import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
 import '../component_fields/component_field_number.dart';
@@ -68,7 +66,7 @@ class ComponentSprite extends ComponentType {
         onDragCancelCallback: onDragCancelCallback,
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
-        animation: animation!,
+        animation: animation,
         medias: medias,
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
@@ -106,7 +104,7 @@ class ComponentSprite extends ComponentType {
         onDragCancelCallback: onDragCancelCallback,
         onDragEndCallback: onDragEndCallback,
         onDragUpdateCallback: onDragUpdateCallback,
-        animation: animation!,
+        animation: animation,
         medias: medias,
         initScale: Vector2(
             fields["size"]!.value.toDouble(), fields["size"]!.value.toDouble()),
@@ -120,28 +118,11 @@ class ComponentSprite extends ComponentType {
   @override
   Future<GamePlayerObject> updateDisplay(Component? component,
       GamePlayerObject parent) async {
-    if (component is ComponentFlameImage) {
 
-      if (fields['texture'] != null) {
-        late Media? media;
-        try {
-          media =
-              parent.plockGame.medias.firstWhere((element) => element.name ==
-                  fields['texture']!.value);
-        } catch (e) {
-          media = null;
-        }
-        if (media != null) {
-          component.image = media.file;
-        }
-        if (component.image != null) {
-          var img = await decodeImageFromList(
-              await component.image!.readAsBytes());
-          component.sprite = Sprite(img);
-        }
-      } else {
-        component.sprite = null;
-      }
+    if (component is ComponentFlameSprite) {
+
+      ComponentFlameSprite sprite = component;
+      sprite.animation = fields["animator"]!.value.firstWhere((element) => element.name == fields["current"]!.value);
     }
     return parent;
   }

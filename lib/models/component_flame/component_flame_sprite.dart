@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/cupertino.dart';
+// ignore: unused_import
 import 'package:flutter/foundation.dart';
 import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
@@ -28,7 +29,7 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
   final ComponentType componentType;
 
   /// The texture of the image.
-  final PlockSpriteAnimation animation;
+  PlockSpriteAnimation animation;
 
   /// The scale of the image.
   Vector2 initScale;

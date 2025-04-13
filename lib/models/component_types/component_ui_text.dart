@@ -5,7 +5,6 @@ import 'package:flame/text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 
-import '../../pages/play/game_player_object.dart';
 import '../../pages/play/game_player_ui_object.dart';
 import '../component_fields/component_field_color.dart';
 import '../component_fields/component_field_number.dart';

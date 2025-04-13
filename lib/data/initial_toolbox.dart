@@ -80,6 +80,7 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
 
+import '../models/component_fields/blocky/custom_blocks/objects/sprite_change.dart';
 import '../models/component_fields/blocky/custom_blocks/system/change_scene.dart';
 
 /// The initial toolbox of the blockly.
@@ -207,6 +208,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_asset_spawn),
         ToolboxBlock(data: block_object_add_force),
         ToolboxBlock(data: block_object_set_force),
+        ToolboxBlock(data: block_sprite_change),
       ]
   ),
   ToolboxCategory(

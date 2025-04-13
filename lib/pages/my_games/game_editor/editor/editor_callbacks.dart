@@ -3,7 +3,6 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dar
 
 import '../../../../models/games/scene.dart';
 import 'object_component.dart';
-import 'object_scene_component.dart';
 
 class EditorCallbacks {
   final Function(ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) openEditor;

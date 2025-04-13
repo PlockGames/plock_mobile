@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
 import 'edit_component_page.dart';

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +132,7 @@ class _EditorPageState extends State<EditorPage> {
         widget.game.uuid = uuid;
       } else {
         // Update the game
-        var upload = await Api.updateGame(
+        await Api.updateGame(
             widget.game.uuid,
             UpdateGameDto(
               title: "${widget.game.name}",

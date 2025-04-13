@@ -41,17 +41,10 @@ class PlayPageState extends State<PlayPage> {
       var jsonResponse = rep['data'];
       var likes = jsonResponse['likes'];
 
-      var response = await Api.getGameLike(game.uuid);
-      dynamic decoded = response['data'];
-      bool isLiked = decoded['totalLikes'] > 0;
       setState(() {
         favoriteStatus[game.uuid] = jsonResponse['hasLiked'];
         countLike[game.uuid] = likes.toString();
       });
-    //  print("-------------is liked ?--------------");
-   //   print(favoriteStatus);
-   //c   print(game.id);
-   //   print("-------------is liked ?--------------");
     }
   }
 

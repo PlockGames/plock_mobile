@@ -59,6 +59,7 @@ class EventManager {
       js.onMessage("setVariableValue", (args) => _setVariableValue(game, thisObjectId, args));
       js.onMessage("getListValue", (args) => _getListValue(game, thisObjectId, args));
       js.onMessage("setListValue", (args) => _setListValue(game, thisObjectId, args));
+      js.onMessage("changeSprite", (args) => _changeSprite(game, thisObjectId, args));
   }
 
   /// Return delta time
@@ -262,15 +263,15 @@ class EventManager {
               componentType.fields.values.elementAt(i).value = value;
               game.isDirty = true;
             } else if (componentType.fields.values.elementAt(i) is ComponentFieldColour) {
-              value = "ff${value!.substring(4)}";
+              value = "ff${value.substring(4)}";
               Color color = Color(int.parse(value, radix: 16));
               componentType.fields.values.elementAt(i).value = color;
               game.isDirty = true;
             } else if (componentType.fields.values.elementAt(i) is ComponentFieldDropDown) {
-              componentType.fields.values.elementAt(i).value = value!;
+              componentType.fields.values.elementAt(i).value = value;
               game.isDirty = true;
             } else if (componentType.fields.values.elementAt(i) is ComponentFieldBlockly) {
-              componentType.fields.values.elementAt(i).value[0] = value!;
+              componentType.fields.values.elementAt(i).value[0] = value;
               game.isDirty = true;
             }
           }
@@ -309,7 +310,7 @@ class EventManager {
       ComponentType componentType = componentTypeModel.instance();
 
       if (componentType is ComponentEvent) {
-        componentType.fields['name']!.value = name!;
+        componentType.fields['name']!.value = name;
       }
       object.components.add(componentType);
     } catch (e) {
@@ -336,7 +337,6 @@ class EventManager {
       String property = args[1];
 
       try {
-        GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
         List<Component> components = game.gamePlayer!.components;
         GamePlayerObject? gameObject;
         for (Component component in components) {
@@ -418,6 +418,21 @@ class EventManager {
         object.velocity = PVector2.Vector2(object.velocity?.x ?? 0, value.toDouble());
         game.isDirty = true;
       }
+    } catch (e) {
+      print("Error(setObjectValue): $e");
+    }
+  }
+
+  static void _changeSprite(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[1];
+    String name = args[0];
+
+    try {
+      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) =>
+      element.id == objectId);
+      var componentType = object.components.firstWhere((element) => element.type == "ComponentSprite");
+      componentType.fields["current"]!.value = name;
+      game.isDirty = true;
     } catch (e) {
       print("Error(setObjectValue): $e");
     }

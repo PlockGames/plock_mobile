@@ -1,6 +1,5 @@
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import '../../../../models/games/scene.dart';
 import 'object_component.dart';

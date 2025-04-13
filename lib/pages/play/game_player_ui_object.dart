@@ -86,11 +86,8 @@ class GamePlayerUiObject extends PositionComponent {
       component.priority = gameObject.layer;
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
-        if (componentFlame.getComponentType() == null) {
-          continue;
-        }
         componentFlame.getComponentType().updateDisplayUi(component, this);
-        alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
+        alreadyDisplayed.add(componentFlame.getComponentType().uuid);
       }
     }
 
@@ -107,11 +104,6 @@ class GamePlayerUiObject extends PositionComponent {
           if (comp != null) {
             comp.priority = gameObject.layer;
             add(comp);
-            ComponentFlame componentFlame = comp as ComponentFlame;
-            if (componentFlame.getComponentType() == null) {
-              continue;
-            }
-            ComponentType componentType = componentFlame.getComponentType();
           }
         }
     }

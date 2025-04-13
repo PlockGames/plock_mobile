@@ -3,7 +3,11 @@ import 'package:flame/components.dart';
 import 'package:plock_mobile/models/component_types/component_circle.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_circle.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
+import 'package:plock_mobile/models/games/game.dart';
+import 'package:plock_mobile/models/games/game_object.dart';
 import 'dart:ui';
+
+import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 void main() {
   group('ComponentCircle Tests', () {
@@ -30,6 +34,7 @@ void main() {
     test('should return a valid DisplayComponents', () {
       final component = ComponentCircle();
       final displayComponent = component.getDisplayComponent(
+              [],
               () {},
               (details) {},
               (details) {},
@@ -43,8 +48,12 @@ void main() {
     });
 
     test('should update display correctly', () {
+      final gameObject = GameObject(id: 0, name: 'object');
+      final Game game = Game(name: 'game');
+      final GamePlayerObject gamePlayerObject = GamePlayerObject(gameObject: gameObject, plockGame: game);
       final component = ComponentCircle();
       final displayComponent = component.getGameDisplayComponent(
+              [],
               () {},
               (details) {},
               (details) {},
@@ -54,7 +63,7 @@ void main() {
 
       component.fields['radius']!.value = 30.0;
       component.fields['color']!.value = const Color(0xff0000ff);
-      component.updateDisplay(displayComponent);
+      component.updateDisplay(displayComponent, gamePlayerObject);
 
       expect(displayComponent.radius, 30.0);
       expect(displayComponent.paint.color, const Color(0xff0000ff));

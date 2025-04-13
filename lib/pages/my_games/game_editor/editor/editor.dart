@@ -101,12 +101,10 @@ class Editor extends Forge2DGame with DragCallbacks {
       }
 
       for (var object in objects) {
-        if (object is ObjectSceneComponent) {
-          if (!world.contains(object)) {
-            world.add(object);
-          }
+        if (!world.contains(object)) {
+          world.add(object);
         }
-      }
+            }
     }
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/paint/paint_canvas_painter.dart';
 
 class PaintBar extends StatelessWidget {
 

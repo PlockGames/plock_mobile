@@ -1,14 +1,7 @@
-import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:plock_mobile/models/games/component_flame.dart';
-import 'package:plock_mobile/models/games/component_type.dart';
 
-import '../component_fields/image/media_select.dart';
-import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
 class ComponentFlameTile extends SpriteComponent with TapCallbacks, DragCallbacks {

@@ -9,7 +9,7 @@ import 'package:plock_mobile/models/component_types/component_variable.dart';
 void main() {
   test('Should return all components in a list', () {
 
-    final components = ComponentList.get();
+    const components = ComponentList;
 
     expect(components, isMap);
 

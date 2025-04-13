@@ -22,7 +22,7 @@ void main() {
     });
 
     test('should create a Blockly Field with values', () {
-      ComponentFieldBlockly componentFieldBlockly = ComponentFieldBlockly(value: {'blocks': {'languageVersion': 0, 'blocks': ["myblock"]}}, value_lua: "test");
+      ComponentFieldBlockly componentFieldBlockly = ComponentFieldBlockly(value: {'blocks': {'languageVersion': 0, 'blocks': ["myblock"]}}, value_js: "test");
       List values = componentFieldBlockly.value;
 
       expect(componentFieldBlockly, isNotNull);

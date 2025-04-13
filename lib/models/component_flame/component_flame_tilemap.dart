@@ -114,6 +114,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
 
     final ui.Image image = await recorder.endRecording().toImage((tilemap.width * initScale.x * tileSize).toInt(), (tilemap.height * initScale.y * tileSize).toInt());
     Sprite sprite = Sprite(image);
+    sprites.clear();
     return sprite;
   }
 
@@ -173,7 +174,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
       for (int x = 0; x < tilemap.width; x++) {
         for (int y = 0; y < tilemap.height; y++) {
           final int tile = tilemap.map[i][x][y];
-          if (tile < 0 || tile >= sprites.length) {
+          if (tile < 0 || tile >= collisions.length) {
             continue;
           }
 
@@ -198,31 +199,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
             bodyComponents.add(bodyComponent);
             bodyComponent.bodyDef!.position += Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
             world.add(bodyComponent);
-            //add(bodyComponent);
-          } else {
-            final BodyComponent bodyComponent = BodyComponent(
-              fixtureDefs: [
-                FixtureDef(PolygonShape()..setAsBoxXY(initScale.x + 0.005, initScale.y + 0.005),
-                  restitution: 0.0,
-                  density: 1.0,
-                  friction: 0.0,
-                  isSensor: true,
-                  userData: Vector2(x.toDouble(), y.toDouble()),
-                ),
-              ],
-              bodyDef: BodyDef(
-                position: Vector2(x * initScale.x, y * initScale.y),
-                angle: 0.0,
-                type: BodyType.static,
-              ),
-              renderBody: false,
-            );
-            bodyComponents.add(bodyComponent);
-            bodyComponent.bodyDef!.position += Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
-            world.add(bodyComponent);
           }
-
-
         }
       }
     }

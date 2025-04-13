@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'dart:ui';
 
 import 'package:flame/components.dart';

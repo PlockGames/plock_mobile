@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../component_fields/image/LoadedImage.dart';
-import '../component_fields/image/media_select.dart';
 import '../utils/Vector2.dart';
 import 'media/media_set.dart';
 

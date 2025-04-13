@@ -146,12 +146,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     for (var component in this.children) {
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
-        if (componentFlame.getComponentType() == null) {
-          continue;
-        }
-        ComponentType componentType = componentFlame.getComponentType()!;
+        ComponentType componentType = componentFlame.getComponentType();
         this.bodyDef = (await componentType.updateDisplay(component, this)).bodyDef;
-        alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
+        alreadyDisplayed.add(componentFlame.getComponentType().uuid);
       }
     }
 
@@ -173,10 +170,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
               add(comp);
             }
             ComponentFlame componentFlame = comp as ComponentFlame;
-            if (componentFlame.getComponentType() == null) {
-              continue;
-            }
-            ComponentType componentType = componentFlame.getComponentType()!;
+            ComponentType componentType = componentFlame.getComponentType();
             this.bodyDef = (await componentType.updateDisplay(comp, this)).bodyDef;
           }
         }
