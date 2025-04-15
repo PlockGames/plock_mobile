@@ -249,7 +249,9 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
   void onRemove() {
     super.onRemove();
     for (final bodyComponent in bodyComponents) {
-      world.remove(bodyComponent);
+      if (world.children.contains(bodyComponent)) {
+        world.remove(bodyComponent);
+      }
     }
   }
 

@@ -96,7 +96,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       ),
     ];
 
-    //await lua.openLibs();
     EventManager.registerEvents(js, plockGame, gameObject.id);
     js.onMessage("getNeedAbort", (args) => needAbort);
     handlePromises();
@@ -110,6 +109,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     // init events
     js.evaluate("let collider = \"\";");
     js.evaluate("let colliderName = \"\";");
+    js.evaluate("let params = [];");
 
     // Execute the start events
     if (gameObject.enabled) {
@@ -142,8 +142,9 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
     List<String> alreadyDisplayed = [];
 
-    // Update the components that are already instancied
-    for (var component in this.children) {
+    // Update the components that are already instanced
+    for (int i = 0; i < this.children.length; i++) {
+      var component = this.children.elementAt(i);
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
         ComponentType componentType = componentFlame.getComponentType();
@@ -152,7 +153,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       }
     }
 
-    // update the components that are already instancied in world
+    // update the components that are already instanced in world
     for (var component in this.world.children) {
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
@@ -172,7 +173,6 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
             onDragUpdate,
             onDragEnd,
             onDragCancel);
-          //print(comp);
           if (comp != null) {
             if (comp is BodyComponent) {
               comp.bodyDef!.position = Vector2(gameObject.position.x, gameObject.position.y);
@@ -182,7 +182,12 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
             }
             ComponentFlame componentFlame = comp as ComponentFlame;
             ComponentType componentType = componentFlame.getComponentType();
-            this.bodyDef = (await componentType.updateDisplay(comp, this)).bodyDef;
+            try {
+              final updatedThis = await componentType.updateDisplay(comp, this);
+              this.bodyDef = updatedThis.bodyDef;
+            } catch (e) {
+              plockGame.isDirty = true;
+            }
           }
         }
     }
@@ -200,32 +205,42 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   void updatePhysic() {
-    if (gameObject.isPhysicsDirty && body.isAwake) {
-      gameObject.isPhysicsDirty = false;
-      Vector2 oldPos = this.body.position;
-      double oldAngle = this.body.angle;
-      if (gameObject.isPositionDirty) {
-        oldPos = Vector2(gameObject.position.x, gameObject.position.y);
-        gameObject.isPositionDirty = false;
+
+      try {
+        body.angle;
+      } catch (e) {
+        // body is not created yet
+        return;
       }
-      world.destroyBody(body);
-      bodyDef!.position = oldPos;
-      bodyDef!.angle = oldAngle;
-      this.body = world.createBody(bodyDef!);
-      for (var fixtureDef in fixtureDefs!) {
-        body.createFixture(fixtureDef);
-      }
-    } else {
-      if (gameObject.isPositionDirty) {
-        gameObject.isPositionDirty = false;
-        body.setTransform(Vector2(gameObject.position.x, gameObject.position.y), body.angle);
-        for (var contact in body.contacts) {
-          Vector2 pos = contact.bodyB.position;
-          contact.bodyB.setTransform(pos, contact.bodyB.angle);
-          contact.bodyB.setAwake(true);
+
+      if (gameObject.isPhysicsDirty && body.isAwake) {
+        gameObject.isPhysicsDirty = false;
+        Vector2 oldPos = this.body.position;
+        double oldAngle = this.body.angle;
+        if (gameObject.isPositionDirty) {
+          oldPos = Vector2(gameObject.position.x, gameObject.position.y);
+          gameObject.isPositionDirty = false;
+        }
+        world.destroyBody(body);
+        bodyDef!.position = oldPos;
+        bodyDef!.angle = oldAngle;
+        this.body = world.createBody(bodyDef!);
+        for (var fixtureDef in fixtureDefs!) {
+          body.createFixture(fixtureDef);
+        }
+      } else {
+        if (gameObject.isPositionDirty) {
+          gameObject.isPositionDirty = false;
+          body.setTransform(
+              Vector2(gameObject.position.x, gameObject.position.y),
+              body.angle);
+          for (var contact in body.contacts) {
+            Vector2 pos = contact.bodyB.position;
+            contact.bodyB.setTransform(pos, contact.bodyB.angle);
+            contact.bodyB.setAwake(true);
+          }
         }
       }
-    }
   }
 
   /// Update the event components list.
@@ -376,7 +391,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event, int collider, String colliderName) async {
+  Future<void> executeEvent(String event, int collider, String colliderName, {List<String> params = const []}) async {
     if (!gameObject.enabled) {
       return;
     }
@@ -385,15 +400,26 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     event = event.replaceAll("while (", "while (!sendMessage(\"getNeedAbort\", JSON.stringify([])) && ");
 
     // add collider to the event an wrap it in a function
-    event =
+    var eventModified =
     "collider = $collider\n"
-        "colliderName = \"$colliderName\"\n"
-        "async function event() {\n"
-        "  $event\n"
-        "}\n"
-        "event();\n";
+    "colliderName = \"$colliderName\"\n"
+    "params = ";
+    if (params.isNotEmpty) {
+      eventModified += "[";
+      for (var param in params) {
+        eventModified += "\"$param\",";
+      }
+      eventModified = eventModified.substring(0, eventModified.length - 1);
+      eventModified += "];\n";
+    } else {
+      eventModified += "[];\n";
+    }
+    eventModified += "async function event() {\n"
+    "  $event\n"
+    "}\n"
+    "event();\n";
 
-    js.evaluateAsync(event).then(
+    js.evaluateAsync(eventModified).then(
           (JsEvalResult jsResult) {
         if (jsResult.isError) {
           print("Error in event: ${jsResult.stringResult}");

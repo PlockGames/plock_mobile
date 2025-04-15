@@ -53,8 +53,14 @@ class _EditorPageState extends State<EditorPage> {
                     objects: objects,
                     medias: widget.game.medias,
                     canvas: canvas,
+                    convertToAsset: convertToAsset,
                   )));
     };
+  }
+
+  /// Callback : Convert an object to an asset.
+  void convertToAsset(ObjectComponent object) {
+    widget.game.assets.add(object.getGameObject());
   }
 
   /// Callback : Add a game object to the game.

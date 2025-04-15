@@ -53,6 +53,9 @@ class GameObject {
   /// set velocity
   Vector2? velocity;
 
+  /// Keep when changing the scene
+  bool keep = false;
+
   GameObject({required this.id, required this.name});
 
   /// Return a copy of the object
@@ -67,6 +70,7 @@ class GameObject {
     instance.locked = locked;
     instance.visible = visible;
     instance.enabled = enabled;
+    instance.keep = keep;
     for (var component in components) {
       instance.components.add(component.instance());
     }
@@ -79,6 +83,10 @@ class GameObject {
     json += "\"id\": $id,";
     json += "\"name\": \"$name\",";
     json += "\"layer\": $layer,";
+    json += "\"enabled\": $enabled,";
+    json += "\"locked\": $locked,";
+    json += "\"visible\": $visible,";
+    json += "\"keep\": $keep,";
     json += "\"components\": [";
     components.forEach((element) {
       json += element.toJson();
@@ -97,7 +105,11 @@ class GameObject {
   static GameObject fromJson(Map<String, dynamic> json) {
     GameObject gameObject = GameObject(id: json['id'], name: json['name']);
     gameObject.position = Vector2.fromJson(json['position']);
+    gameObject.enabled = json['enabled'];
     gameObject.layer = json['layer'];
+    gameObject.locked = json['locked'];
+    gameObject.visible = json['visible'];
+    gameObject.keep = json['keep'];
     for (var component in json['components']) {
       var componentModel = ComponentList.getByName(component["type"]);
       if (componentModel == null) {

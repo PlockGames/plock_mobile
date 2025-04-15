@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -9,6 +10,7 @@ import 'package:plock_mobile/models/component_fields/component_field_blocky.dart
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/component_types/component_event.dart';
+import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';
 
 import '../../models/component_fields/component_field_color.dart';
@@ -60,6 +62,8 @@ class EventManager {
       js.onMessage("getListValue", (args) => _getListValue(game, thisObjectId, args));
       js.onMessage("setListValue", (args) => _setListValue(game, thisObjectId, args));
       js.onMessage("changeSprite", (args) => _changeSprite(game, thisObjectId, args));
+      js.onMessage("objectEnable", (arg) => _objectEnable(game, thisObjectId, arg));
+      js.onMessage("triggerEvent", (args) => _triggerEvent(game, thisObjectId, args));
   }
 
   /// Return delta time
@@ -96,12 +100,20 @@ class EventManager {
     if (sceneIndex != -1) {
       game.currentSceneIndex = sceneIndex;
 
-      for (var object in game.gamePlayer!.components) {
-        if (object is GamePlayerObject) {
+      for (int i = 0; i < game.gamePlayer!.components.length; i++) {
+        var object = game.gamePlayer!.components[i];
+        if (object is GamePlayerObject && object.gameObject.keep == false) {
+          game.gamePlayer!.world.remove(object);
+          game.gamePlayer!.components.removeAt(i);
+          i--;
+        }
+      }
+
+      for (var object in game.gamePlayer!.world.children) {
+        if (object is ComponentFlame) {
           game.gamePlayer!.world.remove(object);
         }
       }
-      game.gamePlayer!.components.clear();
 
       for (var object in game.gamePlayer!.uiComponents) {
         if (object is GamePlayerUiObject) {
@@ -114,15 +126,18 @@ class EventManager {
       game.gamePlayer!.uiComponents.addAll(game.scenes[sceneIndex].uiObjects.map((e) => GamePlayerUiObject(gameObject: e, plockGame: game)));
 
       game.gamePlayer!.components.forEach((element) {
-        game.gamePlayer!.world.add(element);
+        if (element.parent == null) {
+          game.gamePlayer!.world.add(element);
+        }
       });
 
       game.gamePlayer!.uiComponents.forEach((element) {
         game.gamePlayer!.camera.viewport.add(element);
       });
-
-      game.isDirty = true;
     }
+
+    game.isDirty = true;
+    game.gamePlayer?.camera.viewfinder.position = Vector2(0, 0);
   }
 
   static String? _rgbToColor(Game game, int thisObjectId, dynamic args) {
@@ -191,8 +206,20 @@ class EventManager {
   static int _getObjectByName(Game game, int thisObjectId, dynamic args) {
       String name = args[0];
       try {
-        GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) =>
+        GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) =>
         element.name == name);
+        object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) =>
+          element.name == name);
+        if (object == null) {
+          final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.name == name) as GamePlayerObject?;
+          if (objectComponent != null) {
+            object = objectComponent.gameObject;
+          }
+        }
+        if (object == null) {
+          print("Error(getObjectByName): Object not found");
+          return -1;
+        }
         return object.id;
       } catch (e) {
         print("Error(getObjectByName): $e");
@@ -246,8 +273,15 @@ class EventManager {
         component = "ComponentUi" + component.split("Component").last;
       }
 
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+
         if (object == null) {
-          print("Object not found");
+          print("Error(setComponentValue): Object not found");
           return;
         }
 
@@ -287,14 +321,23 @@ class EventManager {
     String name = args[1];
     String value = args[2].toString();
 
-    print("Set variable value: $objectId, $name, $value");
-
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+      if (object == null) {
+        print("Error(setVariableValue): Object not found");
+        return;
+      }
       var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
       componentType.fields["value"]!.value = value;
     } catch (e) {
-      print("Error(setComponentValue): $e");
+      print("Error(setVariableValue): $e");
     }
   }
 
@@ -367,7 +410,18 @@ class EventManager {
     double value = args[2].toDouble();
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+      if (object == null) {
+        print("Error(setObjectValue): Object not found");
+        return;
+      }
       if (property.toLowerCase() == "x") {
         object.position.x = value;
         object.isPositionDirty = true;
@@ -398,7 +452,7 @@ class EventManager {
         game.isDirty = true;
       }
     } catch (e) {
-      print("Error(setObjectValue): $e");
+      print("Error(setAddForce): $e");
     }
   }
 
@@ -419,7 +473,7 @@ class EventManager {
         game.isDirty = true;
       }
     } catch (e) {
-      print("Error(setObjectValue): $e");
+      print("Error(setSetForce): $e");
     }
   }
 
@@ -434,7 +488,27 @@ class EventManager {
       componentType.fields["current"]!.value = name;
       game.isDirty = true;
     } catch (e) {
-      print("Error(setObjectValue): $e");
+      print("Error(changeSprite): $e");
+    }
+  }
+
+  static void _objectEnable(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[1];
+    bool enabled = args[0];
+
+    try {
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) =>
+      element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) =>
+        element.id == objectId);
+      if (object == null) {
+        print("Error(objectEnable): Object not found");
+        return;
+      }
+      object.enabled = enabled;
+      game.isDirty = true;
+    } catch (e) {
+      print("Error(objectEnable): $e");
     }
   }
 
@@ -467,7 +541,18 @@ class EventManager {
     String name = args[1];
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+      if (object == null) {
+        print("Error(getVariableValue): Object not found");
+        return null;
+      }
       var componentType = object.components.firstWhere((element) => element.type == "ComponentVariable" && element.fields["name"]!.value == name);
       return componentType.fields["value"]!.value;
     } catch (e) {
@@ -482,7 +567,12 @@ class EventManager {
     String name = args[1];
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        print("Error(getListValue): Object not found");
+        return null;
+      }
       var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
       return componentType.fields["values"]!.value;
     } catch (e) {
@@ -496,16 +586,41 @@ class EventManager {
     int objectId = args[0];
     String name = args[1];
     List<dynamic> value = args[2];
-
-
-    print("Set list value: $objectId, $name, $value");
+    List<String> list = value.map((e) => e.toString()).toList();
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) => element.id == objectId);
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        print("Error(setListValue): Object not found");
+        return;
+      }
       var componentType = object.components.firstWhere((element) => element.type == "ComponentList" && element.fields["name"]!.value == name);
-      componentType.fields["values"]!.value = value;
+      componentType.fields["values"]!.value = list;
     } catch (e) {
       print("Error(setListValue): $e");
+    }
+  }
+
+  /// Set the property of a component of an object.
+  static void _triggerEvent(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+    String name = args[1];
+    List<dynamic> params = args[2];
+
+    try {
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        print("Error(triggerEvent): Object not found");
+        return;
+      }
+      var gamePlayerObject = game.gamePlayer?.components.firstWhere((element) => element is GamePlayerObject && element.gameObject.id == objectId) as GamePlayerObject?;
+      ComponentEvent component = object.components.firstWhere((element) => element.type == "ComponentEvent" && element.fields["name"]!.value == name) as ComponentEvent;
+      final paramsStr = params.map((e) => e.toString()).toList();
+      gamePlayerObject?.executeEvent(component.fields['event']!.value[0], -1, "", params: paramsStr);
+    } catch (e) {
+      print("Error(triggerEvent): $e");
     }
   }
 

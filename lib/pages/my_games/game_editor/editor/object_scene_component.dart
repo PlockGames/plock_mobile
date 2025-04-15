@@ -58,6 +58,9 @@ class ObjectSceneComponent extends BodyComponent
   /// The game the object comes from.
   final Plock.Game plockGame;
 
+  /// The removed components (body components) that are not displayed.
+  List<ComponentFlame> removedComponents = [];
+
   ObjectSceneComponent({
     required id,
     required this.selectObject,
@@ -256,5 +259,26 @@ class ObjectSceneComponent extends BodyComponent
   @override
   getGameObject() {
     return _gameObject;
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    for (var component in displayComponents) {
+      if (component is BodyComponent && component is ComponentFlame && world.contains(component)) {
+        final componentFlame = component as ComponentFlame;
+        removedComponents.add(componentFlame);
+        world.remove(component);
+      }
+    }
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    for (var component in removedComponents) {
+      world.add(component as Component);
+    }
+    removedComponents = [];
   }
 }

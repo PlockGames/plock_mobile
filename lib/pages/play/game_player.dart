@@ -183,7 +183,7 @@ class GamePlayer extends Forge2DGame {
           GamePlayerObject object = components[i] as GamePlayerObject;
 
           if (!game.scenes[game.currentSceneIndex].objects.contains(
-              object.gameObject)) {
+              object.gameObject) && !object.gameObject.keep) {
             components.remove(object);
             world.remove(object);
             i--;

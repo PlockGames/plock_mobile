@@ -76,6 +76,7 @@ class GamePlayerUiObject extends PositionComponent {
           remove(component);
         }
       }
+      return;
     }
 
     List<String> alreadyDisplayed = [];

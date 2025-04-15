@@ -85,7 +85,6 @@ class ComponentImage extends ComponentType {
 
     Media? media;
     try {
-      print(medias);
       media = medias.firstWhere((element) => element.name ==
           fields["texture"]!.value.name);
     } catch (e) {
