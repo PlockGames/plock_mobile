@@ -59,8 +59,13 @@ class _EditorPageState extends State<EditorPage> {
   }
 
   /// Callback : Convert an object to an asset.
-  void convertToAsset(ObjectComponent object) {
-    widget.game.assets.add(object.getGameObject());
+  void convertToAsset(ObjectComponent object, EditorCanvas canvas) {
+    if (canvas == EditorCanvas.scene) {
+      widget.game.assets.add(object.getGameObject());
+    } else {
+      widget.game.uiAssets.add(object.getGameObject());
+    }
+
   }
 
   /// Callback : Add a game object to the game.
@@ -133,12 +138,11 @@ class _EditorPageState extends State<EditorPage> {
           contentGame: widget.game.toJson(),
         ));
         var json = upload;
-        print(json);
         final String uuid = json['data']['id'];
         widget.game.uuid = uuid;
       } else {
         // Update the game
-        await Api.updateGame(
+        final update = await Api.updateGame(
             widget.game.uuid,
             UpdateGameDto(
               title: "${widget.game.name}",
@@ -150,6 +154,8 @@ class _EditorPageState extends State<EditorPage> {
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
+
+        print(update);
       }
 
         // upload images
@@ -234,9 +240,9 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
-  Function(Function(GameObject), Function(GameObject), EditorCanvas canvas)
+  Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas)
       openAssets(BuildContext context) {
-    return (Function(GameObject) spawnAsset, Function(GameObject) updateAsset,
+    return (Function(GameObject, EditorCanvas) spawnAsset, Function(GameObject) updateAsset,
         EditorCanvas canvas) {
       Navigator.push(
           context,

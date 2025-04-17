@@ -20,8 +20,8 @@ class BottomBarCallbacks {
   final Function() testGame;
   final Function() goBack;
   final Function(List<ObjectComponent>, EditorCanvas canvas) openObjects;
-  final Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets;
-  final Function(GameObject) spawnAsset;
+  final Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas) openAssets;
+  final Function(GameObject, EditorCanvas) spawnAsset;
   final Function(GameObject) updateAsset;
   final Function() openMedias;
   final Function() changeMode;

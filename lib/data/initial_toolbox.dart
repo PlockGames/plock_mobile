@@ -83,6 +83,7 @@ import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
 
 import '../models/component_fields/blocky/custom_blocks/objects/component_event_trigger.dart';
+import '../models/component_fields/blocky/custom_blocks/objects/object_is_enabled.dart';
 import '../models/component_fields/blocky/custom_blocks/objects/sprite_change.dart';
 import '../models/component_fields/blocky/custom_blocks/system/change_scene.dart';
 
@@ -214,6 +215,7 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_object_set_force),
         ToolboxBlock(data: block_sprite_change),
         ToolboxBlock(data: block_object_enable),
+        ToolboxBlock(data: block_object_is_enabled),
         ToolboxBlock(data: block_event_trigger),
       ]
   ),

@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import '../../pages/play/game_player_object.dart';
+import '../../pages/play/game_player_ui_object.dart';
 import '../component_fields/component_field_number.dart';
 import '../component_fields/component_field_sprite.dart';
 import '../component_fields/sprite/sprite_animation.dart';
@@ -10,23 +11,23 @@ import '../games/component_type.dart';
 import '../games/media.dart';
 
 /// A component that contain an object level variable
-class ComponentSprite extends ComponentType {
+class ComponentUiSprite extends ComponentType {
 
-  ComponentSprite() {
-    fields["size"] = ComponentFieldNumber(value: 1.0);
+  ComponentUiSprite() {
+    fields["size"] = ComponentFieldNumber(value: 100.0);
     fields["current"] = ComponentFieldText(value: "");
     fields["animator"] = ComponentFieldSprite(value: List<PlockSpriteAnimation>.empty(growable: true));
   }
 
   @override
-  String get type => 'ComponentSprite';
+  String get type => 'ComponentUiSprite';
 
   @override
   String get name => 'Sprite';
 
   @override
   ComponentType instance() {
-    ComponentSprite comp = ComponentSprite();
+    ComponentUiSprite comp = ComponentUiSprite();
     fields.forEach((key, value) {
       comp.fields[key] = value.instance();
     });
@@ -116,20 +117,11 @@ class ComponentSprite extends ComponentType {
   }
 
   @override
-  Future<GamePlayerObject> updateDisplay(Component? component,
-      GamePlayerObject parent) async {
-
+  Future<GamePlayerUiObject> updateDisplayUi(Component? component,
+      GamePlayerUiObject parent) async {
     if (component is ComponentFlameSprite) {
-
       ComponentFlameSprite sprite = component;
-      try {
-        sprite.animation =
-            fields["animator"]!.value.firstWhere((element) =>
-            element.name ==
-                fields["current"]!.value);
-      } catch (e) {
-        sprite.animation = fields["animator"]!.value.first;
-      }
+      sprite.animation = fields["animator"]!.value.firstWhere((element) => element.name == fields["current"]!.value);
     }
     return parent;
   }

@@ -84,6 +84,7 @@ class GameObject {
     json += "\"name\": \"$name\",";
     json += "\"layer\": $layer,";
     json += "\"enabled\": $enabled,";
+    json += "\"type\": \"${type.name}\",";
     json += "\"locked\": $locked,";
     json += "\"visible\": $visible,";
     json += "\"keep\": $keep,";
@@ -107,6 +108,8 @@ class GameObject {
     gameObject.position = Vector2.fromJson(json['position']);
     gameObject.enabled = json['enabled'];
     gameObject.layer = json['layer'];
+    gameObject.rotation = json['rotation'] ?? 0;
+    gameObject.type = json['type'] == "asset" ? GameObjectType.asset : GameObjectType.object;
     gameObject.locked = json['locked'];
     gameObject.visible = json['visible'];
     gameObject.keep = json['keep'];

@@ -15,7 +15,7 @@ class EditorCallbacks {
   final Function() testGame;
   final Function() goBack;
   final Function(List<ObjectComponent>, EditorCanvas canvas) openObjects;
-  final Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets;
+  final Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas) openAssets;
   final Function() openMedias;
   final Function(Function(Scene) changeScene) openScenes;
 

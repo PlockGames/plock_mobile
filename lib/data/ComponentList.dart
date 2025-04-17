@@ -12,6 +12,7 @@ import '../models/component_types/component_text.dart';
 import '../models/component_types/component_event.dart';
 import '../models/component_types/component_list.dart' as cp;
 import '../models/component_types/component_ui_image.dart';
+import '../models/component_types/component_ui_sprite.dart';
 import '../models/games/component_type.dart';
 
 /**
@@ -37,6 +38,7 @@ class ComponentList {
   static final Map<String, ComponentType> uiComponents = {
     'ComponentUiText': ComponentUiText(),
     'ComponentUiImage': ComponentUiImage(),
+    'ComponentUiSprite': ComponentUiSprite(),
     'ComponentVariable': ComponentVariable(),
     'ComponentList': cp.ComponentList(),
     'ComponentEvent': ComponentEvent(),

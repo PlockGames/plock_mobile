@@ -25,6 +25,8 @@ class ComponentType {
   /// The display name of the component.
   String get name => 'Unknown';
 
+  bool get isScrollable => false;
+
   /// Debug data
   Map<String, dynamic> get debugData => {};
 

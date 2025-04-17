@@ -63,7 +63,9 @@ class EventManager {
       js.onMessage("setListValue", (args) => _setListValue(game, thisObjectId, args));
       js.onMessage("changeSprite", (args) => _changeSprite(game, thisObjectId, args));
       js.onMessage("objectEnable", (arg) => _objectEnable(game, thisObjectId, arg));
+      js.onMessage("objectIsEnabled", (arg) => _objectIsEnabled(game, thisObjectId, arg));
       js.onMessage("triggerEvent", (args) => _triggerEvent(game, thisObjectId, args));
+
   }
 
   /// Return delta time
@@ -480,11 +482,27 @@ class EventManager {
   static void _changeSprite(Game game, int thisObjectId, dynamic args) {
     int objectId = args[1];
     String name = args[0];
+    bool isUi = false;
 
     try {
-      GameObject object = game.scenes[game.currentSceneIndex].objects.firstWhere((element) =>
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) =>
       element.id == objectId);
-      var componentType = object.components.firstWhere((element) => element.type == "ComponentSprite");
+      if (object == null) {
+        object = game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) =>
+        element.id == objectId);
+        isUi = true;
+      }
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+      if (object == null) {
+        print("Error(changeSprite): Object not found");
+        return;
+      }
+      var componentType = object.components.firstWhere((element) => element.type == (isUi ? "ComponentUiSprite" : "ComponentSprite"));
       componentType.fields["current"]!.value = name;
       game.isDirty = true;
     } catch (e) {
@@ -509,6 +527,25 @@ class EventManager {
       game.isDirty = true;
     } catch (e) {
       print("Error(objectEnable): $e");
+    }
+  }
+
+  static bool _objectIsEnabled(Game game, int thisObjectId, dynamic args) {
+    int objectId = args[0];
+
+    try {
+      GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) =>
+      element.id == objectId);
+      object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) =>
+        element.id == objectId);
+      if (object == null) {
+        print("Error(objectIsEnabled): Object not found");
+        return false;
+      }
+      return object.enabled;
+    } catch (e) {
+      print("Error(objectIsEnabled): $e");
+      return false;
     }
   }
 
@@ -570,6 +607,12 @@ class EventManager {
       GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
       object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
       if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
+      if (object == null) {
         print("Error(getListValue): Object not found");
         return null;
       }
@@ -591,6 +634,12 @@ class EventManager {
     try {
       GameObject? object = game.scenes[game.currentSceneIndex].objects.firstWhereOrNull((element) => element.id == objectId);
       object ??= game.scenes[game.currentSceneIndex].uiObjects.firstWhereOrNull((element) => element.id == objectId);
+      if (object == null) {
+        final objectComponent = game.gamePlayer?.components.firstWhereOrNull((element) => (element as GamePlayerObject).gameObject.id == objectId) as GamePlayerObject?;
+        if (objectComponent != null) {
+          object = objectComponent.gameObject;
+        }
+      }
       if (object == null) {
         print("Error(setListValue): Object not found");
         return;

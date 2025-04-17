@@ -173,6 +173,15 @@ class Game {
     });
     json += "],";
 
+    json += "\"uiAssets\": [";
+    uiAssets.forEach((element) {
+      json += element.toJson();
+      if (uiAssets.indexOf(element) != uiAssets.length - 1) {
+        json += ",";
+      }
+    });
+    json += "],";
+
     // add medias
     json += "\"medias\": [";
     medias.forEach((element) {
@@ -209,6 +218,8 @@ class Game {
         game.lastUpdate = lastUpdate;
       }
 
+
+
       game.scenes.clear();
       game.objectCount = json['objectCount'];
       var jsonScene = json['scenes'];
@@ -223,6 +234,21 @@ class Game {
         } else {
           game.medias.add(Media.fromJson(media));
         }
+      }
+
+      game.assets.clear();
+      var jsonAssets = json['assets'];
+      print(jsonAssets);
+      for (var asset in jsonAssets) {
+        GameObject assetObject = GameObject.fromJson(asset);
+        game.assets.add(assetObject);
+      }
+
+      game.uiAssets.clear();
+      var jsonUiAssets = json['uiAssets'];
+      for (var asset in jsonUiAssets) {
+        GameObject assetObject = GameObject.fromJson(asset);
+        game.uiAssets.add(assetObject);
       }
 
       return game;

@@ -298,10 +298,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blockly_plus
-      sha256: c5e81716ae16f3793924dc16777ad54c9282da9eb8cb7b55baee41dae365b9b6
+      sha256: ee6dae91c182ce110073c5589c163bf544f59c24c63d4200834127d2e943bc88
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   flutter_colorpicker:
     dependency: "direct main"
     description:

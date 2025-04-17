@@ -76,7 +76,7 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     setState(() {
       widget.object.getGameObject().type = GameObjectType.asset;
       widget.object.getGameObject().assetId = widget.object.getGameObject().id;
-      widget.convertToAsset(widget.object);
+      widget.convertToAsset(widget.object, widget.canvas);
     });
   }
 

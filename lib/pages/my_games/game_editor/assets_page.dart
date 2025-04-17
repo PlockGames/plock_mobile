@@ -10,7 +10,7 @@ import 'editor/editor_canvas.dart';
 class AssetsPage extends StatefulWidget {
   // A callback function to add a component to the game object
   final Plock.Game game;
-  final Function(Plock.GameObject) spawnAsset;
+  final Function(Plock.GameObject, EditorCanvas) spawnAsset;
   final Function(Plock.GameObject) updateAsset;
   final EditorCanvas canvas;
 
@@ -65,7 +65,7 @@ class _AssetsPageState extends State<AssetsPage> {
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
-                      widget.spawnAsset(object);
+                      widget.spawnAsset(object, widget.canvas);
                       Navigator.of(context).pop();
                     },
                   ),
