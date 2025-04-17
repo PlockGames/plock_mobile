@@ -1,12 +1,13 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AuthService {
-  static const String baseUrl = "https://plock-dev.strangled.net/api/auth";
-  static const String loginUrl = "$baseUrl/login";
-  static const String signupUrl = "$baseUrl/signup";
-  static const String completeSignupUrl = "$baseUrl/signup/complete";
+  static String baseUrl = "${dotenv.env['API_URL']!}/auth";
+  static String loginUrl = "$baseUrl/login";
+  static String signupUrl = "$baseUrl/signup";
+  static String completeSignupUrl = "$baseUrl/signup/complete";
 
   final FlutterSecureStorage _storage;
   final http.Client _client;

@@ -21,13 +21,13 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
   /// Get all the games with their game data.
   Future<List<Game>> getAllGamesWithData() async {
-    var lastResponse = await ApiService.getAllGames(1);
-    dynamic decoded = jsonDecode(lastResponse.body);
-    var allGames = decoded['data']['data'];
+    var lastResponse = await Api.getAllGames(1);
+    dynamic decoded = lastResponse['data']['data'];
+    var allGames = decoded;
 
     for (int page = 2; 0 < decoded.length; page++) {
-      lastResponse = await ApiService.getAllGames(page);
-      decoded = jsonDecode(lastResponse.body)['data']['data'];
+      lastResponse = await Api.getAllGames(page);
+      decoded = lastResponse['data']['data'];
       allGames.addAll(decoded);
     }
     List<Game> allGameWithData = <Game>[];
@@ -46,8 +46,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
       }
 
       loadedGame.uuid = game['id'];
-      final mediasResponse = await ApiService.getMedias(game['id']);
-      final mediasJson = jsonDecode(mediasResponse.body);
+      final mediasResponse = await Api.getMedias(game['id']);
+      final mediasJson = mediasResponse;
 
       for (var media in mediasJson['data']) {
         final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
@@ -88,7 +88,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
   void removeProject(Game game) {
     setState(() {
-      ApiService.deleteGame(game.uuid);
+      Api.deleteGame(game.uuid);
       projects.remove(game);
     });
   }
