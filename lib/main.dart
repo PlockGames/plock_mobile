@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:plock_mobile/pages/games/games_search_page.dart';
 import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 import 'package:plock_mobile/pages/play/play_page.dart';
 import 'package:plock_mobile/pages/login_page.dart';
 import 'package:plock_mobile/pages/register_page.dart';
+import 'package:plock_mobile/pages/profile/my_profile_page.dart';
 import 'package:plock_mobile/services/auth_service.dart';
 import 'package:plock_mobile/services/auth_guard.dart';
 
@@ -177,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 2, vsync: this, initialIndex: 0);
+    controller = TabController(length: 4, vsync: this, initialIndex: 0);
     _checkAuthentication();
   }
 
@@ -219,15 +221,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
         tabs: const <Widget>[
-          Tab(icon: Icon(Icons.play_arrow)),
-          Tab(icon: Icon(Icons.create)),
+          // Tab(icon: Icon(Icons.play_arrow), text: "Play"),
+          // home icon
+          Tab(icon: Icon(Icons.home), text: "Home"),
+          Tab(icon: Icon(Icons.search), text: "Games"),
+          Tab(icon: Icon(Icons.create), text: "My Games"),
+          Tab(icon: Icon(Icons.person), text: "Profile"),
         ],
       ),
       body: TabBarView(
         controller: controller,
         children: <Widget>[
           PlayPage(),
+          const GamesSearchPage(),
           const MyGamesPage(),
+          const ProfilePage(),
         ],
       ),
     );
