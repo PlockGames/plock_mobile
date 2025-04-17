@@ -16,7 +16,7 @@ import '../assets_page.dart';
 import '../medias_page.dart';
 import '../objects_page.dart';
 import '../scenes_page.dart';
-import 'Editor.dart';
+import 'editor.dart';
 import 'object_component.dart';
 
 /// The editor page.
@@ -298,7 +298,7 @@ class _EditorPageState extends State<EditorPage> {
     return Column(
       children: <Widget>[
         Expanded(
-          child: GameWidget(
+          child: GameWidget<Editor>(
             key: Key("editor_game"),
             game: Editor(
               game: widget.game,

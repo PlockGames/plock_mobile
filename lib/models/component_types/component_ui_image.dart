@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/models/component_fields/component_field_Image.dart';
+import 'package:plock_mobile/models/component_fields/component_field_image.dart';
 import 'package:plock_mobile/models/component_fields/image/media_select.dart';
 import 'package:plock_mobile/models/component_flame/component_flame_image.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
