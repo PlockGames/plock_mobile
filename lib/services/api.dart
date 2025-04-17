@@ -130,6 +130,16 @@ class ApiService {
   static Future<http.Response> getMedias(String gameId) async {
     return await _httpClient.get("/game/$gameId/images");
   }
+
+  /// Returns a list of recommended games.
+  ///
+  /// If [page] is not null, it will return the recommended games for that specific page.
+  static Future<http.Response> getRecommendedGames(int? page) async {
+    if (page != null) {
+      return await _httpClient.get("/game/recommendation?page=$page&perPage=5");
+    }
+    return await _httpClient.get("/game/recommendation");
+  }
 }
 
 class CreateGameDto {
