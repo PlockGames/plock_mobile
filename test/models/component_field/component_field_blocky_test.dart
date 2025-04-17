@@ -3,6 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/media.dart';
+import 'package:flutter_blockly_plus/flutter_blockly_plus.dart' as BlockyPlus;
+import 'package:mockito/mockito.dart';
+
+// Create a Mock for the ComponentFieldBlockly class
+class MockComponentFieldBlockly extends Mock implements ComponentFieldBlockly {}
 
 void main() {
   // Ensure Flutter binding is initialized
@@ -22,6 +27,7 @@ void main() {
           'blocks': [],
         },
       });
+      expect(blocklyField.debugData, isEmpty);
     });
 
     test('Should create ComponentFieldBlockly with custom values', () {
@@ -40,6 +46,7 @@ void main() {
 
       expect(blocklyField.value[0], customJs);
       expect(blocklyField.value[1], customJson);
+      expect(blocklyField.debugData, isEmpty);
     });
 
     test('Should create an instance with the same values', () {
@@ -52,15 +59,20 @@ void main() {
 
       expect(instanceField.value[0], originalField.value[0]);
       expect(instanceField.value[1], originalField.value[1]);
+      expect(instanceField.debugData, isEmpty);
     });
 
-    test('Should convert to JSON correctly', () {
+    test('Should convert to JSON correctly with no JS code', () {
+      final blocklyField = ComponentFieldBlockly();
+      final jsonValue = blocklyField.toJson();
+      expect(jsonValue, '""');
+    });
+
+    test('Should convert to JSON correctly with simple JS code', () {
       final blocklyField = ComponentFieldBlockly(
         value_js: 'console.log("Test");',
       );
-
       final jsonValue = blocklyField.toJson();
-
       expect(jsonValue, '"console.log(\\"Test\\");"');
     });
 
@@ -71,12 +83,18 @@ void main() {
       blocklyField.updateFromJson(newJsValue);
 
       expect(blocklyField.value[0], newJsValue);
+      expect(blocklyField.value[1], ComponentFieldBlockly.initialJson); // JSON should remain default
     });
 
-    test('Should return debug data', () {
+    test('Should update value setter correctly', () {
       final blocklyField = ComponentFieldBlockly();
-
-      expect(blocklyField.debugData, isEmpty);
+      final newJsValue = 'let x = 5;';
+      blocklyField.value = newJsValue;
+      expect(blocklyField.value[0], newJsValue);
     });
+
+
+
+
   });
 }
