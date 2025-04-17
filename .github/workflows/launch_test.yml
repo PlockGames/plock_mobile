@@ -72,7 +72,15 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/data/initial_toolbox.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap.dart'  -o coverage/lcov.info
           
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_canvas_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/side_bar_component.dart'  -o coverage/lcov.info
+
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
@@ -80,6 +88,7 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/play_page.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/event_manager.dart'  -o coverage/lcov.info
+
 
       - name: Generate HTML coverage report
         # Uses genhtml to convert lcov.info to HTML report
