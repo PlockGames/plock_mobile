@@ -1,13 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/games/game.dart';
-import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
-import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
 import '../../../models/games/media/media_set.dart';
 import 'media_editor_page.dart';

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
 import 'package:plock_mobile/pages/play/game_player_object.dart';
 
+import '../../pages/play/game_player_ui_object.dart';
 import 'media.dart';
 
 /// A component that can be added to a game object.
@@ -24,6 +24,8 @@ class ComponentType {
 
   /// The display name of the component.
   String get name => 'Unknown';
+
+  bool get isScrollable => false;
 
   /// Debug data
   Map<String, dynamic> get debugData => {};
@@ -60,6 +62,10 @@ class ComponentType {
   }
 
   Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
+    return parent;
+  }
+
+  Future<GamePlayerUiObject> updateDisplayUi(Component? component, GamePlayerUiObject parent) async {
     return parent;
   }
 

@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap_editor_page.dart';
@@ -54,19 +52,15 @@ class _TilemapEditorState extends State<TilemapEditor> {
   @override
   Widget build(BuildContext context) {
 
-    int count = 0;
     List<LoadedMediaTile> loadedMediasTiles = List<LoadedMediaTile>.empty(growable: true);
 
     for (int i = 0; i < widget.loadedMedias.length; i++) {
       if (widget.loadedMedias[i] != null) {
-        count += widget.loadedMedias[i]!.count;
 
         for (int j = 0; j < widget.loadedMedias[i]!.count; j++) {
           loadedMediasTiles.add(LoadedMediaTile(loadedMedia: widget.loadedMedias[i], index: j));
         }
 
-      } else {
-        count += 1;
       }
     }
 

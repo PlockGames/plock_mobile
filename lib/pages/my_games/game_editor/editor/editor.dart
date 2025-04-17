@@ -101,10 +101,8 @@ class Editor extends Forge2DGame with DragCallbacks {
       }
 
       for (var object in objects) {
-        if (object is ObjectSceneComponent) {
-          if (!world.contains(object)) {
-            world.add(object);
-          }
+        if (!world.contains(object)) {
+          world.add(object);
         }
       }
     }
@@ -219,11 +217,15 @@ class Editor extends Forge2DGame with DragCallbacks {
     game.currentSceneIndex = game.scenes.indexOf(scene);
 
     for (var object in objects) {
-      world.remove(object);
+      if (world.contains(object)) {
+        world.remove(object);
+      }
     }
 
     for (var object in uiObjects) {
-      camera.viewport.remove(object);
+      if (camera.viewport.contains(object)) {
+        camera.viewport.remove(object);
+      }
     }
 
     objects = [];
@@ -274,24 +276,44 @@ class Editor extends Forge2DGame with DragCallbacks {
     return uiObjects;
   }
 
-  ObjectComponent spawnAsset(GameObject gameObject) {
+  ObjectComponent spawnAsset(GameObject gameObject, EditorCanvas canvas) {
     final gameObjectInstance = gameObject.instance();
     gameObjectInstance.id = game.objectCount;
-    final object = ObjectSceneComponent(
-        id: game.objectCount,
-        selectObject: selectObject,
-        isObjectSelected: isObjectSelected,
-        updateObject: updateObject,
-        getMode: getMode,
-        moveCamera: moveCamera,
-        gameObject: gameObjectInstance,
-        plockGame: game
-    );
-    world.add(object);
-    objects.add(object);
-    game.objectCount++;
-    editorCallbacks.addGameObject(object.gameObject);
-    return object;
+
+    if (canvas == EditorCanvas.scene) {
+      final object = ObjectSceneComponent(
+          id: game.objectCount,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          updateObject: updateObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          gameObject: gameObjectInstance,
+          plockGame: game
+      );
+      world.add(object);
+      objects.add(object);
+      game.objectCount++;
+      editorCallbacks.addGameObject(object.gameObject);
+      return object;
+    } else {
+      final object = ObjectUiComponent(
+          id: game.objectCount,
+          selectObject: selectObject,
+          isObjectSelected: isObjectSelected,
+          updateObject: updateUiObject,
+          getMode: getMode,
+          moveCamera: moveCamera,
+          gameObject: gameObjectInstance,
+          plockGame: game
+      );
+      camera.viewport.add(object);
+      uiObjects.add(object);
+      game.objectCount++;
+      editorCallbacks.addUIObject(object.gameObject);
+      return object;
+    }
+
   }
 
   void updateAsset(GameObject gameObject) {

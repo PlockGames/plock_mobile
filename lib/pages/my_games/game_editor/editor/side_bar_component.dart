@@ -4,11 +4,9 @@ import 'package:flame/components.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:plock_mobile/models/flame/RoundedRectangleComponent.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_component.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 
 import '../../../../models/games/game_object.dart';
-import 'bottom_bar_button_canvas_component.dart';
 import 'editor_canvas.dart';
 
 /// The bottom bar of the editor.
@@ -101,27 +99,25 @@ class SideBarComponent extends PositionComponent {
     super.render(canvas);
 
     // Update the buttons depending on the selected object
-    if (deleteBtn != null && editBtn != null && background != null) {
-      if (bottomBarCallbacks.getSelectedObject() == null) {
-        if (children.contains(deleteBtn)) {
-          children.remove(deleteBtn);
-        }
-        if (children.contains(editBtn)) {
-          children.remove(editBtn);
-        }
-        if (children.contains(background)) {
-          children.remove(background);
-        }
-      } else {
-        if (!children.contains(deleteBtn)) {
-          add(deleteBtn);
-        }
-        if (!children.contains(editBtn)) {
-          add(editBtn);
-        }
-        if (!children.contains(background)) {
-          add(background);
-        }
+    if (bottomBarCallbacks.getSelectedObject() == null) {
+      if (children.contains(deleteBtn)) {
+        children.remove(deleteBtn);
+      }
+      if (children.contains(editBtn)) {
+        children.remove(editBtn);
+      }
+      if (children.contains(background)) {
+        children.remove(background);
+      }
+    } else {
+      if (!children.contains(deleteBtn)) {
+        add(deleteBtn);
+      }
+      if (!children.contains(editBtn)) {
+        add(editBtn);
+      }
+      if (!children.contains(background)) {
+        add(background);
       }
     }
 

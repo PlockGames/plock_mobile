@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:plock_mobile/data/ComponentList.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
-import '../../../models/games/component_type.dart';
 import 'editor/editor_canvas.dart';
 import 'editor/object_component.dart';
 

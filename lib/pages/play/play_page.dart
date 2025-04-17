@@ -38,25 +38,13 @@ class PlayPageState extends State<PlayPage> {
     List<plock.Game> allGames = await getAllGamesWithData();
     for (var game in allGames) {
       var rep = await Api.getGame(game.uuid);
-      var jsonResponse = jsonDecode(rep['data']);
-      var likes = jsonResponse['data']['likes'];
+      var jsonResponse = rep['data'];
+      var likes = jsonResponse['likes'];
 
-      var response = await Api.getGameLike(game.uuid);
-      dynamic decoded = jsonDecode(response['data']);
-      bool isLiked = decoded['totalLikes'] > 0;
       setState(() {
-        favoriteStatus[game.uuid] = jsonResponse['data']['hasLiked'];
+        favoriteStatus[game.uuid] = jsonResponse['hasLiked'];
         countLike[game.uuid] = likes.toString();
-        print("-------------------------------");
-        print(rep);
-        print("-------------------------------");
-        print(jsonResponse['data']['hasLiked']);
-        print("-------------------------------");
       });
-    //  print("-------------is liked ?--------------");
-   //   print(favoriteStatus);
-   //c   print(game.id);
-   //   print("-------------is liked ?--------------");
     }
   }
 

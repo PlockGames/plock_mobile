@@ -166,25 +166,24 @@ class _ComponentFieldImageFieldState extends State<ComponentFieldImageField> {
             }
           ),
         SizedBox.fromSize(size: const Size(0, 20)),
-        if (future != null)
-          FutureBuilder<LoadedImage?>(
-            future: future,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (media?.file == null) {
-                  return const Text('No image');
-                }
-
-                if (media is MediaSet) {
-                  return PartImage(snapshot.data!.data, snapshot.data!.bounds);
-                } else {
-                  return Image.memory(snapshot.data!.data);
-                }
-              } else {
-                return const CircularProgressIndicator();
+        FutureBuilder<LoadedImage?>(
+          future: future,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (media?.file == null) {
+                return const Text('No image');
               }
-            },
-          ),
+
+              if (media is MediaSet) {
+                return PartImage(snapshot.data!.data, snapshot.data!.bounds);
+              } else {
+                return Image.memory(snapshot.data!.data);
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
       ]
     );
   }

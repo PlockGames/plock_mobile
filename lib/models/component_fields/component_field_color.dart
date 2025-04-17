@@ -70,7 +70,7 @@ class ColourField extends StatefulWidget {
   /// The callback to update the value.
   Function? updateValue;
 
-  ColourField({required initialValue, this.onUpdate, this.updateValue}) : _value = initialValue;
+  ColourField({super.key, required initialValue, this.onUpdate, this.updateValue}) : _value = initialValue;
 
   /// The value of the field.
   Color get value => _value;

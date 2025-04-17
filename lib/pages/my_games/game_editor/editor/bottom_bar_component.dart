@@ -6,7 +6,6 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart';
 
-import '../../../../models/games/game_object.dart';
 import 'bottom_bar_button_canvas_component.dart';
 import 'editor_canvas.dart';
 

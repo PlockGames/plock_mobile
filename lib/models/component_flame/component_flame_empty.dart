@@ -1,13 +1,9 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/body_component.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
-
-import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
 class ComponentFlameEmpty extends PositionComponent with TapCallbacks, DragCallbacks implements ComponentFlame {

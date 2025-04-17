@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter_js_plus/flutter_js.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
@@ -27,7 +26,10 @@ class GamePlayerUiObject extends PositionComponent {
   List<ComponentType> eventComponents = [];
 
   /// js state, used to execute events.
-  JavascriptRuntime js = getJavascriptRuntime();
+  JavascriptRuntime js = getJavascriptRuntime(forceJavascriptCoreOnAndroid: false);
+
+  /// does the gameObject need to abort the event ?
+  bool needAbort = false;
 
   GamePlayerUiObject({
     required this.gameObject,
@@ -40,8 +42,9 @@ class GamePlayerUiObject extends PositionComponent {
 
     super.position = Vector2(gameObject.position.x, gameObject.position.y);
 
-    //await lua.openLibs();
     EventManager.registerEvents(js, plockGame, gameObject.id);
+    js.onMessage("getNeedAbort", (args) => needAbort);
+    handlePromises();
 
     // Update the components
     gameObject.isPhysicsDirty = false;
@@ -50,6 +53,7 @@ class GamePlayerUiObject extends PositionComponent {
 
     // init events
     js.evaluate("let collider = \"\";");
+    js.evaluate("let colliderName = \"\";");
 
     if (gameObject.enabled) {
       // Execute the start events
@@ -72,19 +76,18 @@ class GamePlayerUiObject extends PositionComponent {
           remove(component);
         }
       }
+      return;
     }
 
     List<String> alreadyDisplayed = [];
 
-    // Update the components that are already instancied
-    //print(this.children);
+    // Update the components that are already instanced
     for (var component in this.children) {
+      component.priority = gameObject.layer;
       if (component is ComponentFlame) {
         ComponentFlame componentFlame = component as ComponentFlame;
-        if (componentFlame.getComponentType() == null) {
-          continue;
-        }
-        alreadyDisplayed.add(componentFlame.getComponentType()!.uuid);
+        componentFlame.getComponentType().updateDisplayUi(component, this);
+        alreadyDisplayed.add(componentFlame.getComponentType().uuid);
       }
     }
 
@@ -99,12 +102,8 @@ class GamePlayerUiObject extends PositionComponent {
             onDragEnd,
             onDragCancel);
           if (comp != null) {
+            comp.priority = gameObject.layer;
             add(comp);
-            ComponentFlame componentFlame = comp as ComponentFlame;
-            if (componentFlame.getComponentType() == null) {
-              continue;
-            }
-            ComponentType componentType = componentFlame.getComponentType()!;
           }
         }
     }
@@ -192,30 +191,52 @@ class GamePlayerUiObject extends PositionComponent {
   }
 
   /// Execute an event.
-  Future<void> executeEvent(String event, int collider, String colliderName) async {
+  void executeEvent(String event, int collider, String colliderName) async {
     if (!gameObject.enabled) {
       return;
     }
 
-    // add collider to the event
-    event = "collider = ${collider}\ncolliderName = \"${colliderName}\"\n$event";
+    // add break in while loops
+    event = event.replaceAll("while (", "while (!sendMessage(\"getNeedAbort\", JSON.stringify([])) && ");
 
-    //print(event);
+    // add collider to the event an wrap it in a function
+    event =
+        "collider = $collider\n"
+        "colliderName = \"$colliderName\"\n"
+        "async function event() {\n"
+        "  $event\n"
+        "}\n"
+        "event();\n";
 
-    JsEvalResult res = js.evaluate(event);
+    js.evaluateAsync(event).then(
+      (JsEvalResult jsResult) {
+        if (jsResult.isError) {
+          print("Error in event: ${jsResult.stringResult}");
+        }
+      },
+    ).catchError((error) {
+      print("Error in event: $error");
+    });
+  }
 
-    if (res.rawResult != null) {
-      //print(event);
-      print(res);
+  Future<void> handlePromises() async {
+    while (true) {
+      js.executePendingJob();
+      if (needAbort) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 1));
     }
   }
 
   void stopEvents() {
-    try {
-      //js.dispose();
-    } catch (e) {
-      print("Game interrupted");
-    }
+    needAbort = true;
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    stopEvents();
   }
 
 }

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/services/api.dart';
 import '../../models/games/game.dart';
 import 'package:http/http.dart' as http;
+
 
 /// The page that display the games created by the user
 class MyGamesPage extends StatefulWidget {
@@ -59,8 +59,13 @@ class _MyGamesPageState extends State<MyGamesPage> {
       }
 
 
+      final profile = await Api.getUserProfile();
 
-      if (game["creatorId"] == dotenv.env['USER_ID']) {
+      if (profile["status"] == false) {
+        return [];
+      }
+
+      if (game["creatorId"] == profile['data']['id']) {
         allGameWithData.add(loadedGame);
       }
     }

@@ -1,6 +1,5 @@
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 
 import '../../../../models/games/scene.dart';
 import 'object_component.dart';
@@ -21,8 +20,8 @@ class BottomBarCallbacks {
   final Function() testGame;
   final Function() goBack;
   final Function(List<ObjectComponent>, EditorCanvas canvas) openObjects;
-  final Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets;
-  final Function(GameObject) spawnAsset;
+  final Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas) openAssets;
+  final Function(GameObject, EditorCanvas) spawnAsset;
   final Function(GameObject) updateAsset;
   final Function() openMedias;
   final Function() changeMode;

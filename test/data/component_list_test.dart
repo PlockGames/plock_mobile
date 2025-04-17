@@ -18,7 +18,7 @@ void main() {
   group('ComponentList Tests', () {
     test('Should return all components in a map', () {
       final components = ComponentList.getAll();
-
+      
       expect(components, isMap);
       expect(components.length, greaterThan(0));
     });
