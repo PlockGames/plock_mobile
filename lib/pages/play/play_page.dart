@@ -32,6 +32,15 @@ class _PlayPageState extends State<PlayPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Always refresh games when entering the page
+    setState(() {
+      _gamesFuture = _fetchGames();
+    });
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
