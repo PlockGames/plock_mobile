@@ -5,48 +5,89 @@ on:
     branches:
       - develop
       - main
+      - feat/Plock-177
   pull_request:
     branches:
       - develop
       - main
+      - feat/Plock-177
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  test_and_coverage:
+    name: Test & Coverage Report
+    runs-on: ubuntu-latest # Flutter tests run well on Linux
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4 # Use latest version
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2 # Use a stable version
         with:
-          channel: stable
-          flutter-version: '3.24.0'
+          flutter-version: "3.24.5" # Specify the exact version
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Ensure .env exists
-        run: |
-          if [ ! -f .env ]; then
-            echo ".env file missing, creating from .env.example"
-            cp .env.example .env
-          fi
+      - name: Create .env file
+        run: cp .env.example .env
 
-      - name: Run Flutter Tests
-        run: flutter test --coverage || true
-
-      - name: Fix Slashes in Coverage File
-        run: sed -i 's|\\|/|g' coverage/lcov.info || true
+      - name: Run tests with coverage
+        run: flutter test --coverage # Generates coverage/lcov.info
 
       - name: Install lcov
+        # Installs lcov which includes the genhtml tool
         run: sudo apt-get update && sudo apt-get install -y lcov
+        # Requires sudo, runs on ubuntu-latest runner
 
-      - name: Generate Coverage HTML Report
-        run: genhtml coverage/lcov.info -o coverage/html || true
+      - name: Remove Unwanted Files from Coverage
+        run: |
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_empty.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_circle.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_image.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_rect.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_sprite.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_text.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tile.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/games/component_flame.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_flame/component_flame_tilemap.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/flame/RoundedRectangleComponent.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_types/component_physics_circle.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_types/component_physics.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/loaded_media_tile.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page_loaded.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_painter.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_top_bar.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap_editor_page.dart' -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_page.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_scene_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_component.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
+          
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player_ui_object.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/play_page.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/event_manager.dart'  -o coverage/lcov.info
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
+      - name: Generate HTML coverage report
+        # Uses genhtml to convert lcov.info to HTML report
+        # -o specifies the output directory
+        run: genhtml coverage/lcov.info -o coverage/html
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4 # Use latest version
         with:
-          name: coverage-report
-          path: coverage/html
+          name: coverage-report # Name of the artifact
+          path: coverage/html # Path to the directory to upload
