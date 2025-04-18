@@ -28,10 +28,36 @@ class PlayPageState extends State<PlayPage> {
   final Map<String, bool> favoriteStatus = {}; // Map to store like status by game ID
   final Map<String, String> countLike = {}; // Map to store like counts as strings by game ID
 
+  bool isGameMode = false;
+  int currentPageIndex = 0;
+  final PageController _pageController = PageController();
+
   @override
   void initState() {
     super.initState();
     _initializeFavoriteStatus();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Basculer entre le mode jeu et le mode défilement
+  void toggleGameMode() {
+    setState(() {
+      isGameMode = !isGameMode;
+      // Afficher un message lors du changement de mode
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isGameMode
+              ? "Mode jeu activé"
+              : "Mode défilement activé"),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    });
   }
 
   Future<void> _initializeFavoriteStatus() async {
@@ -101,98 +127,126 @@ class PlayPageState extends State<PlayPage> {
       stream: getAllGamesWithData().asStream(),
       builder: (context, snapshot) {
         if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-          return Column(
+          return Stack(
             children: [
-              Expanded(
-                child: PageView(
-                  scrollDirection: Axis.vertical,
-                  children: snapshot.data!.map((game) {
-                    bool isFavorite = favoriteStatus[game.uuid] ?? false;
-                    return Stack(
-                      children: [
-                        // Widget principal du jeu
-                        GameWidget(game: GamePlayer(game: game)),
+              Column(
+                children: [
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      scrollDirection: Axis.vertical,
+                      // Désactiver le défilement lorsqu'en mode jeu
+                      physics: isGameMode ? const NeverScrollableScrollPhysics() : null,
+                      onPageChanged: (index) {
+                        setState(() {
+                          currentPageIndex = index;
+                          // Réinitialiser le mode jeu lors du changement de page
+                          if (isGameMode) {
+                            isGameMode = false;
+                          }
+                        });
+                      },
+                      children: snapshot.data!.map((game) {
+                        bool isFavorite = favoriteStatus[game.uuid] ?? false;
+                        return Stack(
+                          children: [
+                            // Widget principal du jeu
+                            GameWidget(game: GamePlayer(game: game)),
 
-                        // Boutons flottants
-                        Positioned(
-                          bottom: 100, // Position verticale
-                          right: 10,   // Position horizontale
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // Bouton "cœur"
-                              IconButton(
-                                icon: Icon(
-                                  Icons.favorite,
-                                  color: isFavorite ? Colors.red : Colors.grey,
-                                  size: 40.0,
-                                ),
-                                onPressed: () {
-                                  if (isFavorite) {
-                                    unlikeGame(game.uuid).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.uuid] = false;
-                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.uuid] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
-                                      });
-                                    });
-                                  } else {
-                                    likeGame(game.uuid).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.uuid] = true;
-                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.uuid] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
-                                      });
-                                    });
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 8.0), // Space between button and text
-                              Text(
-                                countLike[game.uuid] ?? '0', // Fournir '0' si countLike[game.id] est null
-                                style: TextStyle(
-                                  color: Colors.white, // Ajuster la couleur du texte
-                                  fontSize: 16.0,
-                                ),
-                              ),
-
-                              // Espacement entre les boutons
-                              SizedBox(height: 10),
-
-                              // Bouton de partage
-                              IconButton(
-                                icon: Icon(
-                                  Icons.share,
-                                  color: Colors.blue, // Couleur de l'icône
-                                  size: 40.0,
-                                ),
-                                onPressed: () {
-                                  // Générer le lien de partage
-                                  final shareLink = "$url/games/${game.uuid}";
-
-                                  // Copier dans le presse-papiers
-                                  Clipboard.setData(ClipboardData(text: shareLink));
-
-                                  // Afficher une notification ou un message
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Lien copié dans le presse-papiers !"),
+                            // Boutons flottants - masqués en mode jeu
+                            if (!isGameMode)
+                              Positioned(
+                                bottom: 100, // Position verticale
+                                right: 10,   // Position horizontale
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    // Bouton "cœur"
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.favorite,
+                                        color: isFavorite ? Colors.red : Colors.grey,
+                                        size: 40.0,
+                                      ),
+                                      onPressed: () {
+                                        if (isFavorite) {
+                                          unlikeGame(game.uuid).then((_) {
+                                            setState(() {
+                                              favoriteStatus[game.uuid] = false;
+                                              int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
+                                              countLike[game.uuid] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
+                                            });
+                                          });
+                                        } else {
+                                          likeGame(game.uuid).then((_) {
+                                            setState(() {
+                                              favoriteStatus[game.uuid] = true;
+                                              int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
+                                              countLike[game.uuid] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
+                                            });
+                                          });
+                                        }
+                                      },
                                     ),
-                                  );
+                                    SizedBox(height: 8.0), // Space between button and text
+                                    Text(
+                                      countLike[game.uuid] ?? '0', // Fournir '0' si countLike[game.id] est null
+                                      style: TextStyle(
+                                        color: Colors.white, // Ajuster la couleur du texte
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
 
-                                  print("Lien copié : $shareLink");
-                                },
+                                  ],
+                                ),
                               ),
-                              SizedBox(width: 10), // Espacement entre les boutons
 
-                              // Bouton "cœur"
+                            if (isGameMode)
+                              Positioned(
+                                top: 10,
+                                left: 10,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.sports_esports, color: Colors.white, size: 16),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Mode Jeu',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
 
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+              // Bouton flottant pour basculer le mode jeu
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: FloatingActionButton(
+                  elevation: 5,
+                  backgroundColor: isGameMode ? Colors.red : Colors.green,
+                  child: Icon(
+                    isGameMode ? Icons.close : Icons.sports_esports,
+                    color: Colors.white,
+                  ),
+                  onPressed: toggleGameMode,
                 ),
               ),
             ],
@@ -205,7 +259,4 @@ class PlayPageState extends State<PlayPage> {
       },
     );
   }
-
 }
-
-
