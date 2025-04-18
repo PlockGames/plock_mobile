@@ -232,38 +232,24 @@ class PlayPageState extends State<PlayPage> {
                             // Widget principal du jeu
                             AbsorbPointer(
                               absorbing: !isGameMode || isPaused,
-                              child: isGameMode
-                                  ? Container(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                color: Colors.black,
-                                child: FittedBox(
-                                  fit: BoxFit.contain,
-                                  child: SizedBox(
-                                    width: GameConstants.standardResolution.x,
-                                    height: GameConstants.standardResolution.y,
-                                    child: GameWidget(
-                                      key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
-                                      game: gamePlayer,
+                              child: Center(
+                                child: AspectRatio(
+                                  aspectRatio: GameConstants.standardAspectRatio,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                                      color: Colors.black,
                                     ),
-                                  ),
-                                ),
-                              )
-                                  : Container(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.width * (GameConstants.standardResolution.y / GameConstants.standardResolution.x),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
-                                  color: Colors.black,
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.contain,
-                                  child: SizedBox(
-                                    width: GameConstants.standardResolution.x,
-                                    height: GameConstants.standardResolution.y,
-                                    child: GameWidget(
-                                      key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
-                                      game: gamePlayer,
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: SizedBox(
+                                        width: GameConstants.standardResolution.x,
+                                        height: GameConstants.standardResolution.y,
+                                        child: GameWidget(
+                                          key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
+                                          game: gamePlayer,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
