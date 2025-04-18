@@ -11,11 +11,14 @@ import 'package:flutter/services.dart'; // Pour Clipboard
 
 String? url = dotenv.env['API_URL'];
 
+typedef GameModeCallback = void Function(bool isInGameMode);
+
 /// The page where the games are played.
 class PlayPage extends StatefulWidget {
   bool scrollEnabled = true;
+  final GameModeCallback? onGameModeChanged;
 
-  PlayPage({Key? key, this.scrollEnabled = true}) : super(key: key);
+  PlayPage({Key? key, this.scrollEnabled = true, this.onGameModeChanged}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -48,15 +51,10 @@ class PlayPageState extends State<PlayPage> {
   void toggleGameMode() {
     setState(() {
       isGameMode = !isGameMode;
-      // Afficher un message lors du changement de mode
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isGameMode
-              ? "Mode jeu activé"
-              : "Mode défilement activé"),
-          duration: Duration(seconds: 1),
-        ),
-      );
+
+      if (widget.onGameModeChanged != null) {
+        widget.onGameModeChanged!(isGameMode);
+      }
     });
   }
 
@@ -143,6 +141,9 @@ class PlayPageState extends State<PlayPage> {
                           // Réinitialiser le mode jeu lors du changement de page
                           if (isGameMode) {
                             isGameMode = false;
+                            if (widget.onGameModeChanged != null) {
+                              widget.onGameModeChanged!(false);
+                            }
                           }
                         });
                       },
@@ -151,7 +152,44 @@ class PlayPageState extends State<PlayPage> {
                         return Stack(
                           children: [
                             // Widget principal du jeu
-                            GameWidget(game: GamePlayer(game: game)),
+                            AbsorbPointer(
+                              // Absorbe les interactions avec le jeu si on n'est pas en mode jeu
+                              absorbing: !isGameMode,
+                              child: GameWidget(game: GamePlayer(game: game)),
+                            ),
+
+                            if (!isGameMode)
+                              Positioned.fill(
+                                child: GestureDetector(
+                                  onTap: toggleGameMode, // Active le mode jeu au tap
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0.4),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(height: 16),
+                                          Text(
+                                            'Appuyez pour jouer',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              shadows: [
+                                                Shadow(
+                                                  blurRadius: 10.0,
+                                                  color: Colors.black,
+                                                  offset: Offset(2.0, 2.0),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
 
                             // Boutons flottants - masqués en mode jeu
                             if (!isGameMode)
@@ -196,35 +234,7 @@ class PlayPageState extends State<PlayPage> {
                                         fontSize: 16.0,
                                       ),
                                     ),
-
                                   ],
-                                ),
-                              ),
-
-                            if (isGameMode)
-                              Positioned(
-                                top: 10,
-                                left: 10,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.sports_esports, color: Colors.white, size: 16),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Mode Jeu',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ),
                           ],
@@ -235,20 +245,21 @@ class PlayPageState extends State<PlayPage> {
                 ],
               ),
 
-              // Bouton flottant pour basculer le mode jeu
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: FloatingActionButton(
-                  elevation: 5,
-                  backgroundColor: isGameMode ? Colors.red : Colors.green,
-                  child: Icon(
-                    isGameMode ? Icons.close : Icons.sports_esports,
-                    color: Colors.white,
+              // Bouton flottant pour quitter le mode jeu
+              if (isGameMode)
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: FloatingActionButton(
+                    elevation: 5,
+                    backgroundColor: Colors.red,
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    onPressed: toggleGameMode,
                   ),
-                  onPressed: toggleGameMode,
                 ),
-              ),
             ],
           );
         } else if (snapshot.data != null && snapshot.data!.isEmpty) {
