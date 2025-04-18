@@ -25,8 +25,8 @@ void main() {
       return MaterialApp(
         home: AssetsPage(
           game: testGame,
-          spawnAsset: (asset) {
-            print('spawnAsset called with: ${asset.name}');
+          spawnAsset: (asset, canvas) {
+            print('spawnAsset called with: ${asset.name} on canvas: $canvas');
             spawnedAssets.add(asset);
           },
           updateAsset: (asset) => updatedAssets.add(asset),
@@ -52,8 +52,6 @@ void main() {
       expect(find.text('Asset 1'), findsWidgets);
     });
 
-
-
     testWidgets('adds a new asset when the FAB is tapped', (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -68,7 +66,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         home: AssetsPage(
           game: testGame,
-          spawnAsset: (asset) => spawnedAssets.add(asset),
+          spawnAsset: (asset, canvas) => spawnedAssets.add(asset),
           updateAsset: (asset) => updatedAssets.add(asset),
           canvas: EditorCanvas.ui,
         ),
@@ -87,7 +85,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         home: AssetsPage(
           game: testGame,
-          spawnAsset: (asset) => spawnedAssets.add(asset),
+          spawnAsset: (asset, canvas) => spawnedAssets.add(asset),
           updateAsset: (asset) => updatedAssets.add(asset),
           canvas: EditorCanvas.ui,
         ),

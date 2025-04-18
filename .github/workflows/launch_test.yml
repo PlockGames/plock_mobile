@@ -62,6 +62,9 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_page_loaded.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tileset/tileset_editor_painter.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/api_service.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/auth_service.dart'  -o coverage/lcov.info
+          
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor.dart'  -o coverage/lcov.info

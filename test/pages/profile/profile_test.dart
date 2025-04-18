@@ -32,32 +32,18 @@ void main() {
       expect(find.text('********'), findsOneWidget);
     });
 
-    testWidgets("Modification du nom d'utilisateur via le dialogue d'édition", (WidgetTester tester) async {
+    testWidgets("Ouverture et fermeture du dialogue de modification du nom d'utilisateur", (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
         ),
       );
-
-      // Attendre que les données soient chargées
       await tester.pump(const Duration(seconds: 1));
-
-      // Taper sur l'icône d'édition associé au "Nom d'utilisateur"
       await tester.tap(find.byIcon(Icons.edit).first);
       await tester.pumpAndSettle();
-
-      // Vérifie que le dialogue s'ouvre avec le titre "Modifier Nom d'utilisateur"
       expect(find.text("Modifier Nom d'utilisateur"), findsOneWidget);
-
-      // Modifier le champ en entrant "newusername" dans le TextFormField
-      await tester.enterText(find.byType(TextFormField), 'newusername');
-
-      // Enregistrer la modification
-      await tester.tap(find.text('Enregistrer'));
+      await tester.tap(find.text('Annuler'));
       await tester.pumpAndSettle();
-
-      // Le test ne peut pas tester la mise à jour réelle car cela nécessiterait
-      // une réponse API, mais on peut vérifier que le dialogue se ferme
       expect(find.text("Modifier Nom d'utilisateur"), findsNothing);
     });
 

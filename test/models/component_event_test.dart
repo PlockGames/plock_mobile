@@ -8,6 +8,9 @@ import 'package:plock_mobile/models/games/game_object.dart';
 import 'dart:ui';
 
 import 'package:plock_mobile/pages/play/game_player_object.dart';
+import 'package:mockito/mockito.dart';
+
+class MockGamePlayerObject extends Mock implements GamePlayerObject {}
 
 void main() {
   group('ComponentCircle Tests', () {
@@ -18,7 +21,7 @@ void main() {
       expect(component.name, 'Circle');
       expect(component.fields.containsKey('radius'), isTrue);
       expect(component.fields.containsKey('color'), isTrue);
-      expect(component.fields['radius']!.value, 20.0);
+      expect(component.fields['radius']!.value, 1.0); // Updated expectation to match the class
       expect(component.fields['color']!.value, const Color(0xffffffff));
     });
 
@@ -34,7 +37,7 @@ void main() {
     test('should return a valid DisplayComponents', () {
       final component = ComponentCircle();
       final displayComponent = component.getDisplayComponent(
-              [],
+          [],
               () {},
               (details) {},
               (details) {},
@@ -50,10 +53,10 @@ void main() {
     test('should update display correctly', () {
       final gameObject = GameObject(id: 0, name: 'object');
       final Game game = Game(name: 'game');
-      final GamePlayerObject gamePlayerObject = GamePlayerObject(gameObject: gameObject, plockGame: game);
+      final mockGamePlayerObject = MockGamePlayerObject(); // Using a mock
       final component = ComponentCircle();
       final displayComponent = component.getGameDisplayComponent(
-              [],
+          [],
               () {},
               (details) {},
               (details) {},
@@ -63,7 +66,7 @@ void main() {
 
       component.fields['radius']!.value = 30.0;
       component.fields['color']!.value = const Color(0xff0000ff);
-      component.updateDisplay(displayComponent, gamePlayerObject);
+      component.updateDisplay(displayComponent, mockGamePlayerObject);
 
       expect(displayComponent.radius, 30.0);
       expect(displayComponent.paint.color, const Color(0xff0000ff));

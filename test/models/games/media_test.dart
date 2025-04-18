@@ -36,8 +36,6 @@ void main() {
       await File.fromUri(Uri.file('test_image.png')).delete();
     });
 
-
-
     test('instance() creates a copy', () {
       final copy = media.instance();
       expect(copy.id, media.id);
@@ -98,7 +96,7 @@ void main() {
     test('toJson() returns correct JSON string', () {
       final jsonString = media.toJson();
       // On retire tout les espaces et retour a la ligne pour une comparaison plus facile.
-      expect(jsonString.replaceAll(RegExp(r'\s'), ''), '{"id":1,"name":"TestMedia","uuid":"${media.uuid}"}');
+      expect(jsonString.replaceAll(RegExp(r'\s'), ''), '{"isSet":false,"id":1,"name":"TestMedia","uuid":"${media.uuid}"}');
     });
 
     test('fromJson() creates Media object from JSON', () {

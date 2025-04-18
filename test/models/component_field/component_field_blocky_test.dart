@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plock_mobile/models/component_fields/component_field_blocky.dart';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/media.dart';
+import 'dart:convert';
 
 void main() {
   // Ensure Flutter binding is initialized
@@ -14,7 +15,7 @@ void main() {
     test('Should create ComponentFieldBlockly with default values', () {
       final blocklyField = ComponentFieldBlockly();
 
-      expect(blocklyField.type, 'ComponentFieldBlocky');
+      expect(blocklyField.runtimeType.toString(), 'ComponentFieldBlockly');
       expect(blocklyField.value[0], '');
       expect(blocklyField.value[1], {
         'blocks': {
@@ -60,17 +61,23 @@ void main() {
       );
 
       final jsonValue = blocklyField.toJson();
+      final expectedJsString = jsonEncode('console.log("Test");');
+      final expectedJson = '{"json": {"blocks":{"languageVersion":0,"blocks":[]}}, "js": $expectedJsString}';
 
-      expect(jsonValue, '"console.log(\\"Test\\");"');
+      expect(jsonValue, expectedJson);
     });
 
     test('Should update from JSON', () {
       final blocklyField = ComponentFieldBlockly();
       final newJsValue = 'alert("Updated");';
+      final escapedJsValue = jsonEncode(newJsValue);
+      final jsonString = '{"json": {"blocks":{"languageVersion":0,"blocks":[]}}, "js": $escapedJsValue}';
+      final newJsonValue = jsonDecode(jsonString);
 
-      blocklyField.updateFromJson(newJsValue);
+      blocklyField.updateFromJson(newJsonValue);
 
       expect(blocklyField.value[0], newJsValue);
+      expect(blocklyField.value[1], {'blocks': {'languageVersion': 0, 'blocks': []}});
     });
 
     test('Should return debug data', () {

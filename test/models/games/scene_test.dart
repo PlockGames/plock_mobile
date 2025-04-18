@@ -45,15 +45,14 @@ void main() {
     {
       "name": "JSON Scene",
       "objects": [
-        {"id": 3,"name": "Object 3","components": [],"position": {"x":0.0,"y":0.0}}
+        {"id": 3,"name": "Object 3","layer":0,"enabled":true,"type":"object","locked":false,"visible":true,"keep":false,"components":[],"position": {"x":0.0,"y":0.0}}
       ],
       "uiObjects": [
-        {"id": 4,"name": "UI Object 4","components": [],"position": {"x":0.0,"y":0.0}}
+        {"id": 4,"name": "UI Object 4","layer":0,"enabled":true,"type":"object","locked":false,"visible":true,"keep":false,"components":[],"position": {"x":0.0,"y":0.0}}
       ]
     }
     """;
       expect(jsonString.replaceAll(RegExp(r'\s'), ''), expectedJson.replaceAll(RegExp(r'\s'), ''));
     });
-
   });
 }
