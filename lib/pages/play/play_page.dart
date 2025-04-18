@@ -31,18 +31,29 @@ class PlayPageState extends State<PlayPage> {
   final Map<String, bool> favoriteStatus = {}; // Map to store like status by game ID
   final Map<String, String> countLike = {}; // Map to store like counts as strings by game ID
 
+  // Map pour stocker les instances de GamePlayer
+  final Map<String, GamePlayer> gamePlayerInstances = {};
+  final Map<String, int> gameResetKeys = {};
+
   bool isGameMode = false;
+  bool isPaused = false;
   int currentPageIndex = 0;
   final PageController _pageController = PageController();
 
   // Pour eviter le rechargement du jeu quand on rentre en game mode
   Future<List<plock.Game>> _gamesFuture = Future.value([]);
+  List<plock.Game> _loadedGames = [];
   bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _gamesFuture = getAllGamesWithData();
+    _gamesFuture = getAllGamesWithData().then((games) {
+      setState(() {
+        _loadedGames = games;
+      });
+      return games;
+    });
     _initializeFavoriteStatus();
     _isInitialized = true;
   }
@@ -56,12 +67,55 @@ class PlayPageState extends State<PlayPage> {
   // Basculer entre le mode jeu et le mode défilement
   void toggleGameMode() {
     setState(() {
+      // Si on sort du mode jeu, réinitialiser le jeu actuel
+      if (isGameMode) {
+        _resetCurrentGame();
+        isPaused = false;
+      }
+
       isGameMode = !isGameMode;
 
       if (widget.onGameModeChanged != null) {
         widget.onGameModeChanged!(isGameMode);
       }
     });
+  }
+
+  void _resetCurrentGame() {
+    if (_loadedGames.isNotEmpty && currentPageIndex < _loadedGames.length) {
+      plock.Game currentGame = _loadedGames[currentPageIndex];
+      // Recréer l'instance du GamePlayer pour réinitialiser le jeu
+      if (currentGame.uuid != null) {
+        setState(() {
+          // Incrémenter la clé de réinitialisation pour forcer une reconstruction complète
+          gameResetKeys[currentGame.uuid] = (gameResetKeys[currentGame.uuid] ?? 0) + 1;
+          gamePlayerInstances[currentGame.uuid] = GamePlayer(game: currentGame);
+        });
+      }
+    }
+  }
+
+  void togglePause() {
+    setState(() {
+      isPaused = !isPaused;
+      _pauseOrResumeCurrentGame();
+    });
+  }
+
+  void _pauseOrResumeCurrentGame() {
+    if (_loadedGames.isNotEmpty && currentPageIndex < _loadedGames.length) {
+      plock.Game currentGame = _loadedGames[currentPageIndex];
+      if (currentGame.uuid != null) {
+        GamePlayer? gamePlayer = gamePlayerInstances[currentGame.uuid];
+        if (gamePlayer != null) {
+          if (isPaused) {
+            gamePlayer.pauseEngine();
+          } else {
+            gamePlayer.resumeEngine();
+          }
+        }
+      }
+    }
   }
 
   Future<void> _initializeFavoriteStatus() async {
@@ -150,6 +204,7 @@ class PlayPageState extends State<PlayPage> {
                           // Réinitialiser le mode jeu lors du changement de page
                           if (isGameMode) {
                             isGameMode = false;
+                            isPaused = false;
                             if (widget.onGameModeChanged != null) {
                               widget.onGameModeChanged!(false);
                             }
@@ -158,13 +213,28 @@ class PlayPageState extends State<PlayPage> {
                       },
                       children: games.map((game) {
                         bool isFavorite = favoriteStatus[game.uuid] ?? false;
+
+                        // Initialiser la clé de réinitialisation si nécessaire
+                        if (!gameResetKeys.containsKey(game.uuid)) {
+                          gameResetKeys[game.uuid] = 0;
+                        }
+
+                        // Utiliser l'instance existante ou en créer une nouvelle
+                        if (!gamePlayerInstances.containsKey(game.uuid)) {
+                          gamePlayerInstances[game.uuid] = GamePlayer(game: game);
+                        }
+                        GamePlayer gamePlayer = gamePlayerInstances[game.uuid]!;
+
                         return Stack(
+                          key: ValueKey('game-${game.uuid}-${gameResetKeys[game.uuid]}'),
                           children: [
                             // Widget principal du jeu
                             AbsorbPointer(
-                              // Absorbe les interactions avec le jeu si on n'est pas en mode jeu
-                              absorbing: !isGameMode,
-                              child: GameWidget(game: GamePlayer(game: game)),
+                              absorbing: !isGameMode || isPaused,
+                              child: GameWidget(
+                                  key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
+                                  game: gamePlayer
+                              ),
                             ),
 
                             if (!isGameMode)
@@ -195,6 +265,42 @@ class PlayPageState extends State<PlayPage> {
                                           ),
                                         ],
                                       ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                            // Overlay pour le mode pause
+                            if (isGameMode && isPaused)
+                              Positioned.fill(
+                                child: Container(
+                                  color: Colors.black.withOpacity(0.4),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.pause_circle_outline,
+                                          color: Colors.white,
+                                          size: 64,
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text(
+                                          'Jeu en pause',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            shadows: [
+                                              Shadow(
+                                                blurRadius: 10.0,
+                                                color: Colors.black,
+                                                offset: Offset(2.0, 2.0),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -259,14 +365,33 @@ class PlayPageState extends State<PlayPage> {
                 Positioned(
                   bottom: 20,
                   right: 20,
-                  child: FloatingActionButton(
-                    elevation: 5,
-                    backgroundColor: Colors.red,
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    ),
-                    onPressed: toggleGameMode,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Bouton de pause
+                      FloatingActionButton(
+                        heroTag: "pauseButton",
+                        elevation: 5,
+                        backgroundColor: Colors.blue,
+                        child: Icon(
+                          isPaused ? Icons.play_arrow : Icons.pause,
+                          color: Colors.white,
+                        ),
+                        onPressed: togglePause,
+                      ),
+                      SizedBox(height: 10),
+                      // Bouton de fermeture qui réinitialise le jeu
+                      FloatingActionButton(
+                        heroTag: "closeButton",
+                        elevation: 5,
+                        backgroundColor: Colors.red,
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        ),
+                        onPressed: toggleGameMode,
+                      ),
+                    ],
                   ),
                 ),
             ],
