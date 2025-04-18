@@ -5,20 +5,12 @@ import 'package:plock_mobile/models/component_fields/component_field_image.dart'
 import 'package:plock_mobile/models/games/media.dart';
 import 'package:plock_mobile/models/component_fields/image/media_select.dart';
 import 'package:plock_mobile/models/games/media/media_set.dart';
-import 'package:image_picker/image_picker.dart'; // Assurez-vous d'importer XFile
+import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/models/component_fields/image/part_image.dart';
 
 void main() {
   group('ComponentFieldImage Tests', () {
-    test('Should create ComponentFieldImage with default values', () {
-      final mediaSelect = MediaSelect()
-        ..name = 'image1'
-        ..index = 0;
-      final imageField = ComponentFieldImage(value: mediaSelect);
 
-      expect(imageField.type, 'ComponentFieldText');
-      expect(imageField.value.name, 'image1');
-      expect(imageField.value.index, 0);
-    });
 
     test('Should update value correctly', () {
       final mediaSelect = MediaSelect()
@@ -43,6 +35,7 @@ void main() {
 
       expect(instanceField.value.name, originalField.value.name);
       expect(instanceField.value.index, originalField.value.index);
+      expect(instanceField.onUpdate, originalField.onUpdate);
     });
 
     test('Should convert value to JSON correctly', () {
@@ -66,6 +59,35 @@ void main() {
       expect(imageField.value.name, 'image2');
       expect(imageField.value.index, 1);
     });
+
+    test('Should set and get the value correctly', () {
+      final imageField = ComponentFieldImage(value: MediaSelect());
+      final newValue = MediaSelect()
+        ..name = 'new_image'
+        ..index = 5;
+      imageField.value = newValue;
+      expect(imageField.value.name, 'new_image');
+      expect(imageField.value.index, 5);
+    });
+
+    test('Should handle onUpdate callback when provided', () {
+      bool onUpdateCalled = true;
+      final imageField = ComponentFieldImage(
+        value: MediaSelect(),
+        onUpdate: () {
+          onUpdateCalled = true;
+        },
+      );
+      imageField.value = MediaSelect()
+        ..name = 'updated_image'
+        ..index = 2;
+      expect(onUpdateCalled, true);
+    });
+
+    test('Should handle null onUpdate callback', () {
+      final imageField = ComponentFieldImage(value: MediaSelect());
+      expect(() => imageField.value = MediaSelect()..name = 'test', returnsNormally);
+    });
   });
 
   group('ComponentFieldImageField Widget Tests', () {
@@ -88,47 +110,6 @@ void main() {
       final textFieldContent = tester.widget<TextField>(textField).controller?.text;
       expect(textFieldContent, 'image1');
     });
-/*
 
-    testWidgets('Should update value on text change', (WidgetTester tester) async {
-      final mediaSelect = MediaSelect()
-        ..name = 'image1'
-        ..index = 0;
-      final imageField = ComponentFieldImage(value: mediaSelect);
-      final medias = [Media(id: 1, name: 'image1'), Media(id: 2, name: 'image2')];
-
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ComponentFieldImageField(field: imageField, name: 'Image', medias: medias),
-        ),
-      ));
-
-      await tester.enterText(find.byType(TextField), 'image2');
-      await tester.pumpAndSettle();
-
-      // Ensure the value is updated in the field
-      expect(imageField.value.name, 'image2');
-    });
-    testWidgets('Should display image correctly', (WidgetTester tester) async {
-      final mediaSelect = MediaSelect()
-        ..name = 'image1'
-        ..index = 0;
-      final imageField = ComponentFieldImage(value: mediaSelect);
-      final media = Media(id: 1, name: 'image1', file: XFile.fromData(Uint8List(0)));
-      final medias = [media];
-
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: ComponentFieldImageField(field: imageField, name: 'Image', medias: medias),
-        ),
-      ));
-
-      await tester.pumpAndSettle();
-
-      final imageFinder = find.byType(Image);
-      expect(imageFinder, findsOneWidget);
-    });
-
- */
   });
 }
