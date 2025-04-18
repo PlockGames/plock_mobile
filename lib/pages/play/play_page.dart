@@ -35,10 +35,16 @@ class PlayPageState extends State<PlayPage> {
   int currentPageIndex = 0;
   final PageController _pageController = PageController();
 
+  // Pour eviter le rechargement du jeu quand on rentre en game mode
+  Future<List<plock.Game>> _gamesFuture = Future.value([]);
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
+    _gamesFuture = getAllGamesWithData();
     _initializeFavoriteStatus();
+    _isInitialized = true;
   }
 
   @override
@@ -59,16 +65,18 @@ class PlayPageState extends State<PlayPage> {
   }
 
   Future<void> _initializeFavoriteStatus() async {
-    List<plock.Game> allGames = await getAllGamesWithData();
+    List<plock.Game> allGames = await _gamesFuture;
     for (var game in allGames) {
       var rep = await Api.getGame(game.uuid);
       var jsonResponse = rep['data'];
       var likes = jsonResponse['likes'];
 
-      setState(() {
-        favoriteStatus[game.uuid] = jsonResponse['hasLiked'];
-        countLike[game.uuid] = likes.toString();
-      });
+      if (mounted) {
+        setState(() {
+          favoriteStatus[game.uuid] = jsonResponse['hasLiked'];
+          countLike[game.uuid] = likes.toString();
+        });
+      }
     }
   }
 
@@ -121,10 +129,11 @@ class PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<plock.Game>>(
-      stream: getAllGamesWithData().asStream(),
+    return FutureBuilder<List<plock.Game>>(
+      future: _gamesFuture,
       builder: (context, snapshot) {
         if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+          List<plock.Game> games = snapshot.data!;
           return Stack(
             children: [
               Column(
@@ -147,7 +156,7 @@ class PlayPageState extends State<PlayPage> {
                           }
                         });
                       },
-                      children: snapshot.data!.map((game) {
+                      children: games.map((game) {
                         bool isFavorite = favoriteStatus[game.uuid] ?? false;
                         return Stack(
                           children: [
