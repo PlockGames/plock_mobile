@@ -4,6 +4,7 @@ import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/constants/game_constants.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
 import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
@@ -60,12 +61,18 @@ class GamePlayer extends Forge2DGame {
 
   @override
   Future<void> onLoad() async {
-    game.screenSize = size;
+    // Définition d'une taille de jeu fixe
+    final gameResolution = GameConstants.standardResolution;
+
+    // Configuration d'un viewport à résolution fixe
+    camera.viewport = FixedResolutionViewport(resolution: gameResolution);
+
+    // Assurez-vous que le jeu est informé de cette résolution fixe
+    game.screenSize = gameResolution;
     game.gamePlayer = this;
 
     camera.viewfinder.zoom = 50;
     camera.viewfinder.position = Vector2(0, 0);
-    camera.viewport = MaxViewport();
 
     // Add button to exit the game if in test mode
     if (isTest && exitGame != null) {

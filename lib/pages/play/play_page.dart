@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/constants/game_constants.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -231,9 +232,41 @@ class PlayPageState extends State<PlayPage> {
                             // Widget principal du jeu
                             AbsorbPointer(
                               absorbing: !isGameMode || isPaused,
-                              child: GameWidget(
-                                  key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
-                                  game: gamePlayer
+                              child: isGameMode
+                                  ? Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                color: Colors.black,
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: SizedBox(
+                                    width: GameConstants.standardResolution.x,
+                                    height: GameConstants.standardResolution.y,
+                                    child: GameWidget(
+                                      key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
+                                      game: gamePlayer,
+                                    ),
+                                  ),
+                                ),
+                              )
+                                  : Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.width * (GameConstants.standardResolution.y / GameConstants.standardResolution.x),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                                  color: Colors.black,
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: SizedBox(
+                                    width: GameConstants.standardResolution.x,
+                                    height: GameConstants.standardResolution.y,
+                                    child: GameWidget(
+                                      key: ValueKey('gameWidget-${game.uuid}-${gameResetKeys[game.uuid]}'),
+                                      game: gamePlayer,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
 
@@ -274,33 +307,75 @@ class PlayPageState extends State<PlayPage> {
                             if (isGameMode && isPaused)
                               Positioned.fill(
                                 child: Container(
-                                  color: Colors.black.withOpacity(0.4),
+                                  color: Colors.black.withOpacity(0.7),
                                   child: Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.pause_circle_outline,
-                                          color: Colors.white,
-                                          size: 64,
-                                        ),
-                                        SizedBox(height: 16),
-                                        Text(
-                                          'Jeu en pause',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                            shadows: [
-                                              Shadow(
-                                                blurRadius: 10.0,
-                                                color: Colors.black,
-                                                offset: Offset(2.0, 2.0),
-                                              ),
-                                            ],
+                                    child: Container(
+                                      padding: EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.9),
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.3),
+                                            spreadRadius: 2,
+                                            blurRadius: 10,
+                                            offset: Offset(0, 3),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
+                                      width: MediaQuery.of(context).size.width * 0.8,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Jeu en pause',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 30),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blue,
+                                              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            onPressed: togglePause,
+                                            child: Text(
+                                              'Reprendre',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 15),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.green,
+                                              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              _resetCurrentGame();
+                                              togglePause(); // Reprendre le jeu après rafraîchissement
+                                            },
+                                            child: Text(
+                                              'Rafraîchir',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
