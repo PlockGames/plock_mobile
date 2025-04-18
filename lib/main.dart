@@ -72,6 +72,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late TabController controller;
   final authService = AuthService();
 
+  bool isInGameMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -92,11 +94,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     }
   }
 
+  void _handleGameModeChanged(bool gameMode) {
+    setState(() {
+      isInGameMode = gameMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plock'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -109,7 +118,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
         ],
       ),
-      bottomNavigationBar: TabBar(
+      // Désactive la barre de navigation quand en mode jeu
+      bottomNavigationBar: isInGameMode
+          ? null
+          : TabBar(
         controller: controller,
         physics: const NeverScrollableScrollPhysics(),
         tabs: const <Widget>[
@@ -119,8 +131,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: controller,
+        // Désactive le swipe horizontal quand en mode jeu
+        physics: isInGameMode
+            ? const NeverScrollableScrollPhysics()
+            : const AlwaysScrollableScrollPhysics(),
         children: <Widget>[
-          PlayPage(),
+          PlayPage(onGameModeChanged: _handleGameModeChanged),
           const MyGamesPage(),
         ],
       ),
