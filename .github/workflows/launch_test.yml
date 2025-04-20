@@ -76,7 +76,8 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_ui_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/data/initial_toolbox.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap.dart'  -o coverage/lcov.info
-          
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/constants/game_constants.dart'  -o coverage/lcov.info
+
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_canvas_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
