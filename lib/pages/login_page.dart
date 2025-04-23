@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final AuthService? authService;
+
+  const LoginPage({super.key, this.authService});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +12,7 @@ class LoginPage extends StatelessWidget {
 
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
-    final authService = AuthService();
+    final _authService = authService ?? AuthService();
 
     // Function to validate inputs and trigger login
     void _validateAndLogin() async {
@@ -44,21 +46,19 @@ class LoginPage extends StatelessWidget {
       );
 
       // Proceed with login using AuthService
-      final result = await authService.login(email, password);
+      final result = await _authService.login(email, password);
 
       if (result['success']) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login successful!")),
-        );
         // Navigate to home page
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (route) => false);
       } else {
         // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'])),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar() // Cacher le SnackBar "Logging in..." d'abord
+          ..showSnackBar(
+            SnackBar(content: Text(result['message'])),
+          );
       }
     }
 

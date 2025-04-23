@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http;
 import 'dart:convert';
 import 'auth_service.dart';
 import 'http_client_service.dart';
@@ -67,6 +71,39 @@ class ApiService {
     try {
       final response = await _httpClient.patch(endpoint, data);
       return _processResponse(response);
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e', 'data': null};
+    }
+  }
+
+  // Méthode pour envoyer des fichiers
+  Future<Map<String, dynamic>> uploadMedia(
+      String endpoint, Uint8List data) async {
+    try {
+      final token = await _authService.getAccessToken();
+      http.MultipartFile file = http.MultipartFile.fromBytes('images', data,
+          filename: "image.png", contentType: http.MediaType("image", "png"));
+
+      final body =
+          http.MultipartRequest("POST", Uri.parse('$baseUrl$endpoint'));
+      body.files.add(file);
+
+      // Create headers with Content-Type first
+      final headers = {
+        "Content-Type": "multipart/form-data",
+      };
+
+      // Only add the Authorization header if token exists
+      if (token != null && token.isNotEmpty) {
+        headers["Authorization"] = "Bearer $token";
+      }
+
+      body.headers.addAll(headers);
+
+      final res = await body.send();
+      final httpRes = await http.Response.fromStream(res);
+      print(httpRes.body);
+      return _processResponse(httpRes);
     } catch (e) {
       return {'success': false, 'message': 'Error: $e', 'data': null};
     }

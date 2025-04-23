@@ -139,8 +139,9 @@ class _EditorPageState extends State<EditorPage> {
               "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
           contentGame: widget.game.toJson(),
         ));
-        var json = jsonDecode(upload.body);
-        final String uuid = json['data']['id'];
+        var json = upload;
+        final Map<String, dynamic> decodedJson = jsonDecode(json.body);
+        final String uuid = decodedJson['data']['id'];
         widget.game.uuid = uuid;
       } else {
         // Update the game
@@ -222,7 +223,16 @@ class _EditorPageState extends State<EditorPage> {
                       game: tempGame,
                       isTest: true,
                       exitGame: goBack(context),
-                      uploadGame: uploadGame(context)))));
+                      uploadGame: uploadGame(context),
+                      navigateToMyGames: navigateToMyGames(context)))));
+    };
+  }
+
+  Function() navigateToMyGames(BuildContext context) {
+    return () {
+      // Navigate to My Games page
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      Navigator.of(context).pushNamed('/home');
     };
   }
 
@@ -304,7 +314,7 @@ class _EditorPageState extends State<EditorPage> {
     return Column(
       children: <Widget>[
         Expanded(
-          child: GameWidget(
+          child: GameWidget<Editor>(
             key: Key("editor_game"),
             game: Editor(
               game: widget.game,
