@@ -14,8 +14,7 @@ class ApiService {
   ApiService({
     AuthService? authService,
     http.Client? client,
-  }) :
-        _authService = authService ?? AuthService(),
+  })  : _authService = authService ?? AuthService(),
         _client = client ?? http.Client();
 
   // GET request avec token d'authentification
@@ -34,16 +33,13 @@ class ApiService {
 
       return _processResponse(response);
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
   // POST request avec token d'authentification
-  Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> post(
+      String endpoint, Map<String, dynamic> data) async {
     try {
       final token = await _authService.getAccessToken();
       final headers = {
@@ -59,16 +55,13 @@ class ApiService {
 
       return _processResponse(response);
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
   // PUT request avec token d'authentification
-  Future<Map<String, dynamic>> put(String endpoint, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> put(
+      String endpoint, Map<String, dynamic> data) async {
     try {
       final token = await _authService.getAccessToken();
       final headers = {
@@ -84,11 +77,7 @@ class ApiService {
 
       return _processResponse(response);
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
@@ -108,16 +97,13 @@ class ApiService {
 
       return _processResponse(response);
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
   // PATCH request avec token d'authentification
-  Future<Map<String, dynamic>> patch(String endpoint, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> patch(
+      String endpoint, Map<String, dynamic> data) async {
     try {
       final token = await _authService.getAccessToken();
       final headers = {
@@ -133,37 +119,40 @@ class ApiService {
 
       return _processResponse(response);
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
   // Méthode pour envoyer des fichiers
-  Future<Map<String, dynamic>> uploadMedia(String endpoint, Uint8List data) async {
+  Future<Map<String, dynamic>> uploadMedia(
+      String endpoint, Uint8List data) async {
     try {
       final token = await _authService.getAccessToken();
-      http.MultipartFile file = http.MultipartFile.fromBytes('images', data, filename: "image.png", contentType: http.MediaType("image", "png"));
+      http.MultipartFile file = http.MultipartFile.fromBytes('images', data,
+          filename: "image.png", contentType: http.MediaType("image", "png"));
 
-      final body = http.MultipartRequest("POST", Uri.parse('$baseUrl$endpoint'));
+      final body =
+          http.MultipartRequest("POST", Uri.parse('$baseUrl$endpoint'));
       body.files.add(file);
-      body.headers.addAll({
-        "Authorization": "Bearer $token",
+
+      // Create headers with Content-Type first
+      final headers = {
         "Content-Type": "multipart/form-data",
-      });
+      };
+
+      // Only add the Authorization header if token exists
+      if (token != null && token.isNotEmpty) {
+        headers["Authorization"] = "Bearer $token";
+      }
+
+      body.headers.addAll(headers);
+
       final res = await body.send();
       final httpRes = await http.Response.fromStream(res);
       print(httpRes.body);
       return _processResponse(httpRes);
-
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-        'data': null
-      };
+      return {'success': false, 'message': 'Error: $e', 'data': null};
     }
   }
 
@@ -186,7 +175,8 @@ class ApiService {
 
         return {
           'success': false,
-          'message': message ?? 'Request failed with status: ${response.statusCode}',
+          'message':
+              message ?? 'Request failed with status: ${response.statusCode}',
           'data': null
         };
       }

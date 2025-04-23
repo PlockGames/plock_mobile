@@ -21,11 +21,19 @@ class Api {
   static Future<Map<String, dynamic>> getAllGames(int? page) async {
     if (page != null) {
       _log("Getting all games with page: $page");
-      Map<String, dynamic> res = await _apiService.get("/game?page=$page&perPage=3");
+      Map<String, dynamic> res =
+          await _apiService.get("/game?page=$page&perPage=3");
       return res;
     }
     _log("Getting all games");
     Map<String, dynamic> res = await _apiService.get("/game");
+    return res;
+  }
+
+  /// Return a list of recommended games for the user.
+  static Future<Map<String, dynamic>> getRecommendation() async {
+    _log("Getting game recommendations");
+    Map<String, dynamic> res = await _apiService.get("/game/recommendation");
     return res;
   }
 
@@ -35,6 +43,7 @@ class Api {
     final response = await _apiService.get("/auth/me");
     return response;
   }
+
   /// Met à jour le profil de l'utilisateur actuellement authentifié.
   static Future<Map<String, dynamic>> updateUserProfile({
     String? email,
@@ -85,11 +94,9 @@ class Api {
   /// Ajoute un like à un jeu donné par son [id].
   static Future<Map<String, dynamic>> addLikeGame(String gameId) async {
     _log("Adding like game with id: $gameId");
-    final response = await _apiService.post("/like",
-      {
-        "gameId": gameId,
-      }
-    );
+    final response = await _apiService.post("/like", {
+      "gameId": gameId,
+    });
     return response;
   }
 
@@ -105,12 +112,14 @@ class Api {
     return await _apiService.delete("/game/$id");
   }
 
-  static Future<Map<String, dynamic>> updateGame(String id, UpdateGameDto data) async {
+  static Future<Map<String, dynamic>> updateGame(
+      String id, UpdateGameDto data) async {
     _log("Updating game with id: $id");
     return await _apiService.put("/game/$id?id=$id", data.toJson());
   }
 
-  static Future<Map<String, dynamic>> uploadMedia(String gameId, Uint8List data) async {
+  static Future<Map<String, dynamic>> uploadMedia(
+      String gameId, Uint8List data) async {
     _log("Uploading media for game with id: $gameId");
     return await _apiService.uploadMedia("/game/$gameId/images", data);
   }

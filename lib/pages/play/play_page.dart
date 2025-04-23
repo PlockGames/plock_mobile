@@ -24,79 +24,159 @@ class PlayPage extends StatefulWidget {
 }
 
 class PlayPageState extends State<PlayPage> {
-  List<GameWidget> games = [];
-  final Map<String, bool> favoriteStatus = {}; // Map to store like status by game ID
-  final Map<String, String> countLike = {}; // Map to store like counts as strings by game ID
+  final Map<String, bool> favoriteStatus =
+      {}; // Map to store like status by game ID
+  final Map<String, String> countLike =
+      {}; // Map to store like counts as strings by game ID
+  bool _isLoading = true;
+  List<plock.Game> _recommendedGames = [];
+  String _debugMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _initializeFavoriteStatus();
+    _loadRecommendedGames();
   }
 
-  Future<void> _initializeFavoriteStatus() async {
-    List<plock.Game> allGames = await getAllGamesWithData();
-    for (var game in allGames) {
-      var rep = await Api.getGame(game.uuid);
-      var jsonResponse = jsonDecode(rep['data']);
-      var likes = jsonResponse['data']['likes'];
-
-      var response = await Api.getGameLike(game.uuid);
-      dynamic decoded = jsonDecode(response['data']);
-      bool isLiked = decoded['totalLikes'] > 0;
-      setState(() {
-        favoriteStatus[game.uuid] = jsonResponse['data']['hasLiked'];
-        countLike[game.uuid] = likes.toString();
-        print("-------------------------------");
-        print(rep);
-        print("-------------------------------");
-        print(jsonResponse['data']['hasLiked']);
-        print("-------------------------------");
-      });
-    //  print("-------------is liked ?--------------");
-   //   print(favoriteStatus);
-   //c   print(game.id);
-   //   print("-------------is liked ?--------------");
-    }
+  void _logDebug(String message) {
+    print("PlayPage: $message");
+    setState(() {
+      _debugMessage += "\n$message";
+    });
   }
 
-  /// Get all the games with their game data.
-  Future<List<plock.Game>> getAllGamesWithData() async {
-    var lastResponse = await Api.getAllGames(1);
-    dynamic decoded = lastResponse['data']['data'];
-    var allGames = decoded;
+  Future<void> _loadRecommendedGames() async {
+    setState(() {
+      _isLoading = true;
+      _debugMessage = 'Loading recommended games...';
+    });
 
-    for (int page = 2; 0 < decoded.length; page++) {
-      lastResponse = await Api.getAllGames(page);
-      decoded = lastResponse['data']['data'];
-      allGames.addAll(decoded);
-    }
-    List<plock.Game> allGameWithData = <plock.Game>[];
-    for (var game in allGames) {
-      var gameData = await http.get(Uri.parse(game['gameUrl']));
-      var json = jsonDecode(gameData.body);
-      plock.Game? loadedGame = await plock.Game.jsonToGame(name: game["title"], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
-      if (loadedGame == null) {
-        continue;
-      }
+    try {
+      _logDebug("Fetching recommendations from API...");
+      final recommendedGames = await getRecommendedGamesWithData();
 
-      loadedGame.uuid = game['id'];
-      final mediasJson = await Api.getMedias(game['id']);
+      if (recommendedGames.isEmpty) {
+        _logDebug("No recommended games found");
+      } else {
+        _logDebug("Found ${recommendedGames.length} recommended games");
 
-      for (var media in mediasJson['data']) {
-        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
-        if (index != -1) {
-          final fileRes = await http.get(Uri.parse(media['filename']));
-          final file = XFile.fromData(fileRes.bodyBytes);
-          loadedGame.medias[index].file = file;
+        // Initialize like status for recommended games
+        for (var game in recommendedGames) {
+          await _initializeLikeStatus(game);
         }
       }
 
-      print('Game loaded: ${loadedGame.name}');
-
-      allGameWithData.add(loadedGame);
+      setState(() {
+        _recommendedGames = recommendedGames;
+        _isLoading = false;
+      });
+    } catch (e) {
+      _logDebug("Error loading recommended games: $e");
+      setState(() {
+        _isLoading = false;
+      });
     }
-    return allGameWithData;
+  }
+
+  Future<void> _initializeLikeStatus(plock.Game game) async {
+    try {
+      var rep = await Api.getGame(game.uuid);
+      _logDebug("Game API response: ${rep['success']} - ${rep['message']}");
+
+      if (!rep['success']) {
+        _logDebug("Failed to get game data for ID: ${game.uuid}");
+        return;
+      }
+
+      var jsonResponse = jsonDecode(rep['data']);
+      var likes = jsonResponse['data']['likes'];
+      bool isLiked = jsonResponse['data']['hasLiked'] ?? false;
+
+      setState(() {
+        favoriteStatus[game.uuid] = isLiked;
+        countLike[game.uuid] = likes.toString();
+      });
+    } catch (e) {
+      _logDebug("Error initializing like status for ${game.uuid}: $e");
+    }
+  }
+
+  /// Get recommended games with their data
+  Future<List<plock.Game>> getRecommendedGamesWithData() async {
+    var response = await Api.getRecommendation();
+    _logDebug(
+        "Recommendation API response: ${response['success']} - ${response['message']}");
+
+    if (!response['success']) {
+      _logDebug("API error: ${response['message']}");
+      return [];
+    }
+
+    if (response['data'] == null) {
+      _logDebug("No data in response");
+      return [];
+    }
+
+    try {
+      // The API returns data directly, not as a JSON string that needs to be parsed
+      var recommendedGames = response['data'];
+      _logDebug("Processing ${recommendedGames.length} games from API");
+      return await _loadGameData(recommendedGames);
+    } catch (e) {
+      _logDebug("Error processing recommendation data: $e");
+      return [];
+    }
+  }
+
+  /// Helper method to load game data from API responses
+  Future<List<plock.Game>> _loadGameData(List<dynamic> gamesData) async {
+    List<plock.Game> gamesWithData = <plock.Game>[];
+
+    for (var game in gamesData) {
+      try {
+        _logDebug("Loading game: ${game['title']} (${game['id']})");
+        _logDebug("Game URL: ${game['gameUrl']}");
+
+        var gameData = await http.get(Uri.parse(game['gameUrl']));
+        if (gameData.statusCode != 200) {
+          _logDebug("Failed to fetch game data: Status ${gameData.statusCode}");
+          continue;
+        }
+
+        var json;
+        try {
+          json = jsonDecode(gameData.body);
+        } catch (e) {
+          _logDebug("JSON decode error: $e");
+          _logDebug(
+              "Response body: ${gameData.body.substring(0, min(100, gameData.body.length))}...");
+          continue;
+        }
+
+        plock.Game? loadedGame = await plock.Game.jsonToGame(
+            name: game["title"],
+            json: json,
+            lastUpdate: DateTime.parse(game['updatedAt']));
+
+        if (loadedGame == null) {
+          _logDebug("Failed to load game ${game['title']}");
+          continue;
+        }
+
+        loadedGame.uuid = game['id'];
+        _logDebug("Successfully loaded game: ${loadedGame.name}");
+        gamesWithData.add(loadedGame);
+      } catch (e) {
+        _logDebug("Error loading game: $e");
+      }
+    }
+
+    return gamesWithData;
+  }
+
+  // Helper function for min value
+  int min(int a, int b) {
+    return a < b ? a : b;
   }
 
   Future<void> likeGame(String gameId) async {
@@ -107,117 +187,138 @@ class PlayPageState extends State<PlayPage> {
     await Api.deleteLikeGame(gameId);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<plock.Game>>(
-      stream: getAllGamesWithData().asStream(),
-      builder: (context, snapshot) {
-        if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-          return Column(
+  Widget _buildGameView(plock.Game game) {
+    bool isFavorite = favoriteStatus[game.uuid] ?? false;
+
+    return Stack(
+      children: [
+        // Widget principal du jeu
+        GameWidget(game: GamePlayer(game: game)),
+
+        // Boutons flottants
+        Positioned(
+          bottom: 100, // Position verticale
+          right: 10, // Position horizontale
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(
-                child: PageView(
-                  scrollDirection: Axis.vertical,
-                  children: snapshot.data!.map((game) {
-                    bool isFavorite = favoriteStatus[game.uuid] ?? false;
-                    return Stack(
-                      children: [
-                        // Widget principal du jeu
-                        GameWidget(game: GamePlayer(game: game)),
-
-                        // Boutons flottants
-                        Positioned(
-                          bottom: 100, // Position verticale
-                          right: 10,   // Position horizontale
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // Bouton "cœur"
-                              IconButton(
-                                icon: Icon(
-                                  Icons.favorite,
-                                  color: isFavorite ? Colors.red : Colors.grey,
-                                  size: 40.0,
-                                ),
-                                onPressed: () {
-                                  if (isFavorite) {
-                                    unlikeGame(game.uuid).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.uuid] = false;
-                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.uuid] = (currentLikes - 1).toString(); // Décrémenter et convertir en string
-                                      });
-                                    });
-                                  } else {
-                                    likeGame(game.uuid).then((_) {
-                                      setState(() {
-                                        favoriteStatus[game.uuid] = true;
-                                        int currentLikes = int.parse(countLike[game.uuid] ?? '0'); // Récupérer et convertir les likes en int
-                                        countLike[game.uuid] = (currentLikes + 1).toString(); // Incrémenter et convertir en string
-                                      });
-                                    });
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 8.0), // Space between button and text
-                              Text(
-                                countLike[game.uuid] ?? '0', // Fournir '0' si countLike[game.id] est null
-                                style: TextStyle(
-                                  color: Colors.white, // Ajuster la couleur du texte
-                                  fontSize: 16.0,
-                                ),
-                              ),
-
-                              // Espacement entre les boutons
-                              SizedBox(height: 10),
-
-                              // Bouton de partage
-                              IconButton(
-                                icon: Icon(
-                                  Icons.share,
-                                  color: Colors.blue, // Couleur de l'icône
-                                  size: 40.0,
-                                ),
-                                onPressed: () {
-                                  // Générer le lien de partage
-                                  final shareLink = "$url/games/${game.uuid}";
-
-                                  // Copier dans le presse-papiers
-                                  Clipboard.setData(ClipboardData(text: shareLink));
-
-                                  // Afficher une notification ou un message
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Lien copié dans le presse-papiers !"),
-                                    ),
-                                  );
-
-                                  print("Lien copié : $shareLink");
-                                },
-                              ),
-                              SizedBox(width: 10), // Espacement entre les boutons
-
-                              // Bouton "cœur"
-
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+              // Bouton "cœur"
+              IconButton(
+                icon: Icon(
+                  Icons.favorite,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                  size: 40.0,
+                ),
+                onPressed: () {
+                  if (isFavorite) {
+                    unlikeGame(game.uuid).then((_) {
+                      setState(() {
+                        favoriteStatus[game.uuid] = false;
+                        int currentLikes =
+                            int.parse(countLike[game.uuid] ?? '0');
+                        countLike[game.uuid] = (currentLikes - 1).toString();
+                      });
+                    });
+                  } else {
+                    likeGame(game.uuid).then((_) {
+                      setState(() {
+                        favoriteStatus[game.uuid] = true;
+                        int currentLikes =
+                            int.parse(countLike[game.uuid] ?? '0');
+                        countLike[game.uuid] = (currentLikes + 1).toString();
+                      });
+                    });
+                  }
+                },
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                countLike[game.uuid] ?? '0',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
                 ),
               ),
+
+              SizedBox(height: 10),
+
+              // Bouton de partage
+              IconButton(
+                icon: Icon(
+                  Icons.share,
+                  color: Colors.blue,
+                  size: 40.0,
+                ),
+                onPressed: () {
+                  final shareLink = "$url/games/${game.uuid}";
+                  Clipboard.setData(ClipboardData(text: shareLink));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Lien copié dans le presse-papiers !"),
+                    ),
+                  );
+                },
+              ),
             ],
-          );
-        } else if (snapshot.data != null && snapshot.data!.isEmpty) {
-          return Center(child: Text('No games found'));
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
+          ),
+        ),
+      ],
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (_recommendedGames.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('No recommended games found', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _loadRecommendedGames,
+              child: Text('Refresh'),
+            ),
+            SizedBox(height: 20),
+            Container(
+              height: 150,
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: SingleChildScrollView(
+                child: Text(_debugMessage, style: TextStyle(fontSize: 12)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Recommended Games',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: PageView(
+            scrollDirection: Axis.vertical,
+            children:
+                _recommendedGames.map((game) => _buildGameView(game)).toList(),
+          ),
+        ),
+      ],
+    );
+  }
 }
-
-
