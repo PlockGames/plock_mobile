@@ -10,8 +10,8 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_mode.dart'
 /// A bottom bar button.
 ///
 /// Used in the [BottomBarComponent].
-class BottomBarButtonCanvasComponent extends PositionComponent with TapCallbacks {
-
+class BottomBarButtonCanvasComponent extends PositionComponent
+    with TapCallbacks {
   /// The path to the SVG file.
   var svgPathes = Map<EditorCanvas, String>.from({
     EditorCanvas.scene: 'svg/scene.svg',
@@ -30,7 +30,8 @@ class BottomBarButtonCanvasComponent extends PositionComponent with TapCallbacks
   /// the svg component
   late SvgComponent svgComponent;
 
-  BottomBarButtonCanvasComponent(Vector2 pos, {required this.getCanvas, this.tapAction}) {
+  BottomBarButtonCanvasComponent(Vector2 pos,
+      {required this.getCanvas, this.tapAction}) {
     priority = 10000;
     position = pos;
   }
@@ -67,8 +68,6 @@ class BottomBarButtonCanvasComponent extends PositionComponent with TapCallbacks
   @override
   void update(double dt) {
     super.update(dt);
-
-
   }
 
   @override

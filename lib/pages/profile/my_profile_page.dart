@@ -3,6 +3,7 @@ import 'package:plock_mobile/services/api.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -25,15 +26,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _fetchUserProfile() async {
-
     try {
       print("Fetching user profile...");
 
-      final response = await Api.getUserProfile();
-      if (response['success']) {
-        final Map<String, dynamic> jsonData = json.decode(response['data']);
+      final response = await ApiService.getUserProfile();
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
 
-        if (jsonData['status'] == 'success' ) {
+        if (jsonData['status'] == 'success') {
           final userData = jsonData['data'];
           print("------");
           setState(() {
@@ -41,21 +41,24 @@ class _ProfilePageState extends State<ProfilePage> {
             phone = userData['phoneNumber'] ?? "";
             username = userData['username'] ?? "";
             // Formater la date de naissance si elle existe
-              dateOfBirth = userData['birthDate'];
+            dateOfBirth = userData['birthDate'];
           });
 
           print("Profil utilisateur chargé avec succès");
         }
       } else {
         // Gestion des erreurs
-        print("Erreur lors de la récupération du profil utilisateur: ${response['message']}");
+        print(
+            "Erreur lors de la récupération du profil utilisateur: ${response.statusCode}");
       }
     } catch (e) {
       print("Erreur: $e");
     }
   }
+
   void _editField(String title, String currentValue, Function(String) onSave) {
-    TextEditingController controller = TextEditingController(text: currentValue);
+    TextEditingController controller =
+        TextEditingController(text: currentValue);
     bool isPassword = title == "Mot de passe";
 
     showDialog(
@@ -68,52 +71,52 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text('Modifier $title'),
             content: title == "Date de naissance"
                 ? InkWell(
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (pickedDate != null) {
-                  String formattedDate =
-                      "${pickedDate.day.toString().padLeft(2, '0')}/"
-                      "${pickedDate.month.toString().padLeft(2, '0')}/"
-                      "${pickedDate.year}";
-                  setDialogState(() {
-                    controller.text = formattedDate;
-                  });
-                }
-              },
-              child: AbsorbPointer(
-                child: TextFormField(
-                  controller: controller,
-                  decoration: const InputDecoration(
-                    hintText: "Sélectionner une date",
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                ),
-              ),
-            )
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (pickedDate != null) {
+                        String formattedDate =
+                            "${pickedDate.day.toString().padLeft(2, '0')}/"
+                            "${pickedDate.month.toString().padLeft(2, '0')}/"
+                            "${pickedDate.year}";
+                        setDialogState(() {
+                          controller.text = formattedDate;
+                        });
+                      }
+                    },
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          hintText: "Sélectionner une date",
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                      ),
+                    ),
+                  )
                 : TextFormField(
-              controller: controller,
-              obscureText: isPassword ? obscurePassword : false,
-              decoration: InputDecoration(
-                hintText: title,
-                suffixIcon: isPassword
-                    ? IconButton(
-                  icon: Icon(obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: () {
-                    setDialogState(() {
-                      obscurePassword = !obscurePassword;
-                    });
-                  },
-                )
-                    : null,
-              ),
-            ),
+                    controller: controller,
+                    obscureText: isPassword ? obscurePassword : false,
+                    decoration: InputDecoration(
+                      hintText: title,
+                      suffixIcon: isPassword
+                          ? IconButton(
+                              icon: Icon(obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility),
+                              onPressed: () {
+                                setDialogState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -144,7 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final parts = controller.text.split('/');
                         if (parts.length == 3) {
                           updateData['birthDate'] =
-                          "${parts[2]}-${parts[1]}-${parts[0]}";
+                              "${parts[2]}-${parts[1]}-${parts[0]}";
                         }
                       }
                       break;
@@ -152,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   // Mise à jour via l'API
                   try {
-                    final response = await Api.updateUserProfile(
+                    final response = await ApiService.updateUserProfile(
                       username: updateData['username'],
                       email: updateData['email'],
                       password: updateData['password'],
@@ -160,17 +163,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       birthDate: updateData['birthDate'],
                     );
 
-                    if (response['success']) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$title mis à jour avec succès')));
+                    if (response.statusCode == 200) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('$title mis à jour avec succès')));
                       _fetchUserProfile();
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Erreur: ${response['message']}')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Erreur: ${response.statusCode}')));
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erreur: $e')));
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Erreur: $e')));
                   }
 
                   Navigator.pop(context);
@@ -184,10 +187,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
-
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         profileImage = File(pickedFile.path);
@@ -212,18 +214,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: profileImage != null ? FileImage(profileImage!) : null,
-                  child: profileImage == null ? const Icon(Icons.person, size: 50) : null,
+                  backgroundImage:
+                      profileImage != null ? FileImage(profileImage!) : null,
+                  child: profileImage == null
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
                 ),
               ),
               const SizedBox(height: 20),
-
-              _buildEditableField("Nom d'utilisateur", username, (value) => username = value),
+              _buildEditableField(
+                  "Nom d'utilisateur", username, (value) => username = value),
               _buildEditableField("Email", email, (value) => email = value),
-              _buildEditableField("Mot de passe", "********", (value) => password = value),
-
+              _buildEditableField(
+                  "Mot de passe", "********", (value) => password = value),
               _buildEditableField("Téléphone", phone, (value) => phone = value),
-              _buildEditableField("Date de naissance", dateOfBirth, (value) => dateOfBirth = value),
+              _buildEditableField("Date de naissance", dateOfBirth,
+                  (value) => dateOfBirth = value),
             ],
           ),
         ),
@@ -231,10 +237,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildEditableField(String title, String value, Function(String) onSave) {
+  Widget _buildEditableField(
+      String title, String value, Function(String) onSave) {
     return ListTile(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(value.isNotEmpty ? value : "Non défini"),  // Default to "Non défini" if the value is empty
+      subtitle: Text(value.isNotEmpty
+          ? value
+          : "Non défini"), // Default to "Non défini" if the value is empty
       trailing: IconButton(
         icon: const Icon(Icons.edit),
         onPressed: () => _editField(title, value, onSave),

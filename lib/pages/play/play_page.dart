@@ -1,317 +1,256 @@
+// play_page.dart
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
-import 'package:flutter/services.dart'; // Pour Clipboard
 
-String? url = dotenv.env['API_URL'];
-
-/// The page where the games are played.
 class PlayPage extends StatefulWidget {
-  bool scrollEnabled = true;
-
-  PlayPage({Key? key, this.scrollEnabled = true}) : super(key: key);
+  const PlayPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return PlayPageState();
-  }
+  State<PlayPage> createState() => _PlayPageState();
 }
 
-class PlayPageState extends State<PlayPage> {
-  final Map<String, bool> favoriteStatus =
-      {}; // Map to store like status by game ID
-  final Map<String, String> countLike =
-      {}; // Map to store like counts as strings by game ID
-  bool _isLoading = true;
-  List<plock.Game> _recommendedGames = [];
-  String _debugMessage = '';
+class _PlayPageState extends State<PlayPage>
+    with AutomaticKeepAliveClientMixin {
+  // ─────────────────────────  STATE
+  final PageController _pageController = PageController();
+  late Future<List<plock.Game>> _gamesFuture;
+  final Map<String, bool> _isLiked = {};
+  final Map<String, int> _likesCount = {};
 
   @override
   void initState() {
     super.initState();
-    _loadRecommendedGames();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    _gamesFuture = _fetchGames();
   }
 
-  void _logDebug(String message) {
-    print("PlayPage: $message");
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Always refresh games when entering the page
     setState(() {
-      _debugMessage += "\n$message";
+      _gamesFuture = _fetchGames();
     });
   }
 
-  Future<void> _loadRecommendedGames() async {
-    setState(() {
-      _isLoading = true;
-      _debugMessage = 'Loading recommended games...';
-    });
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
+  @override
+  bool get wantKeepAlive => true;
+
+  // ─────────────────────────  DATA
+  Future<List<plock.Game>> _fetchGames() async {
     try {
-      _logDebug("Fetching recommendations from API...");
-      final recommendedGames = await getRecommendedGamesWithData();
+      // Use the recommendation endpoint instead of getAllGames
+      final response = await ApiService.getRecommendedGames(1);
 
-      if (recommendedGames.isEmpty) {
-        _logDebug("No recommended games found");
-      } else {
-        _logDebug("Found ${recommendedGames.length} recommended games");
-
-        // Initialize like status for recommended games
-        for (var game in recommendedGames) {
-          await _initializeLikeStatus(game);
-        }
+      if (response.statusCode != 200) {
+        print('Error: ${response.statusCode} - ${response.body}');
+        return [];
       }
 
-      setState(() {
-        _recommendedGames = recommendedGames;
-        _isLoading = false;
-      });
-    } catch (e) {
-      _logDebug("Error loading recommended games: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+      final Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+      final List<dynamic> decoded = decodedResponse['data'] as List;
+      final List<plock.Game> games = [];
 
-  Future<void> _initializeLikeStatus(plock.Game game) async {
-    try {
-      var rep = await Api.getGame(game.uuid);
-      _logDebug("Game API response: ${rep['success']} - ${rep['message']}");
-
-      if (!rep['success']) {
-        _logDebug("Failed to get game data for ID: ${game.uuid}");
-        return;
-      }
-
-      var jsonResponse = jsonDecode(rep['data']);
-      var likes = jsonResponse['data']['likes'];
-      bool isLiked = jsonResponse['data']['hasLiked'] ?? false;
-
-      setState(() {
-        favoriteStatus[game.uuid] = isLiked;
-        countLike[game.uuid] = likes.toString();
-      });
-    } catch (e) {
-      _logDebug("Error initializing like status for ${game.uuid}: $e");
-    }
-  }
-
-  /// Get recommended games with their data
-  Future<List<plock.Game>> getRecommendedGamesWithData() async {
-    var response = await Api.getRecommendation();
-    _logDebug(
-        "Recommendation API response: ${response['success']} - ${response['message']}");
-
-    if (!response['success']) {
-      _logDebug("API error: ${response['message']}");
-      return [];
-    }
-
-    if (response['data'] == null) {
-      _logDebug("No data in response");
-      return [];
-    }
-
-    try {
-      // The API returns data directly, not as a JSON string that needs to be parsed
-      var recommendedGames = response['data'];
-      _logDebug("Processing ${recommendedGames.length} games from API");
-      return await _loadGameData(recommendedGames);
-    } catch (e) {
-      _logDebug("Error processing recommendation data: $e");
-      return [];
-    }
-  }
-
-  /// Helper method to load game data from API responses
-  Future<List<plock.Game>> _loadGameData(List<dynamic> gamesData) async {
-    List<plock.Game> gamesWithData = <plock.Game>[];
-
-    for (var game in gamesData) {
-      try {
-        _logDebug("Loading game: ${game['title']} (${game['id']})");
-        _logDebug("Game URL: ${game['gameUrl']}");
-
-        var gameData = await http.get(Uri.parse(game['gameUrl']));
-        if (gameData.statusCode != 200) {
-          _logDebug("Failed to fetch game data: Status ${gameData.statusCode}");
-          continue;
-        }
-
-        var json;
+      for (final raw in decoded) {
         try {
-          json = jsonDecode(gameData.body);
+          final gameJson = await http.get(Uri.parse(raw['gameUrl']));
+          final game = await plock.Game.jsonToGame(
+            name: raw['title'],
+            json: jsonDecode(gameJson.body),
+            lastUpdate: DateTime.parse(raw['updatedAt']),
+          );
+          if (game == null) continue;
+
+          game
+            ..uuid = raw['id']
+            ..thumbnailUrl = raw['thumbnailUrl']
+            ..likes = raw['likes']
+            ..gameType = raw['gameType'] ?? 'Unknown';
+
+          _isLiked[game.uuid] = raw['hasLiked'] ?? false;
+          _likesCount[game.uuid] = raw['likes'] ?? 0;
+          games.add(game);
         } catch (e) {
-          _logDebug("JSON decode error: $e");
-          _logDebug(
-              "Response body: ${gameData.body.substring(0, min(100, gameData.body.length))}...");
+          print('Error processing game: $e');
           continue;
         }
-
-        plock.Game? loadedGame = await plock.Game.jsonToGame(
-            name: game["title"],
-            json: json,
-            lastUpdate: DateTime.parse(game['updatedAt']));
-
-        if (loadedGame == null) {
-          _logDebug("Failed to load game ${game['title']}");
-          continue;
-        }
-
-        loadedGame.uuid = game['id'];
-        _logDebug("Successfully loaded game: ${loadedGame.name}");
-        gamesWithData.add(loadedGame);
-      } catch (e) {
-        _logDebug("Error loading game: $e");
       }
+      return games;
+    } catch (e) {
+      print('Error fetching recommended games: $e');
+      return [];
     }
-
-    return gamesWithData;
   }
 
-  // Helper function for min value
-  int min(int a, int b) {
-    return a < b ? a : b;
+  // ─────────────────────────  UI
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // AutomaticKeepAlive
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: FutureBuilder<List<plock.Game>>(
+        future: _gamesFuture,
+        builder: (context, snap) {
+          if (snap.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snap.hasError || snap.data!.isEmpty) {
+            return const Center(child: Text('Sin juegos disponibles'));
+          }
+          final games = snap.data!;
+          return PageView.builder(
+            controller: _pageController,
+            scrollDirection: Axis.vertical,
+            physics: const BouncingScrollPhysics(),
+            itemCount: games.length,
+            itemBuilder: (context, index) {
+              final game = games[index];
+              return _GameScreen(
+                key: ValueKey(game.uuid),
+                game: game,
+                isLiked: _isLiked[game.uuid] ?? false,
+                likes: _likesCount[game.uuid] ?? 0,
+                onLikeToggle: _handleLikeToggle,
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 
-  Future<void> likeGame(String gameId) async {
-    await Api.addLikeGame(gameId);
+  // ─────────────────────────  LIKE HANDLER
+  Future<void> _handleLikeToggle(String gameId, bool like) async {
+    setState(() {
+      _isLiked[gameId] = like;
+      _likesCount[gameId] =
+          (_likesCount[gameId] ?? 0) + (like ? 1 : -1).clamp(-1, 1);
+    });
+    like
+        ? await ApiService.addLikeGame(gameId) //
+        : await ApiService.deleteGame(gameId);
   }
+}
 
-  Future<void> unlikeGame(String gameId) async {
-    await Api.deleteLikeGame(gameId);
-  }
+// ─────────────────────────  GAME SCREEN WIDGET
+class _GameScreen extends StatelessWidget {
+  final plock.Game game;
+  final bool isLiked;
+  final int likes;
+  final void Function(String id, bool like) onLikeToggle;
 
-  Widget _buildGameView(plock.Game game) {
-    bool isFavorite = favoriteStatus[game.uuid] ?? false;
+  const _GameScreen({
+    super.key,
+    required this.game,
+    required this.isLiked,
+    required this.likes,
+    required this.onLikeToggle,
+  });
 
+  @override
+  Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.expand,
       children: [
-        // Widget principal du jeu
+        // Juego ocupando toda la pantalla
         GameWidget(game: GamePlayer(game: game)),
 
-        // Boutons flottants
-        Positioned(
-          bottom: 100, // Position verticale
-          right: 10, // Position horizontale
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Bouton "cœur"
-              IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: isFavorite ? Colors.red : Colors.grey,
-                  size: 40.0,
-                ),
-                onPressed: () {
-                  if (isFavorite) {
-                    unlikeGame(game.uuid).then((_) {
-                      setState(() {
-                        favoriteStatus[game.uuid] = false;
-                        int currentLikes =
-                            int.parse(countLike[game.uuid] ?? '0');
-                        countLike[game.uuid] = (currentLikes - 1).toString();
-                      });
-                    });
-                  } else {
-                    likeGame(game.uuid).then((_) {
-                      setState(() {
-                        favoriteStatus[game.uuid] = true;
-                        int currentLikes =
-                            int.parse(countLike[game.uuid] ?? '0');
-                        countLike[game.uuid] = (currentLikes + 1).toString();
-                      });
-                    });
-                  }
-                },
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                countLike[game.uuid] ?? '0',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
-              ),
+        // Capa de información
+        _BottomOverlay(game: game),
 
-              SizedBox(height: 10),
-
-              // Bouton de partage
-              IconButton(
-                icon: Icon(
-                  Icons.share,
-                  color: Colors.blue,
-                  size: 40.0,
-                ),
-                onPressed: () {
-                  final shareLink = "$url/games/${game.uuid}";
-                  Clipboard.setData(ClipboardData(text: shareLink));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Lien copié dans le presse-papiers !"),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+        // Botones flotantes
+        _ActionButtons(
+          game: game,
+          isLiked: isLiked,
+          likes: likes,
+          onLikeToggle: onLikeToggle,
         ),
       ],
     );
   }
+}
+
+// ─────────────────────────  OVERLAYS & BUTTONS (extract‑widget para limpieza)
+class _BottomOverlay extends StatelessWidget {
+  const _BottomOverlay({required this.game});
+  final plock.Game game;
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
+    return Positioned(
+      left: 12,
+      right: 80,
+      bottom: 80,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(game.name,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text('@${game.gameType}',
+              style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        ],
+      ),
+    );
+  }
+}
 
-    if (_recommendedGames.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('No recommended games found', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _loadRecommendedGames,
-              child: Text('Refresh'),
-            ),
-            SizedBox(height: 20),
-            Container(
-              height: 150,
-              width: double.infinity,
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: SingleChildScrollView(
-                child: Text(_debugMessage, style: TextStyle(fontSize: 12)),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+class _ActionButtons extends StatelessWidget {
+  const _ActionButtons({
+    required this.game,
+    required this.isLiked,
+    required this.likes,
+    required this.onLikeToggle,
+  });
 
-    return Column(
-      children: [
-        Expanded(
-          child: PageView(
-            scrollDirection: Axis.vertical,
-            children:
-                _recommendedGames.map((game) => _buildGameView(game)).toList(),
+  final plock.Game game;
+  final bool isLiked;
+  final int likes;
+  final void Function(String id, bool like) onLikeToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 12,
+      bottom: 80,
+      child: Column(
+        children: [
+          IconButton(
+            icon: Icon(Icons.favorite,
+                color: isLiked ? Colors.red : Colors.white, size: 40),
+            onPressed: () => onLikeToggle(game.uuid, !isLiked),
           ),
-        ),
-      ],
+          Text('$likes',
+              style: const TextStyle(color: Colors.white, fontSize: 14)),
+          const SizedBox(height: 24),
+          IconButton(
+            icon: const Icon(Icons.share, color: Colors.white, size: 36),
+            onPressed: () {
+              final url = 'https://plock.app/games/${game.uuid}';
+              Clipboard.setData(ClipboardData(text: url));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Enlace copiado'),
+                  behavior: SnackBarBehavior.floating));
+            },
+          ),
+        ],
+      ),
     );
   }
 }
