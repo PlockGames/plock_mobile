@@ -10,6 +10,7 @@ import 'package:plock_mobile/pages/register_page.dart';
 import 'package:plock_mobile/pages/profile/my_profile_page.dart';
 import 'package:plock_mobile/services/auth_service.dart';
 import 'package:plock_mobile/services/auth_guard.dart';
+import 'package:plock_mobile/theme.dart';
 
 /// The main function of the application.
 void main() async {
@@ -76,10 +77,7 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: _navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Plock',
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: true,
-      ),
+      theme: PlockTheme.darkTheme(),
       initialRoute: '/', // Now using the root route as entry point
       routes: {
         '/': (context) => const SplashScreen(), // Initial loading screen
@@ -143,21 +141,80 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Plock',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+    return Scaffold(
+      backgroundColor: PlockTheme.backgroundDark,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              PlockTheme.backgroundDark,
+              Color(0xFF1A237E).withOpacity(0.8),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo container with glow effect
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: PlockTheme.primaryColor,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: PlockTheme.primaryColor.withOpacity(0.5),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.games,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 24),
-            CircularProgressIndicator(),
-          ],
+              const SizedBox(height: 24),
+              // App name with custom styling
+              const Text(
+                'PLOCK',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 3,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Tagline
+              Text(
+                'Create. Play. Share.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withOpacity(0.7),
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Loading indicator
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(PlockTheme.accentColor),
+                  strokeWidth: 3,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -176,11 +233,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final authService = AuthService();
   final authGuard = AuthGuard();
 
+  // For animated appbar
+  bool _showTitle = true;
+  int _lastTab = 0;
+
   @override
   void initState() {
     super.initState();
     controller = TabController(length: 4, vsync: this, initialIndex: 0);
     _checkAuthentication();
+
+    // Listen for tab changes to update UI
+    controller.addListener(() {
+      if (controller.index != _lastTab) {
+        setState(() {
+          _lastTab = controller.index;
+          // Hide title with animation on Play tab (index 0)
+          _showTitle = controller.index != 0;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   // Check if the user is authenticated
@@ -203,41 +281,135 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plock'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authService.logout();
-              if (mounted) {
-                Navigator.of(context).pushReplacementNamed('/login');
-              }
-            },
+      // Only show AppBar when not on Play tab (index 0)
+      appBar: controller.index == 0
+          ? null
+          : AppBar(
+              title: AnimatedOpacity(
+                opacity: _showTitle ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                child: Text(
+                  _getAppBarTitle(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              actions: [
+                // Only show logout on profile tab
+                if (controller.index == 3)
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    tooltip: 'Logout',
+                    onPressed: () async {
+                      _showLogoutDialog();
+                    },
+                  ),
+              ],
+            ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: PlockTheme.backgroundLight,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: TabBar(
+            controller: controller,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(
+                color: PlockTheme.primaryColor,
+                width: 3,
+              ),
+              insets: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            labelColor: PlockTheme.primaryColor,
+            unselectedLabelColor: PlockTheme.textMuted,
+            tabs: const <Widget>[
+              Tab(
+                icon: Icon(Icons.play_arrow),
+                text: "Play",
+              ),
+              Tab(
+                icon: Icon(Icons.search),
+                text: "Discover",
+              ),
+              Tab(
+                icon: Icon(Icons.create),
+                text: "My Games",
+              ),
+              Tab(
+                icon: Icon(Icons.person),
+                text: "Profile",
+              ),
+            ],
           ),
-        ],
-      ),
-      bottomNavigationBar: TabBar(
-        controller: controller,
-        physics: const NeverScrollableScrollPhysics(),
-        tabs: const <Widget>[
-          // Tab(icon: Icon(Icons.play_arrow), text: "Play"),
-          // home icon
-          Tab(icon: Icon(Icons.home), text: "Home"),
-          Tab(icon: Icon(Icons.search), text: "Games"),
-          Tab(icon: Icon(Icons.create), text: "My Games"),
-          Tab(icon: Icon(Icons.person), text: "Profile"),
-        ],
+        ),
       ),
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          PlayPage(),
+          const PlayPage(),
           const GamesSearchPage(),
           const MyGamesPage(),
           const ProfilePage(),
         ],
       ),
+    );
+  }
+
+  // Get the title based on the selected tab
+  String _getAppBarTitle() {
+    switch (controller.index) {
+      case 0:
+        return 'Play';
+      case 1:
+        return 'Discover Games';
+      case 2:
+        return 'My Games';
+      case 3:
+        return 'My Profile';
+      default:
+        return 'Plock';
+    }
+  }
+
+  // Show logout confirmation dialog
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PlockTheme.errorColor,
+              ),
+              child: const Text('LOGOUT'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await authService.logout();
+                if (mounted) {
+                  Navigator.of(context).pushReplacementNamed('/login');
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
