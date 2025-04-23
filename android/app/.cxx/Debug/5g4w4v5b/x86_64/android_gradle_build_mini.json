@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/musta/snap/flutter/common/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/musta/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/musta/Desktop/workspace/2024/epitech/ESP/plock_mobile/android/app/.cxx/Debug/5g4w4v5b/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/musta/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/musta/Desktop/workspace/2024/epitech/ESP/plock_mobile/android/app/.cxx/Debug/5g4w4v5b/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

@@ -15,8 +15,7 @@ class AuthService {
   AuthService({
     FlutterSecureStorage? storage,
     http.Client? client,
-  }) :
-        _storage = storage ?? const FlutterSecureStorage(),
+  })  : _storage = storage ?? const FlutterSecureStorage(),
         _client = client ?? http.Client();
 
   // Fonction de log simple
@@ -45,7 +44,8 @@ class AuthService {
       if (token == null) {
         _log('Aucun access token trouvé');
       } else {
-        _log('Access token récupéré: ${token.substring(0, min(10, token.length))}...');
+        _log(
+            'Access token récupéré: ${token.substring(0, min(10, token.length))}...');
       }
       return token;
     } catch (e) {
@@ -79,13 +79,71 @@ class AuthService {
   Future<bool> isLoggedIn() async {
     try {
       final token = await getAccessToken();
-      final isLogged = token != null && token.isNotEmpty;
-      _log('Vérification de connexion: ${isLogged ? 'Connecté' : 'Non connecté'}');
-      return isLogged;
+      if (token == null || token.isEmpty) {
+        _log('Vérification de connexion: Non connecté (token absent)');
+        return false;
+      }
+
+      // Vérifier la validité du token
+      final isValid = await isTokenValid(token);
+      _log(
+          'Vérification de connexion: ${isValid ? 'Connecté (token valide)' : 'Non connecté (token non valide)'}');
+      return isValid;
     } catch (e) {
       _log('Erreur lors de la vérification de la connexion: $e');
       return false;
     }
+  }
+
+  // Méthode pour vérifier si un token JWT est valide
+  Future<bool> isTokenValid(String token) async {
+    try {
+      // Vérification structurelle du token
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        _log('Token JWT invalide: format incorrect');
+        return false;
+      }
+
+      // Décode la partie payload (sans vérifier la signature pour l'instant)
+      final payloadBase64 = _normalizeBase64(parts[1]);
+      final payloadJson = utf8.decode(base64Url.decode(payloadBase64));
+      final payload = json.decode(payloadJson);
+
+      // Vérification de l'expiration
+      if (payload['exp'] != null) {
+        final expiry =
+            DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
+        if (DateTime.now().isAfter(expiry)) {
+          _log('Token JWT expiré');
+          return false;
+        }
+      }
+
+      // Si toutes les vérifications passent
+      return true;
+    } catch (e) {
+      _log('Erreur lors de la validation du token: $e');
+      return false;
+    }
+  }
+
+  // Normalisation pour le décodage base64Url
+  String _normalizeBase64(String input) {
+    var output = input.replaceAll('-', '+').replaceAll('_', '/');
+    switch (output.length % 4) {
+      case 0:
+        break;
+      case 2:
+        output += '==';
+        break;
+      case 3:
+        output += '=';
+        break;
+      default:
+        throw Exception('Base64Url string illegal length');
+    }
+    return output;
   }
 
   // Méthode pour se déconnecter
@@ -114,7 +172,8 @@ class AuthService {
         }),
       );
 
-      _log('Réponse du serveur pour la connexion - Status: ${response.statusCode}');
+      _log(
+          'Réponse du serveur pour la connexion - Status: ${response.statusCode}');
       _log('Réponse du serveur pour la connexion - Body: ${response.body}');
 
       final responseData = json.decode(response.body);
@@ -132,7 +191,8 @@ class AuthService {
           'data': responseData['data']
         };
       } else {
-        _log('Échec de la connexion pour: $email - Raison: ${responseData['message']}');
+        _log(
+            'Échec de la connexion pour: $email - Raison: ${responseData['message']}');
         return {
           'success': false,
           'message': responseData['message'] ?? 'Login failed',
@@ -150,22 +210,27 @@ class AuthService {
   // Méthode pour s'inscrire (étape 1)
   Future<Map<String, dynamic>> signup(Map<String, String> signupData) async {
     try {
-      _log('Tentative d\'inscription - Étape 1 avec les données: ${signupData.toString()}');
+      _log(
+          'Tentative d\'inscription - Étape 1 avec les données: ${signupData.toString()}');
 
       // Ajout d'un délai pour s'assurer que la requête est bien envoyée
       await Future.delayed(Duration(milliseconds: 500));
 
-      final response = await _client.post(
+      final response = await _client
+          .post(
         Uri.parse(signupUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(signupData),
-      ).timeout(Duration(seconds: 15), onTimeout: () {
+      )
+          .timeout(Duration(seconds: 15), onTimeout: () {
         _log('TIMEOUT: La requête d\'inscription a expiré');
         throw Exception('La connexion au serveur a expiré');
       });
 
-      _log('Réponse du serveur pour l\'inscription étape 1 - Status: ${response.statusCode}');
-      _log('Réponse du serveur pour l\'inscription étape 1 - Body: ${response.body}');
+      _log(
+          'Réponse du serveur pour l\'inscription étape 1 - Status: ${response.statusCode}');
+      _log(
+          'Réponse du serveur pour l\'inscription étape 1 - Body: ${response.body}');
 
       Map<String, dynamic> responseData;
       try {
@@ -180,11 +245,13 @@ class AuthService {
       }
 
       if (response.statusCode == 201) {
-        if (responseData['data'] == null || responseData['data']['accessToken'] == null) {
+        if (responseData['data'] == null ||
+            responseData['data']['accessToken'] == null) {
           _log('Inscription réussie mais tokens manquants dans la réponse');
           return {
             'success': false,
-            'message': 'Inscription réussie mais erreur dans la réponse du serveur',
+            'message':
+                'Inscription réussie mais erreur dans la réponse du serveur',
           };
         }
 
@@ -221,9 +288,11 @@ class AuthService {
   }
 
   // Méthode pour compléter l'inscription (étape 2)
-  Future<Map<String, dynamic>> completeSignup(Map<String, String> completeData) async {
+  Future<Map<String, dynamic>> completeSignup(
+      Map<String, String> completeData) async {
     try {
-      _log('Tentative d\'inscription - Étape 2 avec les données: ${completeData.toString()}');
+      _log(
+          'Tentative d\'inscription - Étape 2 avec les données: ${completeData.toString()}');
 
       final accessToken = await getAccessToken();
 
@@ -235,20 +304,24 @@ class AuthService {
         };
       }
 
-      final response = await _client.post(
+      final response = await _client
+          .post(
         Uri.parse(completeSignupUrl),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
         body: json.encode(completeData),
-      ).timeout(Duration(seconds: 15), onTimeout: () {
+      )
+          .timeout(Duration(seconds: 15), onTimeout: () {
         _log('TIMEOUT: La requête de complétion d\'inscription a expiré');
         throw Exception('La connexion au serveur a expiré');
       });
 
-      _log('Réponse du serveur pour l\'inscription étape 2 - Status: ${response.statusCode}');
-      _log('Réponse du serveur pour l\'inscription étape 2 - Body: ${response.body}');
+      _log(
+          'Réponse du serveur pour l\'inscription étape 2 - Status: ${response.statusCode}');
+      _log(
+          'Réponse du serveur pour l\'inscription étape 2 - Body: ${response.body}');
 
       Map<String, dynamic> responseData;
       try {
@@ -264,7 +337,8 @@ class AuthService {
 
       if (response.statusCode == 201) {
         // Vérifier s'il y a de nouveaux tokens à stocker
-        if (responseData['data'] != null && responseData['data']['accessToken'] != null) {
+        if (responseData['data'] != null &&
+            responseData['data']['accessToken'] != null) {
           final newAccessToken = responseData['data']['accessToken'];
           final newRefreshToken = responseData['data']['refreshToken'];
 
@@ -299,10 +373,12 @@ class AuthService {
   }
 
   // Méthode pour ajouter le token d'authentification aux headers de requête
-  Future<Map<String, String>> getAuthHeaders([Map<String, String>? headers]) async {
+  Future<Map<String, String>> getAuthHeaders(
+      [Map<String, String>? headers]) async {
     try {
       final accessToken = await getAccessToken();
-      final Map<String, String> authHeaders = headers ?? {'Content-Type': 'application/json'};
+      final Map<String, String> authHeaders =
+          headers ?? {'Content-Type': 'application/json'};
 
       if (accessToken != null) {
         authHeaders['Authorization'] = 'Bearer $accessToken';
