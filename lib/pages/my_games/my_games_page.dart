@@ -18,63 +18,82 @@ class MyGamesPage extends StatefulWidget {
 
 /// The state of the [MyGamesPage]
 class _MyGamesPageState extends State<MyGamesPage> {
+  /// Get all the games created by the current user.
+  Future<List<Game>> getMyGames() async {
+    try {
+      var response = await Api.getMyGames();
 
-  /// Get all the games with their game data.
-  Future<List<Game>> getAllGamesWithData() async {
-    var lastResponse = await Api.getAllGames(1);
-    dynamic decoded = lastResponse['data']['data'];
-    var allGames = decoded;
-
-    for (int page = 2; 0 < decoded.length; page++) {
-      lastResponse = await Api.getAllGames(page);
-      decoded = lastResponse['data']['data'];
-      allGames.addAll(decoded);
-    }
-    List<Game> allGameWithData = <Game>[];
-    for (var game in allGames) {
-      var gameData = await http.get(Uri.parse(game['gameUrl']));
-      late dynamic json;
-      try {
-        json = jsonDecode(gameData.body);
-      } catch (e) {
-        continue;
-      }
-      Game? loadedGame = await Game.jsonToGame(name: game['title'], json: json, lastUpdate: DateTime.parse(game['updatedAt']));
-
-      if (loadedGame == null) {
-        continue;
+      if (!response['success']) {
+        print("Error fetching my games: ${response['message']}");
+        return [];
       }
 
-      loadedGame.uuid = game['id'];
-      final mediasResponse = await Api.getMedias(game['id']);
-      final mediasJson = mediasResponse;
+      final gamesList = response['data']['data'];
 
-      for (var media in mediasJson['data']) {
-        final int index = loadedGame.medias.indexWhere((element) => element.uuid == media['id']);
-        if (index != -1) {
-          final fileRes = await http.get(Uri.parse(media['filename']));
-          final file = XFile.fromData(fileRes.bodyBytes);
-          loadedGame.medias[index].file = file;
+      List<Game> myGamesWithData = <Game>[];
+      for (var game in gamesList) {
+        try {
+          print("Loading game: ${game['title']} (${game['id']})");
+          var gameData = await http.get(Uri.parse(game['gameUrl']));
+
+          if (gameData.statusCode != 200) {
+            print("Failed to load game data: HTTP ${gameData.statusCode}");
+            continue;
+          }
+
+          dynamic json;
+          try {
+            json = jsonDecode(gameData.body);
+          } catch (e) {
+            print("Error parsing game data: $e");
+            continue;
+          }
+
+          Game? loadedGame = await Game.jsonToGame(
+              name: game['title'],
+              json: json,
+              lastUpdate: DateTime.parse(game['updatedAt']));
+
+          if (loadedGame == null) {
+            print("Failed to convert JSON to Game object");
+            continue;
+          }
+
+          loadedGame.uuid = game['id'];
+          final mediasResponse = await Api.getMedias(game['id']);
+
+          if (mediasResponse['success'] && mediasResponse['data'] != null) {
+            for (var media in mediasResponse['data']) {
+              final int index = loadedGame.medias
+                  .indexWhere((element) => element.uuid == media['id']);
+              if (index != -1) {
+                final fileRes = await http.get(Uri.parse(media['filename']));
+                final file = XFile.fromData(fileRes.bodyBytes);
+                loadedGame.medias[index].file = file;
+              }
+            }
+          }
+
+          myGamesWithData.add(loadedGame);
+        } catch (e) {
+          print("Error processing game: $e");
         }
       }
 
-
-
-      if (game["creatorId"] == dotenv.env['USER_ID']) {
-        allGameWithData.add(loadedGame);
-      }
+      return myGamesWithData;
+    } catch (e) {
+      print("Exception in getMyGames: $e");
+      return [];
     }
-
-    return allGameWithData;
   }
 
-  Future<List<Game>> FuturProjects = Future.value([]);
+  Future<List<Game>> futureProjects = Future.value([]);
   var projects = <Game>[];
 
   @override
   void initState() {
     super.initState();
-    FuturProjects = getAllGamesWithData();
+    futureProjects = getMyGames();
     projects = [];
   }
 
@@ -95,63 +114,61 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('My projects'),
           backgroundColor: Colors.grey[800],
         ),
         body: SingleChildScrollView(
-          child: FutureBuilder<List<Game>>(
-            future: FuturProjects,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error : ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                projects = snapshot.data!;
-                projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
-                return Column(
-                  children: [
-                    for (var project in projects)
-                      ListTile(
-                        title: Row(
-                          children: [
-                            Text(project.name),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditorPage(
-                                      game: project,
-                                    ),
-                                    settings: const RouteSettings(name: '/editor'),
+            child: FutureBuilder<List<Game>>(
+          future: futureProjects,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              projects = snapshot.data!;
+              projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
+              return Column(
+                children: [
+                  for (var project in projects)
+                    ListTile(
+                      title: Row(
+                        children: [
+                          Text(project.name),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditorPage(
+                                    game: project,
                                   ),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                _showGameDeletionDialog(context, project);
-                              },
-                            ),
-                          ],
-                        ),
+                                  settings:
+                                      const RouteSettings(name: '/editor'),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _showGameDeletionDialog(context, project);
+                            },
+                          ),
+                        ],
                       ),
-                  ],
-                );
-              } else {
-                return const Center(child: Text('No games found'));
-              }
-            },
-          )
-        ),
+                    ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No games found'));
+            }
+          },
+        )),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _showGameCreationDialog(context);

@@ -128,6 +128,13 @@ class Api {
     _log("Getting medias for game with id: $gameId");
     return await _apiService.get("/game/$gameId/images");
   }
+
+  /// Return a list of games created by the current user
+  static Future<Map<String, dynamic>> getMyGames() async {
+    _log("Getting my games");
+    Map<String, dynamic> res = await _apiService.get("/game/my");
+    return res;
+  }
 }
 
 class CreateGameDto {

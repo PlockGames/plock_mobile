@@ -304,13 +304,6 @@ class PlayPageState extends State<PlayPage> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'Recommended Games',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
         Expanded(
           child: PageView(
             scrollDirection: Axis.vertical,

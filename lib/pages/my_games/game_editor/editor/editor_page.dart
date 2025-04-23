@@ -140,24 +140,25 @@ class _EditorPageState extends State<EditorPage> {
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
-              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
       }
 
-        // upload images
-        List<Media> medias = widget.game.medias;
-        for (var media in medias) {
-          if (media.file != null) {
-            var res = await Api.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
-            final json = res;
-            final String uuid = json['data'][0]['id'];
-            media.uuid = uuid;
-          }
+      // upload images
+      List<Media> medias = widget.game.medias;
+      for (var media in medias) {
+        if (media.file != null) {
+          var res = await Api.uploadMedia(
+              widget.game.uuid, await media.file!.readAsBytes());
+          final json = res;
+          final String uuid = json['data'][0]['id'];
+          media.uuid = uuid;
         }
+      }
 
-        // reupdate game with new ids
+      // reupdate game with new ids
       final finalRes = await Api.updateGame(
           widget.game.uuid,
           UpdateGameDto(
@@ -166,15 +167,14 @@ class _EditorPageState extends State<EditorPage> {
             playTime: "0",
             gameType: "test",
             thumbnailUrl:
-            "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
             contentGame: widget.game.toJson(),
             id: widget.game.uuid,
           ));
 
-        print(finalRes['data']);
+      print(finalRes['data']);
 
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-
+      Navigator.popUntil(context, ModalRoute.withName('/'));
     };
   }
 
@@ -203,7 +203,16 @@ class _EditorPageState extends State<EditorPage> {
                       game: tempGame,
                       isTest: true,
                       exitGame: goBack(context),
-                      uploadGame: uploadGame(context)))));
+                      uploadGame: uploadGame(context),
+                      navigateToMyGames: navigateToMyGames(context)))));
+    };
+  }
+
+  Function() navigateToMyGames(BuildContext context) {
+    return () {
+      // Navigate to My Games page
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      Navigator.of(context).pushNamed('/home');
     };
   }
 
