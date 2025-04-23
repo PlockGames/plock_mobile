@@ -148,60 +148,68 @@ class _MyGamesPageState extends State<MyGamesPage> {
         title: const Text('My projects'),
         backgroundColor: Colors.grey[800],
       ),
-      body: FutureBuilder<List<Game>>(
-        future: FuturProjects,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error : ${snapshot.error}'));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            projects = snapshot.data!;
-            projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
-
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 tarjetas por fila
-                  childAspectRatio:
-                      0.75, // Proporción más alta para tarjetas verticales
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: projects.length,
-                itemBuilder: (context, index) {
-                  final project = projects[index];
-                  return _buildGameCard(context, project);
-                },
-              ),
-            );
-          } else {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.games_outlined, size: 60, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text(
-                    'No games found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Tap + to create your first game',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // Refresh games data when pulled down
+          setState(() {
+            FuturProjects = getAllGamesWithData();
+          });
         },
+        child: FutureBuilder<List<Game>>(
+          future: FuturProjects,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error : ${snapshot.error}'));
+            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              projects = snapshot.data!;
+              projects.sort((a, b) => b.lastUpdate.compareTo(a.lastUpdate));
+
+              return Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // 2 tarjetas por fila
+                    childAspectRatio:
+                        0.75, // Proporción más alta para tarjetas verticales
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: projects.length,
+                  itemBuilder: (context, index) {
+                    final project = projects[index];
+                    return _buildGameCard(context, project);
+                  },
+                ),
+              );
+            } else {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.games_outlined, size: 60, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text(
+                      'No games found',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Tap + to create your first game',
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

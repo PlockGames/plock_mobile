@@ -104,33 +104,41 @@ class _PlayPageState extends State<PlayPage>
     super.build(context); // AutomaticKeepAlive
     return Scaffold(
       backgroundColor: Colors.black,
-      body: FutureBuilder<List<plock.Game>>(
-        future: _gamesFuture,
-        builder: (context, snap) {
-          if (snap.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snap.hasError || snap.data!.isEmpty) {
-            return const Center(child: Text('No games available'));
-          }
-          final games = snap.data!;
-          return PageView.builder(
-            controller: _pageController,
-            scrollDirection: Axis.vertical,
-            physics: const BouncingScrollPhysics(),
-            itemCount: games.length,
-            itemBuilder: (context, index) {
-              final game = games[index];
-              return _GameScreen(
-                key: ValueKey(game.uuid),
-                game: game,
-                isLiked: _isLiked[game.uuid] ?? false,
-                likes: _likesCount[game.uuid] ?? 0,
-                onLikeToggle: _handleLikeToggle,
-              );
-            },
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // Refresh games data when pulled down
+          setState(() {
+            _gamesFuture = _fetchGames();
+          });
         },
+        child: FutureBuilder<List<plock.Game>>(
+          future: _gamesFuture,
+          builder: (context, snap) {
+            if (snap.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snap.hasError || snap.data!.isEmpty) {
+              return const Center(child: Text('No games available'));
+            }
+            final games = snap.data!;
+            return PageView.builder(
+              controller: _pageController,
+              scrollDirection: Axis.vertical,
+              physics: const BouncingScrollPhysics(),
+              itemCount: games.length,
+              itemBuilder: (context, index) {
+                final game = games[index];
+                return _GameScreen(
+                  key: ValueKey(game.uuid),
+                  game: game,
+                  isLiked: _isLiked[game.uuid] ?? false,
+                  likes: _likesCount[game.uuid] ?? 0,
+                  onLikeToggle: _handleLikeToggle,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
