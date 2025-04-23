@@ -51,30 +51,48 @@ class _PlayPageState extends State<PlayPage>
 
   // ─────────────────────────  DATA
   Future<List<plock.Game>> _fetchGames() async {
-    final response = await ApiService.getAllGames(1);
-    final decoded = jsonDecode(response.body)['data']['data'] as List;
-    final List<plock.Game> games = [];
+    try {
+      // Use the recommendation endpoint instead of getAllGames
+      final response = await ApiService.getRecommendedGames(1);
 
-    for (final raw in decoded) {
-      final gameJson = await http.get(Uri.parse(raw['gameUrl']));
-      final game = await plock.Game.jsonToGame(
-        name: raw['title'],
-        json: jsonDecode(gameJson.body),
-        lastUpdate: DateTime.parse(raw['updatedAt']),
-      );
-      if (game == null) continue;
+      if (response.statusCode != 200) {
+        print('Error: ${response.statusCode} - ${response.body}');
+        return [];
+      }
 
-      game
-        ..uuid = raw['id']
-        ..thumbnailUrl = raw['thumbnailUrl']
-        ..likes = raw['likes']
-        ..gameType = raw['gameType'] ?? 'Unknown';
+      final Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+      final List<dynamic> decoded = decodedResponse['data'] as List;
+      final List<plock.Game> games = [];
 
-      _isLiked[game.uuid] = raw['hasLiked'] ?? false;
-      _likesCount[game.uuid] = raw['likes'] ?? 0;
-      games.add(game);
+      for (final raw in decoded) {
+        try {
+          final gameJson = await http.get(Uri.parse(raw['gameUrl']));
+          final game = await plock.Game.jsonToGame(
+            name: raw['title'],
+            json: jsonDecode(gameJson.body),
+            lastUpdate: DateTime.parse(raw['updatedAt']),
+          );
+          if (game == null) continue;
+
+          game
+            ..uuid = raw['id']
+            ..thumbnailUrl = raw['thumbnailUrl']
+            ..likes = raw['likes']
+            ..gameType = raw['gameType'] ?? 'Unknown';
+
+          _isLiked[game.uuid] = raw['hasLiked'] ?? false;
+          _likesCount[game.uuid] = raw['likes'] ?? 0;
+          games.add(game);
+        } catch (e) {
+          print('Error processing game: $e');
+          continue;
+        }
+      }
+      return games;
+    } catch (e) {
+      print('Error fetching recommended games: $e');
+      return [];
     }
-    return games;
   }
 
   // ─────────────────────────  UI

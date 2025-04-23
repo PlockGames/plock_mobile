@@ -136,7 +136,8 @@ class ApiService {
   /// If [page] is not null, it will return the recommended games for that specific page.
   static Future<http.Response> getRecommendedGames(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/game/recommendation?page=$page&perPage=5");
+      return await _httpClient
+          .get("/game/recommendation?page=$page&perPage=10");
     }
     return await _httpClient.get("/game/recommendation");
   }
