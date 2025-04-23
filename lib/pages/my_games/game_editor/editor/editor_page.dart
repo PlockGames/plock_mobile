@@ -9,6 +9,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dar
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:plock_mobile/widgets/tag_selector.dart';
 
 import '../../../../models/games/game.dart' as Plock;
 import '../../../../models/games/media.dart';
@@ -116,12 +117,22 @@ class _EditorPageState extends State<EditorPage> {
   /// Callback : Upload the game to the server and close the editor.
   Function() uploadGame(BuildContext context) {
     return () async {
+      // Show the tag selector first
+      final selectedTags = await showTagSelector(
+        context,
+        initialSelectedTags: [], // You could store previously selected tags here if editing
+      );
+
+      // If user cancelled the tag selection, don't proceed
+      if (selectedTags == null) {
+        return;
+      }
+
       if (widget.game.uuid.isEmpty) {
         // Create the game
-
         var upload = await ApiService.createGame(CreateGameDto(
           title: widget.game.name,
-          tags: [],
+          tags: selectedTags, // Use the selected tags
           playTime: "0",
           gameType: "test",
           thumbnailUrl:
@@ -137,7 +148,7 @@ class _EditorPageState extends State<EditorPage> {
             widget.game.uuid,
             UpdateGameDto(
               title: "${widget.game.name}",
-              tags: [],
+              tags: selectedTags, // Use the selected tags
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
@@ -164,7 +175,7 @@ class _EditorPageState extends State<EditorPage> {
           widget.game.uuid,
           UpdateGameDto(
             title: "${widget.game.name}",
-            tags: [],
+            tags: selectedTags, // Use the selected tags
             playTime: "0",
             gameType: "test",
             thumbnailUrl:

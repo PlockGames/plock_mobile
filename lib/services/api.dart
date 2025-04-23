@@ -141,6 +141,16 @@ class ApiService {
     }
     return await _httpClient.get("/game/recommendation");
   }
+
+  /// Returns a list of available tags.
+  ///
+  /// If [page] is not null, it will return the tags for that specific page.
+  static Future<http.Response> getTags(int? page) async {
+    if (page != null) {
+      return await _httpClient.get("/tag?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/tag");
+  }
 }
 
 class CreateGameDto {
