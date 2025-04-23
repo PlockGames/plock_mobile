@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/theme.dart';
 import '../services/auth_service.dart';
 
+// Imports for Google Sign-In
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
+
 class LoginPage extends StatefulWidget {
   final AuthService? authService;
 
@@ -21,11 +28,21 @@ class _LoginPageState extends State<LoginPage>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  
+  late final GoogleSignIn _googleSignIn;
+  final _secureStorage = const FlutterSecureStorage();
+  // Add a loading state specifically for Google Sign-In
+  bool _isGoogleLoading = false;
+
   AuthService get _authService => widget.authService ?? AuthService();
 
   @override
   void initState() {
     super.initState();
+
+    _googleSignIn = GoogleSignIn(
+      serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID'],
+    );
 
     // Initialize animations
     _animationController = AnimationController(
@@ -50,7 +67,6 @@ class _LoginPageState extends State<LoginPage>
       ),
     );
 
-    // Start animation after build is complete
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _animationController.forward();
     });
@@ -119,7 +135,112 @@ class _LoginPageState extends State<LoginPage>
     }
   }
 
+  // --- Google Sign-In Logic ---
+  Future<void> _handleGoogleSignIn() async {
+    // Prevent multiple sign-in attempts
+    if (_isGoogleLoading) return;
+
+    setState(() {
+      _isGoogleLoading = true;
+    });
+
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User cancelled the sign-in
+        print('Google Sign-In cancelled by user.');
+        if (mounted) {
+          setState(() {
+            _isGoogleLoading = false;
+          });
+        }
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        print('Failed to get Google ID Token.');
+        _showErrorSnackbar('Failed to get Google authentication details.');
+        if (mounted) {
+          setState(() {
+            _isGoogleLoading = false;
+          });
+        }
+        return;
+      }
+
+      // --- Send ID Token to your backend ---
+      // Construct URL from environment variable
+      final String? apiUrl = dotenv.env['API_URL'];
+      if (apiUrl == null || apiUrl.isEmpty) {
+        print('Error: API_URL not found or empty in .env file');
+        _showErrorSnackbar('Configuration error: Missing API URL.');
+        if (mounted) {
+          setState(() { _isGoogleLoading = false; });
+        }
+        return;
+      }
+      // Define the specific endpoint
+      final verifyEndpoint = '/auth/google/verify-token';
+      // Combine base URL and endpoint safely
+      final url = Uri.parse('$apiUrl$verifyEndpoint');
+
+      print('Sending Google ID token to: $url'); // Debug print
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': idToken}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseBody = jsonDecode(response.body);
+        final data = responseBody['data'];
+
+        if (data != null &&
+            data['accessToken'] != null &&
+            data['refreshToken'] != null) {
+          // --- Store tokens securely ---
+          await _secureStorage.write(
+              key: 'accessToken', value: data['accessToken']);
+          await _secureStorage.write(
+              key: 'refreshToken', value: data['refreshToken']);
+
+          print('Google Sign-In Successful, tokens stored.');
+          // Navigate to home page
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home', (route) => false);
+        } else {
+          print('Backend response missing tokens.');
+          _showErrorSnackbar('Login failed: Invalid response from server.');
+        }
+      } else {
+        print('Backend verification failed: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        _showErrorSnackbar(
+            'Google Sign-In failed. Please try again. (Code: ${response.statusCode})');
+      }
+    } catch (error) {
+      print('Error during Google Sign-In: $error');
+      _showErrorSnackbar('An error occurred during Google Sign-In.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isGoogleLoading = false;
+        });
+      }
+    }
+  }
+  // --- End Google Sign-In Logic ---
+
   void _showErrorSnackbar(String message) {
+    // Ensure context is still valid before showing Snackbar
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -307,6 +428,61 @@ class _LoginPageState extends State<LoginPage>
                                       letterSpacing: 1.5,
                                     ),
                                   ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16), // Reduced spacing slightly
+
+                        // OR Separator
+                        Row(
+                          children: [
+                            Expanded(child: Divider(color: Colors.white.withOpacity(0.3))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Text(
+                                'OR',
+                                style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: Colors.white.withOpacity(0.3))),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Google Sign-In Button
+                        SizedBox(
+                          height: 56,
+                          child: OutlinedButton.icon(
+                            onPressed: _isGoogleLoading ? null : _handleGoogleSignIn,
+                            icon: _isGoogleLoading
+                                ? const SizedBox(
+                                    width: 20, // Smaller indicator
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    'assets/images/google_logo.png', // Make sure you have this asset!
+                                    height: 24.0,
+                                  ),
+                            label: const Text(
+                              'SIGN IN WITH GOOGLE',
+                              style: TextStyle(
+                                fontSize: 15, // Slightly smaller font
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.white.withOpacity(0.5)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
                           ),
                         ),
 
