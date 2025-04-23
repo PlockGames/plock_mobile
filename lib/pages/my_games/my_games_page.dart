@@ -80,6 +80,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
           loadedGame.thumbnailUrl = game['thumbnailUrl'];
           loadedGame.likes = game['likes'] ?? 0;
           loadedGame.gameType = game['gameType'] ?? 'Unknown';
+          loadedGame.commentsCount = game['commentsCount'] ?? 0;
 
           final mediasResponse = await ApiService.getMedias(loadedGame.uuid);
           final mediasJson = jsonDecode(mediasResponse.body);
@@ -339,21 +340,45 @@ class _MyGamesPageState extends State<MyGamesPage> {
                           color: Colors.grey[600],
                         ),
                       ),
-                      // Likes counter
+                      // Stats row
                       Row(
                         children: [
-                          const Icon(
-                            Icons.favorite,
-                            size: 14,
-                            color: Colors.redAccent,
+                          // Comments counter
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.comment,
+                                size: 14,
+                                color: Colors.blueAccent,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${game.commentsCount}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${game.likes ?? 0}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                          const SizedBox(width: 8),
+                          // Likes counter
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.favorite,
+                                size: 14,
+                                color: Colors.redAccent,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${game.likes ?? 0}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

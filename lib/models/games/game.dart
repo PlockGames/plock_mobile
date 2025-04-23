@@ -53,6 +53,9 @@ class Game {
   /// Type of game (puzzle, arcade, etc.)
   String? gameType;
 
+  /// Number of comments the game has received
+  int commentsCount = 0;
+
   /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
 
@@ -80,6 +83,7 @@ class Game {
     instance.thumbnailUrl = thumbnailUrl;
     instance.likes = likes;
     instance.gameType = gameType;
+    instance.commentsCount = commentsCount;
 
     instance.scenes.clear();
 

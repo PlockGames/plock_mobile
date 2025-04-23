@@ -89,7 +89,8 @@ class _GamesSearchPageState extends State<GamesSearchPage>
           ..uuid = raw['id']
           ..thumbnailUrl = raw['thumbnailUrl']
           ..likes = raw['likes']
-          ..gameType = raw['gameType'] ?? 'Unknown';
+          ..gameType = raw['gameType'] ?? 'Unknown'
+          ..commentsCount = raw['commentsCount'] ?? 0;
 
         _isLiked[game.uuid] = raw['hasLiked'] ?? false;
         _likesCount[game.uuid] = raw['likes'] ?? 0;
@@ -352,8 +353,10 @@ class _GameCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // Stats row with likes and comments
                         Row(
                           children: [
+                            // Likes count
                             Icon(
                               Icons.favorite,
                               color: isLiked ? Colors.red : Colors.grey,
@@ -361,8 +364,20 @@ class _GameCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text('$likes'),
+
+                            // Comments count
+                            const SizedBox(width: 12),
+                            const Icon(
+                              Icons.comment,
+                              color: Colors.blueAccent,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Text('${game.commentsCount}'),
                           ],
                         ),
+
+                        // Like button
                         IconButton(
                           icon: Icon(
                             isLiked ? Icons.favorite : Icons.favorite_border,

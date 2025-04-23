@@ -151,6 +151,24 @@ class ApiService {
     }
     return await _httpClient.get("/tag");
   }
+
+  /// Returns a list of comments for a specific game.
+  ///
+  /// If [page] is not null, it will return the comments for that specific page.
+  static Future<http.Response> getGameComments(String gameId,
+      {int? page}) async {
+    if (page != null) {
+      return await _httpClient
+          .get("/comment/game/$gameId?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/comment/game/$gameId");
+  }
+
+  /// Adds a comment to a game.
+  static Future<http.Response> addGameComment(
+      String gameId, String content) async {
+    return await _httpClient.post("/comment/$gameId", {"content": content});
+  }
 }
 
 class CreateGameDto {
