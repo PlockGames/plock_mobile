@@ -1,4 +1,3 @@
-
 import 'package:flame/components.dart';
 import 'package:plock_mobile/models/games/media.dart';
 
@@ -46,6 +45,18 @@ class Game {
   /// Asset count, used to assign id
   int assetCount = 0;
 
+  /// URL to the game thumbnail image
+  String? thumbnailUrl;
+
+  /// Number of likes the game has received
+  int likes = 0;
+
+  /// Type of game (puzzle, arcade, etc.)
+  String? gameType;
+
+  /// Number of comments the game has received
+  int commentsCount = 0;
+
   /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
 
@@ -70,13 +81,17 @@ class Game {
     instance.assetCount = assetCount;
     instance.currentSceneIndex = currentSceneIndex;
     instance.firstScene = firstScene;
+    instance.uuid = uuid;
+    instance.thumbnailUrl = thumbnailUrl;
+    instance.likes = likes;
+    instance.gameType = gameType;
+    instance.commentsCount = commentsCount;
 
     instance.scenes.clear();
 
     for (var scene in scenes) {
       instance.scenes.add(scene.instance());
     }
-
 
     for (var asset in assets) {
       instance.assets.add(asset.instance());
@@ -91,12 +106,14 @@ class Game {
 
   int spawnObject(String name) {
     if (gamePlayer == null) {
-      throw Exception("Game player not set. Do not use outside of game player!");
+      throw Exception(
+          "Game player not set. Do not use outside of game player!");
     }
 
     GameObject newObject = GameObject(id: objectCount, name: name);
     scenes[currentSceneIndex].objects.add(newObject);
-    GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
+    GamePlayerObject newGamePlayerObject =
+        GamePlayerObject(gameObject: newObject, plockGame: this);
     gamePlayer!.add(newGamePlayerObject);
     gamePlayer!.components.add(newGamePlayerObject);
     gamePlayer!.world.add(newGamePlayerObject);
@@ -107,7 +124,8 @@ class Game {
 
   int spawnAsset(String assetName, String name) {
     if (gamePlayer == null) {
-      throw Exception("Game player not set. Do not use outside of game player!");
+      throw Exception(
+          "Game player not set. Do not use outside of game player!");
     }
 
     GameObject asset;
@@ -127,7 +145,8 @@ class Game {
     newObject.name = name;
 
     scenes[currentSceneIndex].objects.add(newObject);
-    GamePlayerObject newGamePlayerObject = GamePlayerObject(gameObject: newObject, plockGame: this);
+    GamePlayerObject newGamePlayerObject =
+        GamePlayerObject(gameObject: newObject, plockGame: this);
     gamePlayer!.add(newGamePlayerObject);
     gamePlayer!.components.add(newGamePlayerObject);
     gamePlayer!.world.add(newGamePlayerObject);
@@ -138,7 +157,8 @@ class Game {
 
   void destroyObject(int id) {
     if (gamePlayer == null) {
-      throw Exception("Game player not set. Do not use outside of game player!");
+      throw Exception(
+          "Game player not set. Do not use outside of game player!");
     }
 
     GamePlayerObject? object = gamePlayer!.components.firstWhere((element) {
@@ -158,11 +178,15 @@ class Game {
   /// Convert the game to a JSON string.
   String toJson() {
     String json = "{";
-    json += "\"id\": \"$uuid\","; // This can be null, so ensure you handle it accordingly
+    json += "\"id\": \"$uuid\",";
     json += "\"name\": \"$name\",";
     json += "\"objectCount\": $objectCount,";
     json += "\"assetCount\": $assetCount,";
     json += "\"firstScene\": $firstScene,";
+    json +=
+        "\"thumbnailUrl\": ${thumbnailUrl != null ? "\"$thumbnailUrl\"" : "null"},";
+    json += "\"gameType\": ${gameType != null ? "\"$gameType\"" : "null"},";
+    json += "\"likes\": $likes,";
 
     json += "\"assets\": [";
     assets.forEach((element) {
@@ -210,8 +234,10 @@ class Game {
   }
 
   /// Create a Game from a JSON object.
-  static jsonToGame({required String name, required Map<String, dynamic> json, DateTime? lastUpdate}) async {
-
+  static Future<Game?> jsonToGame(
+      {required String name,
+      required dynamic json,
+      DateTime? lastUpdate}) async {
     try {
       Game game = Game(name: name);
       if (lastUpdate != null) {
@@ -222,6 +248,12 @@ class Game {
 
       game.scenes.clear();
       game.objectCount = json['objectCount'];
+
+      // Asignar propiedades para las tarjetas si están disponibles
+      game.thumbnailUrl = json['thumbnailUrl'];
+      game.gameType = json['gameType'];
+      game.likes = json['likes'] ?? 0;
+
       var jsonScene = json['scenes'];
       for (var scene in jsonScene) {
         game.scenes.add(Plock.Scene.fromJson(scene));

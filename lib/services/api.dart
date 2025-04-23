@@ -1,39 +1,48 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'http_client_service.dart';
 import 'api_service.dart';
 
 /// Service to interact with the API (plock backend)
-class Api {
-  static final ApiService _apiService = ApiService();
+class ApiService {
+  static final String url =
+      dotenv.env['API_URL'] ?? 'http://localhost:3000/api';
+  static final HttpClientService _httpClient = HttpClientService();
 
-  // Fonction de log simple
-  static void _log(String message) {
-    print("Api: $message");
-  }
-
-  /// Return a list of all the games.
+  /// Returns a list of all games.
   ///
-  /// If [page] is not null, it will return the games of that page only.
-  static Future<Map<String, dynamic>> getAllGames(int? page) async {
+  /// If [page] is not null, it will return the games for that specific page only.
+  static Future<http.Response> getAllGames(int? page) async {
     if (page != null) {
-      _log("Getting all games with page: $page");
-      Map<String, dynamic> res = await _apiService.get("/game?page=$page&perPage=3");
-      return res;
+      return await _httpClient.get("/game?page=$page&perPage=3");
     }
-    _log("Getting all games");
-    Map<String, dynamic> res = await _apiService.get("/game");
-    return res;
+    return await _httpClient.get("/game");
   }
 
-  /// Get the profile of the currently authenticated user.
-  static Future<Map<String, dynamic>> getUserProfile() async {
-    _log("Getting user profile");
-    final response = await _apiService.get("/auth/me");
+  /// Returns only the games of the current user.
+  ///
+  /// If [page] is not null, it will return the games for that specific page only.
+  static Future<http.Response> getMyGames(int? page) async {
+    if (page != null) {
+      return await _httpClient.get("/game/my?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/game/my");
+  }
+
+  /// Retrieves the profile of the currently authenticated user.
+  static Future<http.Response> getUserProfile() async {
+    final response = await _httpClient
+        .get("/auth/me", headers: {"Accept": "application/json"});
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
     return response;
   }
-  /// Met à jour le profil de l'utilisateur actuellement authentifié.
-  static Future<Map<String, dynamic>> updateUserProfile({
+
+  /// Updates the profile of the currently authenticated user.
+  static Future<http.Response> updateUserProfile({
     String? email,
     String? firstName,
     String? lastName,
@@ -42,8 +51,7 @@ class Api {
     String? username,
     String? password,
   }) async {
-    _log("Updating user profile");
-    // Créer un objet contenant uniquement les champs non-null
+    // Create an object that contains only the non-null fields
     final Map<String, dynamic> updateData = {};
     if (email != null) updateData['email'] = email;
     if (firstName != null) updateData['firstName'] = firstName;
@@ -53,68 +61,114 @@ class Api {
     if (username != null) updateData['username'] = username;
     if (password != null) updateData['password'] = password;
 
-    final response = await _apiService.put("/user/profile/me", updateData);
+    final response = await _httpClient.put("/user/profile/me", updateData,
+        headers: {"Accept": "application/json"});
+
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
     return response;
   }
 
-  /// Return a list of the game with the given [id].
-  static Future<Map<String, dynamic>> getGame(String id) async {
-    _log("Getting game with id: $id");
-    return await _apiService.get("/game/$id");
+  /// Returns information about the game with the specified [id].
+  static Future<http.Response> getGame(String id) async {
+    return await _httpClient.get("/game/$id");
   }
 
-  /// Retourne le nombre total de likes pour un jeu donné [gameId].
-  static Future<Map<String, dynamic>> getGameLike(String gameId) async {
-    _log("Getting the game like with id: $gameId");
-    final response = await _apiService.get("/like/count/$gameId");
+  /// Returns the total number of likes for a given game [gameId].
+  static Future<http.Response> getGameLike(String gameId) async {
+    final response = await _httpClient
+        .get("/like/count/$gameId", headers: {"Accept": "application/json"});
+    print("gameId: ${gameId}");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
     return response;
   }
 
-  /// Supprime le like d'un jeu donné par son [id].
-  static Future<Map<String, dynamic>> deleteLikeGame(String gameId) async {
-    _log("Deleting like of game with id: $gameId");
-    final response = await _apiService.delete("/like/$gameId");
+  /// Deletes the like of a game by its [id].
+  static Future<http.Response> deleteGame(String gameId) async {
+    final response = await _httpClient.delete("/like/$gameId");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
     return response;
   }
 
-  /// Ajoute un like à un jeu donné par son [id].
-  static Future<Map<String, dynamic>> addLikeGame(String gameId) async {
-    _log("Adding like game with id: $gameId");
-    final response = await _apiService.post("/like",
-      {
-        "gameId": gameId,
-      }
-    );
+  /// Adds a like to a game.
+  static Future<http.Response> addLikeGame(String gameId) async {
+    final response = await _httpClient.post("/like", {"gameId": gameId});
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
     return response;
   }
 
-  /// Create a new game with the given [data].
-  static Future<Map<String, dynamic>> createGame(CreateGameDto data) async {
-    _log("Creating a game");
-    return await _apiService.post("/game", data.toJson());
+  /// Creates a new game with the provided [data].
+  static Future<http.Response> createGame(CreateGameDto data) async {
+    return await _httpClient.post("/game", data.toJson());
   }
 
-  /// Delete a game with the given [id].
-  static Future<Map<String, dynamic>> deleteGame(String id) async {
-    _log("Deleting game with id: $id");
-    return await _apiService.delete("/game/$id");
+  /// Updates an existing game.
+  static Future<http.Response> updateGame(String id, UpdateGameDto data) async {
+    return await _httpClient.put("/game/$id?id=$id", data.toJson());
   }
 
-  static Future<Map<String, dynamic>> updateGame(String id, UpdateGameDto data) async {
-    _log("Updating game with id: $id");
-    return await _apiService.put("/game/$id?id=$id", data.toJson());
+  /// Uploads a media file for a game.
+  static Future<http.Response> uploadMedia(
+      String gameId, Uint8List data) async {
+    var request =
+        http.MultipartRequest('POST', Uri.parse("$url/game/$gameId/images"));
+
+    // Get the access token
+    final response = await _httpClient.multipartRequest(
+        "/game/$gameId/images", {}, {'images': data},
+        headers: {"Content-Type": "multipart/form-data"});
+
+    print(response.body);
+    return response;
   }
 
-  static Future<Map<String, dynamic>> uploadMedia(String gameId, Uint8List data) async {
-    _log("Uploading media for game with id: $gameId");
-    return await _apiService.uploadMedia("/game/$gameId/images", data);
+  /// Retrieves the media associated with a game.
+  static Future<http.Response> getMedias(String gameId) async {
+    return await _httpClient.get("/game/$gameId/images");
   }
 
-  static Future<Map<String, dynamic>> getMedias(String gameId) async {
-    _log("Getting medias for game with id: $gameId");
-    return await _apiService.get("/game/$gameId/images");
+  /// Returns a list of recommended games.
+  ///
+  /// If [page] is not null, it will return the recommended games for that specific page.
+  static Future<http.Response> getRecommendedGames(int? page) async {
+    if (page != null) {
+      return await _httpClient
+          .get("/game/recommendation?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/game/recommendation");
+  }
+
+  /// Returns a list of available tags.
+  ///
+  /// If [page] is not null, it will return the tags for that specific page.
+  static Future<http.Response> getTags(int? page) async {
+    if (page != null) {
+      return await _httpClient.get("/tag?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/tag");
+  }
+
+  /// Returns a list of comments for a specific game.
+  ///
+  /// If [page] is not null, it will return the comments for that specific page.
+  static Future<http.Response> getGameComments(String gameId,
+      {int? page}) async {
+    if (page != null) {
+      return await _httpClient
+          .get("/comment/game/$gameId?page=$page&perPage=10");
+    }
+    return await _httpClient.get("/comment/game/$gameId");
+  }
+
+  /// Adds a comment to a game.
+  static Future<http.Response> addGameComment(
+      String gameId, String content) async {
+    return await _httpClient.post("/comment/$gameId", {"content": content});
   }
 }
 
@@ -135,16 +189,18 @@ class CreateGameDto {
     required this.contentGame,
   });
 
-  /// Convert the object to a json string.
-  Map<String, dynamic> toJson() {
-    return {
+  /// Converts the object to a JSON string.
+  String toJson() {
+    const json = JsonEncoder();
+    var res = json.convert({
       "title": title,
       "tags": tags,
       "playTime": playTime,
       "gameType": gameType,
       "thumbnailUrl": thumbnailUrl,
       "contentGame": jsonDecode(contentGame),
-    };
+    });
+    return res;
   }
 }
 
@@ -167,9 +223,10 @@ class UpdateGameDto {
     required this.contentGame,
   });
 
-  /// Convert the object to a json string.
-  Map<String, dynamic> toJson() {
-    return {
+  /// Converts the object to a JSON string.
+  String toJson() {
+    const json = JsonEncoder();
+    var res = json.convert({
       "id": id,
       "title": title,
       "tags": tags,
@@ -177,6 +234,7 @@ class UpdateGameDto {
       "gameType": gameType,
       "thumbnailUrl": thumbnailUrl,
       "contentGame": jsonDecode(contentGame),
-    };
+    });
+    return res;
   }
 }

@@ -1,0 +1,1 @@
+/home/musta/Desktop/workspace/2024/epitech/ESP/plock_mobile/build/app/intermediates/cxx/Debug/5g4w4v5b/obj/arm64-v8a

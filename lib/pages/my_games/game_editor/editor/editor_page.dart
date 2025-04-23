@@ -8,6 +8,7 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dar
 import 'package:plock_mobile/pages/my_games/game_editor/object_editor_page.dart';
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:plock_mobile/widgets/tag_selector.dart';
 
 import '../../../../models/games/game.dart' as Plock;
 import '../../../../models/games/media.dart';
@@ -18,6 +19,7 @@ import '../objects_page.dart';
 import '../scenes_page.dart';
 import 'editor.dart';
 import 'object_component.dart';
+import 'package:plock_mobile/pages/my_games/my_games_page.dart';
 
 /// The editor page.
 class EditorPage extends StatefulWidget {
@@ -125,12 +127,22 @@ class _EditorPageState extends State<EditorPage> {
   /// Callback : Upload the game to the server and close the editor.
   Function() uploadGame(BuildContext context) {
     return () async {
+      // Show the tag selector first
+      final selectedTags = await showTagSelector(
+        context,
+        initialSelectedTags: [], // You could store previously selected tags here if editing
+      );
+
+      // If user cancelled the tag selection, don't proceed
+      if (selectedTags == null) {
+        return;
+      }
+
       if (widget.game.uuid.isEmpty) {
         // Create the game
-
-        var upload = await Api.createGame(CreateGameDto(
+        var upload = await ApiService.createGame(CreateGameDto(
           title: widget.game.name,
-          tags: [],
+          tags: selectedTags, // Use the selected tags
           playTime: "0",
           gameType: "test",
           thumbnailUrl:
@@ -138,19 +150,20 @@ class _EditorPageState extends State<EditorPage> {
           contentGame: widget.game.toJson(),
         ));
         var json = upload;
-        final String uuid = json['data']['id'];
+        final Map<String, dynamic> decodedJson = jsonDecode(json.body);
+        final String uuid = decodedJson['data']['id'];
         widget.game.uuid = uuid;
       } else {
         // Update the game
-        final update = await Api.updateGame(
+        var upload = await ApiService.updateGame(
             widget.game.uuid,
             UpdateGameDto(
               title: "${widget.game.name}",
-              tags: [],
+              tags: selectedTags, // Use the selected tags
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
-              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
@@ -158,36 +171,40 @@ class _EditorPageState extends State<EditorPage> {
         print(update);
       }
 
-        // upload images
-        List<Media> medias = widget.game.medias;
-        for (var media in medias) {
-          if (media.file != null) {
-            var res = await Api.uploadMedia(widget.game.uuid, await media.file!.readAsBytes());
-            final json = res;
-            final String uuid = json['data'][0]['id'];
-            media.uuid = uuid;
-          }
+      // upload images
+      List<Media> medias = widget.game.medias;
+      for (var media in medias) {
+        if (media.file != null) {
+          var res = await ApiService.uploadMedia(
+              widget.game.uuid, await media.file!.readAsBytes());
+          final json = jsonDecode(res.body);
+          final String uuid = json['data'][0]['id'];
+          media.uuid = uuid;
         }
+      }
 
-        // reupdate game with new ids
-      final finalRes = await Api.updateGame(
+      // reupdate game with new ids
+      final finalRes = await ApiService.updateGame(
           widget.game.uuid,
           UpdateGameDto(
             title: "${widget.game.name}",
-            tags: [],
+            tags: selectedTags, // Use the selected tags
             playTime: "0",
             gameType: "test",
             thumbnailUrl:
-            "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
             contentGame: widget.game.toJson(),
             id: widget.game.uuid,
           ));
 
-        print(finalRes['data']);
-
-        //Navigator.popUntil(context, ModalRoute.withName('/'));
-        //Navigator.pop(context);
-
+      // Navegar a la página my_games_page en lugar de simplemente volver a la raíz
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyGamesPage(),
+          settings: const RouteSettings(name: '/my_games'),
+        ),
+      );
     };
   }
 
@@ -216,7 +233,16 @@ class _EditorPageState extends State<EditorPage> {
                       game: tempGame,
                       isTest: true,
                       exitGame: goBack(context),
-                      uploadGame: uploadGame(context)))));
+                      uploadGame: uploadGame(context),
+                      navigateToMyGames: navigateToMyGames(context)))));
+    };
+  }
+
+  Function() navigateToMyGames(BuildContext context) {
+    return () {
+      // Navigate to My Games page
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      Navigator.of(context).pushNamed('/home');
     };
   }
 

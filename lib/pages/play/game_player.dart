@@ -14,7 +14,6 @@ import 'game_player_ui_object.dart';
 
 /// The game player.
 class GamePlayer extends Forge2DGame {
-
   /// The game data.
   final plock.Game game;
 
@@ -39,16 +38,22 @@ class GamePlayer extends Forge2DGame {
   /// Only use it in test mode !
   final Function? uploadGame;
 
+  /// Callback for navigation after uploading the game
+  final Function? navigateToMyGames;
+
   /// Set to true when all components are loaded. to start the game.
   bool isAllObjectsLoaded = false;
 
   /// The loading screen component
   Component? loadingScreen;
 
-  /// do the game need to abort the events ?
   bool needAbort = false;
-
-  GamePlayer({required this.game, this.isTest = false, this.exitGame, this.uploadGame});
+  GamePlayer(
+      {required this.game,
+      this.isTest = false,
+      this.exitGame,
+      this.uploadGame,
+      this.navigateToMyGames});
 
   void exitGameCallback() {
     for (var object in components) {
@@ -57,6 +62,17 @@ class GamePlayer extends Forge2DGame {
     }
     needAbort = true;
     exitGame!();
+  }
+
+  void uploadGameCallback() async {
+    if (uploadGame != null) {
+      await uploadGame!();
+
+      // Navigate to My Games page after successful upload
+      if (navigateToMyGames != null) {
+        navigateToMyGames!();
+      }
+    }
   }
 
   @override
@@ -82,19 +98,22 @@ class GamePlayer extends Forge2DGame {
 
     // Add button to publish the game if in test mode
     if (isTest && uploadGame != null) {
-      final uploadButton = UploadButton(uploadGame: uploadGame!, screenSize: size);
+      final uploadButton =
+          UploadButton(uploadGame: uploadGameCallback, screenSize: size);
       camera.viewport.add(uploadButton);
     }
 
     // Generate all the game objects of the game
     for (var object in game.scenes[game.currentSceneIndex].objects) {
-      Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
+      Component newComponent =
+          GamePlayerObject(gameObject: object, plockGame: game);
 
       components.add(newComponent);
     }
 
     for (var object in game.scenes[game.currentSceneIndex].uiObjects) {
-      Component newComponent = GamePlayerUiObject(gameObject: object, plockGame: game);
+      Component newComponent =
+          GamePlayerUiObject(gameObject: object, plockGame: game);
       uiComponents.add(newComponent);
     }
 
@@ -111,7 +130,9 @@ class GamePlayer extends Forge2DGame {
 
       GamePlayerUiObject? parent;
       try {
-        parent = uiComponents.firstWhere((element) => (element as GamePlayerUiObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerUiObject;
+        parent = uiComponents.firstWhere((element) =>
+            (element as GamePlayerUiObject).gameObject.id ==
+            object.gameObject.parent!.id) as GamePlayerUiObject;
       } catch (e) {
         parent = null;
       }
@@ -133,7 +154,6 @@ class GamePlayer extends Forge2DGame {
       anchor: Anchor.center,
     );
     add(loadingScreen!);
-
   }
 
   void addObjectsToWorld() {
@@ -149,7 +169,9 @@ class GamePlayer extends Forge2DGame {
 
       GamePlayerObject? parent;
       try {
-        parent = components.firstWhere((element) => (element as GamePlayerObject).gameObject.id == object.gameObject.parent!.id) as GamePlayerObject;
+        parent = components.firstWhere((element) =>
+            (element as GamePlayerObject).gameObject.id ==
+            object.gameObject.parent!.id) as GamePlayerObject;
       } catch (e) {
         parent = null;
       }
@@ -171,14 +193,12 @@ class GamePlayer extends Forge2DGame {
         if (!gameObject.isLoaded || !gameObject.isAllComponentsLoaded) {
           return;
         }
-
       }
 
       remove(loadingScreen!);
       isAllObjectsLoaded = true;
       world.gravity = Vector2(0, 10);
     } else {
-
       game.deltaTime = dt;
 
       // If game is dirty, update all the components and objects
@@ -206,8 +226,8 @@ class GamePlayer extends Forge2DGame {
         for (int i = 0; i < uiComponents.length; i++) {
           GamePlayerUiObject object = uiComponents[i] as GamePlayerUiObject;
 
-          if (!game.scenes[game.currentSceneIndex].uiObjects.contains(
-              object.gameObject)) {
+          if (!game.scenes[game.currentSceneIndex].uiObjects
+              .contains(object.gameObject)) {
             uiComponents.remove(object);
             camera.viewport.remove(object);
             i--;

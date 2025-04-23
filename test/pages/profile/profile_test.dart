@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 // Assurez-vous d'importer le bon chemin de votre page ProfilePage
-import 'package:plock_mobile/pages/my_games/my_profile_page.dart';
+import 'package:plock_mobile/pages/profile/my_profile_page.dart';
 
 void main() {
   group('Tests de ProfilePage', () {
-    testWidgets('Affichage des informations par défaut', (WidgetTester tester) async {
+    testWidgets('Affichage des informations par défaut',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
@@ -32,7 +33,8 @@ void main() {
       expect(find.text('********'), findsOneWidget);
     });
 
-    testWidgets("Ouverture et fermeture du dialogue de modification du nom d'utilisateur", (WidgetTester tester) async {
+    testWidgets("Modification du nom d'utilisateur via le dialogue d'édition",
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
@@ -47,7 +49,8 @@ void main() {
       expect(find.text("Modifier Nom d'utilisateur"), findsNothing);
     });
 
-    testWidgets("Annulation de la modification d'un champ", (WidgetTester tester) async {
+    testWidgets("Annulation de la modification d'un champ",
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
@@ -66,7 +69,8 @@ void main() {
       expect(find.text('Modifier Email'), findsOneWidget);
 
       // Entrer une nouvelle valeur "newemail@example.com" mais annuler ensuite
-      await tester.enterText(find.byType(TextFormField), 'newemail@example.com');
+      await tester.enterText(
+          find.byType(TextFormField), 'newemail@example.com');
       await tester.tap(find.text('Annuler'));
       await tester.pumpAndSettle();
 
@@ -74,7 +78,8 @@ void main() {
       expect(find.text('Modifier Email'), findsNothing);
     });
 
-    testWidgets("Dialogue d'édition pour le mot de passe", (WidgetTester tester) async {
+    testWidgets("Dialogue d'édition pour le mot de passe",
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
@@ -110,7 +115,8 @@ void main() {
       expect(find.text('Modifier Mot de passe'), findsNothing);
     });
 
-    testWidgets("Dialogue d'édition pour la date de naissance", (WidgetTester tester) async {
+    testWidgets("Dialogue d'édition pour la date de naissance",
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),
@@ -142,7 +148,8 @@ void main() {
       expect(find.text('Modifier Date de naissance'), findsNothing);
     });
 
-    testWidgets("Édition de tous les champs disponibles", (WidgetTester tester) async {
+    testWidgets("Édition de tous les champs disponibles",
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: ProfilePage(),

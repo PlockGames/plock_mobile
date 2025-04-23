@@ -1,0 +1,1 @@
+C:\Users\musta\Desktop\workspace\epitech\ESP\plock_mobile\build\app\intermediates\cxx\Debug\2c3f5g52\obj\arm64-v8a
