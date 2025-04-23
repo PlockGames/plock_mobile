@@ -9,12 +9,14 @@ import 'package:plock_mobile/models/utils/Vector2.dart';
 import 'dart:typed_data';
 import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/component_fields/component_field_tileset.dart';
-
+import 'dart:async'; // Import the dart:async library
 
 void main() {
-  group('ComponentFieldTileset', () {
+  group('ComponentFieldTilesetField Widget Tests', () {
     late List<Tile> testTiles;
     late List<Media> testMedias;
+    late ComponentFieldTileset testComponentFieldTileset;
+    late void Function() onUpdateCallback;
 
     setUp(() {
       // Initialiser des tiles de test
@@ -32,80 +34,86 @@ void main() {
         Media(id: 1, name: "media1"),
         Media(id: 2, name: "media2"),
       ];
-    });
 
-    test('instance creates a deep copy', () {
-      final original = ComponentFieldTileset(
+      // Créer un mock de la fonction onUpdate
+      onUpdateCallback = () {};
+
+      // Créer une instance de ComponentFieldTileset pour le widget
+      testComponentFieldTileset = ComponentFieldTileset(
         value: testTiles,
-        onUpdate: () {},
+        onUpdate: onUpdateCallback,
       );
-
-      final copy = original.instance();
-
-      // Vérifier que c'est une nouvelle instance
-      expect(identical(copy.value, original.value), false);
-
-      // Vérifier que les valeurs sont identiques
-      expect(copy.value[0].media, "media1");
-      expect(copy.value[0].collision, [false, true]);
-      expect(copy.value[1].media, "media2");
-      expect(copy.value[1].collision, [true, false]);
     });
 
-    test('value getter/setter works', () {
-      final componentField = ComponentFieldTileset(
-        value: testTiles,
-        onUpdate: () {},
+    Widget createWidgetUnderTest({required ComponentFieldTileset field, List<Media> medias = const []}) {
+      return MaterialApp(
+        home: Scaffold(
+          body: ComponentFieldTilesetField(
+            field: field,
+            name: 'testTileset',
+            medias: medias,
+            onUpdate: onUpdateCallback,
+          ),
+        ),
       );
+    }
 
-      // Vérifier le getter
-      expect(componentField.value.length, 2);
+    testWidgets('renders initial tiles correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(field: testComponentFieldTileset, medias: testMedias));
+      await tester.pumpAndSettle(); // Wait for FutureBuilder
 
-      // Tester le setter
-      final newTiles = [Tile()..media = "new_media"];
-      componentField.value = newTiles;
-      expect(componentField.value.length, 1);
-      expect(componentField.value[0].media, "new_media");
+      expect(find.text('media1'), findsOneWidget);
+      expect(find.text('media2'), findsOneWidget);
+      expect(find.byType(TextField), findsNWidgets(2));
+      expect(find.byIcon(Icons.edit), findsNWidgets(2));
+      expect(find.byIcon(Icons.delete), findsNWidgets(2));
+      expect(find.byType(FilledButton), findsOneWidget); // Add button
     });
 
-    test('toJson returns correct JSON', () {
-      final componentField = ComponentFieldTileset(
-        value: testTiles,
-        onUpdate: () {},
-      );
+    testWidgets('updates tile media when text field loses focus', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(field: testComponentFieldTileset, medias: testMedias));
+      await tester.pumpAndSettle();
 
-      final json = componentField.toJson();
-      expect(json, contains('"media": "media1"'));
-      expect(json, contains('"collision": [false,true]'));
-      expect(json, contains('"media": "media2"'));
-      expect(json, contains('"collision": [true,false]'));
+      final textFieldFinder = find.byType(TextField).first;
+      await tester.enterText(textFieldFinder, 'new_media');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(testComponentFieldTileset.value[0].media, 'new_media');
     });
 
-    test('updateFromJson updates value correctly', () {
-      final componentField = ComponentFieldTileset(
-        value: [],
-        onUpdate: () {},
-      );
+    testWidgets('removes tile when delete button is tapped', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(field: testComponentFieldTileset, medias: testMedias));
+      await tester.pumpAndSettle();
 
-      final jsonData = [
-        {
-          "media": "json_media1",
-          "collision": [true, false]
-        },
-        {
-          "media": "json_media2",
-          "collision": [false, true]
-        }
-      ];
+      expect(testComponentFieldTileset.value.length, 2);
+      await tester.tap(find.byIcon(Icons.delete).first);
+      await tester.pumpAndSettle();
 
-      componentField.updateFromJson(jsonData);
+      expect(testComponentFieldTileset.value.length, 1);
+      expect(find.text('media1'), findsNothing);
+    });
 
-      expect(componentField.value.length, 2);
-      expect(componentField.value[0].media, "json_media1");
-      expect(componentField.value[0].collision, [true, false]);
-      expect(componentField.value[1].media, "json_media2");
-      expect(componentField.value[1].collision, [false, true]);
+    testWidgets('adds new tile when add button is tapped', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(field: testComponentFieldTileset, medias: testMedias));
+      await tester.pumpAndSettle();
+
+      expect(testComponentFieldTileset.value.length, 2);
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+
+      expect(testComponentFieldTileset.value.length, 3);
+      expect(find.byType(TextField), findsNWidgets(3));
+    });
+
+
+    testWidgets('displays empty text if media is null', (WidgetTester tester) async {
+      final nullMediaTileset = ComponentFieldTileset(value: [Tile()..media = "non_existent_media"], onUpdate: () {});
+      await tester.pumpWidget(createWidgetUnderTest(field: nullMediaTileset, medias: testMedias));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Image), findsNothing);
+      expect(find.text(''), findsOneWidget);
     });
   });
-
 }

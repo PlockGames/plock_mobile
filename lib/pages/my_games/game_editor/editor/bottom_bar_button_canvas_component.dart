@@ -3,9 +3,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_svg/flame_svg.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/editor.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_mode.dart';
+
+import 'editor_canvas.dart';
 
 /// A bottom bar button.
 ///

@@ -4,6 +4,7 @@ import 'package:plock_mobile/models/games/media.dart';
 import '../../pages/play/game_player.dart';
 import '../../pages/play/game_player_object.dart';
 import 'game_object.dart';
+import 'media/media_set.dart';
 import 'scene.dart' as Plock;
 
 /// A game.
@@ -62,6 +63,7 @@ class Game {
   /// Store the delta time between two frames.
   double deltaTime = 0;
 
+  /// The last touch position.
   Vector2 lastTouchPosition = Vector2(0, 0);
 
   /// The game player.
@@ -195,6 +197,15 @@ class Game {
     });
     json += "],";
 
+    json += "\"uiAssets\": [";
+    uiAssets.forEach((element) {
+      json += element.toJson();
+      if (uiAssets.indexOf(element) != uiAssets.length - 1) {
+        json += ",";
+      }
+    });
+    json += "],";
+
     // add medias
     json += "\"medias\": [";
     medias.forEach((element) {
@@ -216,6 +227,9 @@ class Game {
     json += "]";
     json += "}";
 
+    json = json.replaceAll("\n", "");
+
+    print(json);
     return json;
   }
 
@@ -229,6 +243,8 @@ class Game {
       if (lastUpdate != null) {
         game.lastUpdate = lastUpdate;
       }
+
+
 
       game.scenes.clear();
       game.objectCount = json['objectCount'];
@@ -245,7 +261,26 @@ class Game {
 
       var jsonMedias = json['medias'];
       for (var media in jsonMedias) {
-        game.medias.add(Media.fromJson(media));
+        if (media['isSet'] == true) {
+          game.medias.add(MediaSet.fromJson(media));
+        } else {
+          game.medias.add(Media.fromJson(media));
+        }
+      }
+
+      game.assets.clear();
+      var jsonAssets = json['assets'];
+      print(jsonAssets);
+      for (var asset in jsonAssets) {
+        GameObject assetObject = GameObject.fromJson(asset);
+        game.assets.add(assetObject);
+      }
+
+      game.uiAssets.clear();
+      var jsonUiAssets = json['uiAssets'];
+      for (var asset in jsonUiAssets) {
+        GameObject assetObject = GameObject.fromJson(asset);
+        game.uiAssets.add(assetObject);
       }
 
       return game;

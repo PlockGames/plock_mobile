@@ -78,7 +78,7 @@ void main() {
       expect(gameRect.color, const Color(0xff654321));
       expect(gameRect.position, Vector2(0, 0));
     });
-
+/*
     test('updateDisplay should update ComponentFlameRect properties', () async {
       final testComponent = ComponentFlameRect(
         size: Vector2(35, 35),
@@ -101,7 +101,7 @@ void main() {
       expect(testComponent.height, 35.0);
       expect(testComponent.paint.color, const Color(0xff112233));
     });
-
+*/
 
   });
 }

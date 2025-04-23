@@ -49,19 +49,54 @@ class _EditComponentPageState extends State<EditComponentPage> {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit ${widget.component.name}'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
+    if (widget.component.isScrollable) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Edit ${widget.component.name}'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var pair in widget.component.fields.entries)
-                pair.value.getField(pair.key, widget.debug, widget.medias, widget.component.fields),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: widget.component.fields.entries.length,
+                  itemBuilder: (context, index) {
+                    final field = widget.component.fields.entries.elementAt(
+                        index);
+                    return field.value.getField(
+                        field.key, widget.debug, widget.medias,
+                        widget.component.fields);
+                  },
+                ),
+              ),
+
             ],
           ),
-      ),
-    );
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Edit ${widget.component.name}'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var pair in widget.component.fields.entries)
+                pair.value.getField(pair.key, widget.debug, widget.medias,
+                    widget.component.fields),
+            ],
+          ),
+        ),
+      );
+    }
+
+
   }
 }

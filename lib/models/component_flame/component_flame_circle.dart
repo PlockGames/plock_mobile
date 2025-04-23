@@ -1,12 +1,9 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
-
-import '../games/media.dart';
 
 /// A flame component used in the editor to represent a circle component.
 class ComponentFlameCircle extends CircleComponent with TapCallbacks, DragCallbacks implements ComponentFlame {

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'http_client_service.dart';
+import 'api_service.dart';
 
 /// Service to interact with the API (plock backend)
 class ApiService {

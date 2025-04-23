@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/media/media_set.dart';
 
@@ -25,7 +23,7 @@ class TilesetEditorPainter extends CustomPainter {
     int imageWidth = image.image.width;
     int imageHeight = image.image.height;
     int nbTilesHorizontally = 1;
-    int nbTilesVertically = 1;
+    //int nbTilesVertically = 1;
 
     if (media is MediaSet) {
       MediaSet mediaSet = media as MediaSet;
@@ -33,7 +31,7 @@ class TilesetEditorPainter extends CustomPainter {
       imageWidth = (image.image.width * scale).toInt();
       imageHeight = (image.image.height * scale).toInt();
       nbTilesHorizontally = image.image.width ~/ mediaSet.tileWidth;
-      nbTilesVertically = image.image.height ~/ mediaSet.tileHeight;
+      //nbTilesVertically = image.image.height ~/ mediaSet.tileHeight;
     }
     canvas.drawImageRect(image.image, Rect.fromLTWH(0, 0, image.image.width.toDouble(), image.image.height.toDouble()), Rect.fromLTWH(0, 0, imageWidth.toDouble(), imageHeight.toDouble()), paint);
 

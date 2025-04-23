@@ -237,6 +237,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool _showTitle = true;
   int _lastTab = 0;
 
+  bool isInGameMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -276,6 +278,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     } else {
       print("User logged in with valid token - Staying on the home page");
     }
+  }
+
+  void _handleGameModeChanged(bool gameMode) {
+    setState(() {
+      isInGameMode = gameMode;
+    });
   }
 
   @override
@@ -345,6 +353,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: controller,
+        // Désactive le swipe horizontal quand en mode jeu
+        physics: isInGameMode
+            ? const NeverScrollableScrollPhysics()
+            : const AlwaysScrollableScrollPhysics(),
         children: <Widget>[
           const PlayPage(),
           const GamesSearchPage(),

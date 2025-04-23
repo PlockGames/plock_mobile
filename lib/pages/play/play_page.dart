@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/comment.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/constants/game_constants.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
@@ -314,9 +316,24 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
   final List<Comment> _comments = [];
   final ScrollController _scrollController = ScrollController();
 
+  // Map pour stocker les instances de GamePlayer
+  final Map<String, GamePlayer> gamePlayerInstances = {};
+  final Map<String, int> gameResetKeys = {};
+
+  bool isGameMode = false;
+  bool isPaused = false;
+  int currentPageIndex = 0;
+  final PageController _pageController = PageController();
+
+  // Pour eviter le rechargement du jeu quand on rentre en game mode
+  Future<List<plock.Game>> _gamesFuture = Future.value([]);
+  List<plock.Game> _loadedGames = [];
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
+
     _commentsFuture = _fetchComments();
     _scrollController.addListener(_scrollListener);
   }
@@ -667,7 +684,6 @@ class _CommentItem extends StatelessWidget {
                   color: Colors.grey[400],
                   fontSize: 12,
                 ),
-              ),
             ],
           ),
 
@@ -701,4 +717,5 @@ class _CommentItem extends StatelessWidget {
       return '${date.day}/${date.month}/${date.year}';
     }
   }
+
 }

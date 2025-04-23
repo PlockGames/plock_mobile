@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plock_mobile/theme.dart';
 import '../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   final AuthService? authService;

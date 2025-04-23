@@ -61,6 +61,7 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/object
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_component.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_add_force.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_destroy.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_enable.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/objects/object_set_force.dart';
@@ -72,6 +73,7 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/collider_name.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/delta_time.dart';
+import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/params.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/screen_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/touch_get.dart';
 import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/system/wait.dart';
@@ -79,6 +81,11 @@ import 'package:plock_mobile/models/component_fields/blocky/custom_blocks/text/t
 import 'package:plock_mobile/models/component_fields/blocky/toolbox.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_block.dart';
 import 'package:plock_mobile/models/component_fields/blocky/toolbox_category.dart';
+
+import '../models/component_fields/blocky/custom_blocks/objects/component_event_trigger.dart';
+import '../models/component_fields/blocky/custom_blocks/objects/object_is_enabled.dart';
+import '../models/component_fields/blocky/custom_blocks/objects/sprite_change.dart';
+import '../models/component_fields/blocky/custom_blocks/system/change_scene.dart';
 
 /// The initial toolbox of the blockly.
 ///
@@ -182,7 +189,9 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_camera_get),
         ToolboxBlock(data: block_camera_set),
         ToolboxBlock(data: block_wait),
-        ToolboxBlock(data: block_touch_get)
+        ToolboxBlock(data: block_touch_get),
+        ToolboxBlock(data: block_change_scene),
+        ToolboxBlock(data: block_params),
       ]
   ),
   ToolboxCategory(
@@ -204,6 +213,10 @@ final initialToolbox = Toolbox(categories: [
         ToolboxBlock(data: block_asset_spawn),
         ToolboxBlock(data: block_object_add_force),
         ToolboxBlock(data: block_object_set_force),
+        ToolboxBlock(data: block_sprite_change),
+        ToolboxBlock(data: block_object_enable),
+        ToolboxBlock(data: block_object_is_enabled),
+        ToolboxBlock(data: block_event_trigger),
       ]
   ),
   ToolboxCategory(

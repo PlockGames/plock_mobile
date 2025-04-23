@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/cupertino.dart';
+// ignore: unused_import
 import 'package:flutter/foundation.dart';
 import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
@@ -28,7 +29,7 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
   final ComponentType componentType;
 
   /// The texture of the image.
-  final PlockSpriteAnimation animation;
+  PlockSpriteAnimation animation;
 
   /// The scale of the image.
   Vector2 initScale;
@@ -59,11 +60,13 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
     anchor = Anchor.center;
   }
 
-  nextImage() async {
+  Future<Vector2> nextImage() async {
     if (animation.images.isEmpty) {
-      return;
+      return Vector2(0, 0);
     }
+    Vector2 size = Vector2(0, 0);
     currentFrame = ((currentFrame + 1) % animation.images.length);
+
     final String currentImageName = animation.images[currentFrame].name;
     try {
       final Media media = medias.firstWhere((element) => element.name == currentImageName);
@@ -71,20 +74,22 @@ class ComponentFlameSprite extends SpriteComponent with TapCallbacks, DragCallba
       if (image != null) {
         final img = await decodeImageFromList(image.data);
         sprite = Sprite(img, srcPosition: Vector2(image.bounds.left, image.bounds.top), srcSize: Vector2(image.bounds.width, image.bounds.height));
+        size = Vector2(image.bounds.width, image.bounds.height);
       } else {
         sprite = await Sprite.load("empty.png");
       }
     } catch (e) {
       sprite = await Sprite.load("empty.png");
     }
+    return size;
   }
 
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
-    await nextImage();
-    double sizeX = sprite?.image.width.toDouble() ?? 0;
-    double sizeY = sprite?.image.height.toDouble() ?? 0;
+    Vector2 imgSize = await nextImage();
+    double sizeX = imgSize.x.toDouble() ?? 0;
+    double sizeY = imgSize.y.toDouble() ?? 0;
     sizeY = sizeY / sizeX;
     sizeX = 1;
     size.x = sizeX * initScale.x;

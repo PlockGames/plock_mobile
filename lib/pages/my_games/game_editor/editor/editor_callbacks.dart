@@ -3,7 +3,6 @@ import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_canvas.dar
 
 import '../../../../models/games/scene.dart';
 import 'object_component.dart';
-import 'object_scene_component.dart';
 
 class EditorCallbacks {
   final Function(ObjectComponent object, List<GameObject> objects, EditorCanvas canvas) openEditor;
@@ -16,7 +15,7 @@ class EditorCallbacks {
   final Function() testGame;
   final Function() goBack;
   final Function(List<ObjectComponent>, EditorCanvas canvas) openObjects;
-  final Function(Function(GameObject), Function(GameObject), EditorCanvas canvas) openAssets;
+  final Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas) openAssets;
   final Function() openMedias;
   final Function(Function(Scene) changeScene) openScenes;
 

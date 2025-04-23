@@ -4,6 +4,7 @@ import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:plock_mobile/constants/game_constants.dart';
 import 'package:plock_mobile/pages/play/exitbutton.dart';
 import 'package:plock_mobile/pages/play/uploadbutton.dart';
 
@@ -46,6 +47,7 @@ class GamePlayer extends Forge2DGame {
   /// The loading screen component
   Component? loadingScreen;
 
+  bool needAbort = false;
   GamePlayer(
       {required this.game,
       this.isTest = false,
@@ -58,6 +60,7 @@ class GamePlayer extends Forge2DGame {
       GamePlayerObject gameObject = (object as GamePlayerObject);
       gameObject.stopEvents();
     }
+    needAbort = true;
     exitGame!();
   }
 
@@ -74,12 +77,18 @@ class GamePlayer extends Forge2DGame {
 
   @override
   Future<void> onLoad() async {
-    game.screenSize = size;
+    // Définition d'une taille de jeu fixe
+    final gameResolution = GameConstants.standardResolution;
+
+    // Configuration d'un viewport à résolution fixe
+    camera.viewport = FixedResolutionViewport(resolution: gameResolution);
+
+    // Assurez-vous que le jeu est informé de cette résolution fixe
+    game.screenSize = gameResolution;
     game.gamePlayer = this;
 
     camera.viewfinder.zoom = 50;
     camera.viewfinder.position = Vector2(0, 0);
-    camera.viewport = MaxViewport();
 
     // Add button to exit the game if in test mode
     if (isTest && exitGame != null) {
@@ -188,9 +197,9 @@ class GamePlayer extends Forge2DGame {
 
       remove(loadingScreen!);
       isAllObjectsLoaded = true;
+      world.gravity = Vector2(0, 10);
     } else {
       game.deltaTime = dt;
-      world.gravity = Vector2(0, 10);
 
       // If game is dirty, update all the components and objects
       if (game.isDirty) {
@@ -200,8 +209,8 @@ class GamePlayer extends Forge2DGame {
         for (int i = 0; i < components.length; i++) {
           GamePlayerObject object = components[i] as GamePlayerObject;
 
-          if (!game.scenes[game.currentSceneIndex].objects
-              .contains(object.gameObject)) {
+          if (!game.scenes[game.currentSceneIndex].objects.contains(
+              object.gameObject) && !object.gameObject.keep) {
             components.remove(object);
             world.remove(object);
             i--;
@@ -235,4 +244,21 @@ class GamePlayer extends Forge2DGame {
   void render(Canvas canvas) {
     super.render(canvas);
   }
+
+  @override
+  void onDetach() {
+    super.onDetach();
+    needAbort = true;
+    for (var object in components) {
+      if (object is GamePlayerObject) {
+        object.stopEvents();
+      }
+    }
+    for (var object in uiComponents) {
+      if (object is GamePlayerUiObject) {
+        object.stopEvents();
+      }
+    }
+  }
+
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
 import 'package:plock_mobile/models/games/game_object_type.dart';
 import 'package:plock_mobile/pages/my_games/game_editor/add_component_page.dart';
-import 'package:plock_mobile/pages/my_games/game_editor/editor/object_scene_component.dart';
 import '../../../models/games/component_type.dart';
 import '../../../models/games/media.dart';
 import 'edit_component_page.dart';
@@ -25,7 +24,10 @@ class ObjectEditorPage extends StatefulWidget {
   /// The canvas of the object.
   final EditorCanvas canvas;
 
-  ObjectEditorPage({super.key, required this.object, required this.objects, required this.medias, required this.canvas});
+  /// Convert to asset function
+  final Function convertToAsset;
+
+  ObjectEditorPage({super.key, required this.object, required this.objects, required this.medias, required this.canvas, required this.convertToAsset});
 
   @override
   State<StatefulWidget> createState() {
@@ -69,6 +71,15 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
     });
   }
 
+  /// Convert an object to an asset
+  void convertObjectToAsset() {
+    setState(() {
+      widget.object.getGameObject().type = GameObjectType.asset;
+      widget.object.getGameObject().assetId = widget.object.getGameObject().id;
+      widget.convertToAsset(widget.object, widget.canvas);
+    });
+  }
+
   void setParent() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -99,6 +110,86 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("id : ${widget.object.getGameObject().id}"),
+                  ],
+                ),
+                TextField(
+                  controller: nameController,
+                  onChanged: (value) {
+                    widget.object.getGameObject().name = value;
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Name',
+                    border: OutlineInputBorder(),
+                    label: Text('Name'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().layer.toString()),
+                  onChanged: (value) {
+                    widget.object.getGameObject().layer = int.parse(value);
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Layer',
+                    border: OutlineInputBorder(),
+                    label: Text('Layer'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.x.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.x = double.parse(value);
+                        widget.object.updateDisplay();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'X',
+                        border: OutlineInputBorder(),
+                        label: Text('X'),
+                      ),
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(child:
+                    TextField(
+                      controller: TextEditingController(text: widget.object.getGameObject().position.y.toString()),
+                      onChanged: (value) {
+                        widget.object.getGameObject().position.y = double.parse(value);
+                        widget.object.updateDisplay();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Y',
+                        border: OutlineInputBorder(),
+                        label: Text('Y'),
+                      ),
+                    ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: TextEditingController(text: widget.object.getGameObject().rotation.toString()),
+                  onChanged: (value) {
+                    try {
+                      widget.object.getGameObject().rotation = double.parse(value);
+                    } catch (e) {
+                      widget.object.getGameObject().rotation = 0;
+                    }
+                    widget.object.updateDisplay();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Rotation',
+                    border: OutlineInputBorder(),
+                    label: Text('Rotation'),
+                  ),
+                ),
                 const Text("Assets can't be edited. Please edit the asset in the asset editor."),
                 // Add button to convert asset to object
                 ElevatedButton(onPressed: convertAssetToObject, child: Text("Convert to Object"))
@@ -202,6 +293,16 @@ class _ObjectEditorPageState extends State<ObjectEditorPage> {
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(onPressed: setParent, child: Text(widget.object.getGameObject().parent != null ? "Parent: ${widget.object.getGameObject().parent!.name}" : "Parent: None")),
+                FilledButton(onPressed: convertObjectToAsset, child: const Text("Convert to Asset")),
+                widget.object.getGameObject().keep ? FilledButton(onPressed: () {
+                  setState(() {
+                    widget.object.getGameObject().keep = false;
+                  });
+                }, child: const Text("keep")) : OutlinedButton(onPressed: () {
+                  setState(() {
+                    widget.object.getGameObject().keep = true;
+                  });
+                }, child: const Text("do not keep")),
                 const SizedBox(height: 40),
                 for (var component in widget.object.getGameObject().components)
                   Row(

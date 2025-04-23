@@ -13,7 +13,7 @@ import '../games/media.dart';
 class ComponentUiImage extends ComponentType {
 
   ComponentUiImage() {
-    fields["size"] = ComponentFieldNumber(value: 1.0);
+    fields["size"] = ComponentFieldNumber(value: 100.0);
     fields["texture"] = ComponentFieldImage(value: MediaSelect());
   }
 
@@ -85,7 +85,6 @@ class ComponentUiImage extends ComponentType {
 
     Media? media;
     try {
-      print(medias);
       media = medias.firstWhere((element) => element.name ==
           fields["texture"]!.value.name);
     } catch (e) {
