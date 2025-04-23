@@ -308,46 +308,38 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ],
             ),
       bottomNavigationBar: Container(
+        height: 76,
         decoration: BoxDecoration(
-          color: PlockTheme.backgroundLight,
+          color: PlockTheme.backgroundDark,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
+              color: PlockTheme.primaryColor.withOpacity(0.15),
+              blurRadius: 12,
+              spreadRadius: -3,
+              offset: const Offset(0, -3),
             ),
           ],
         ),
-        child: SafeArea(
-          child: TabBar(
-            controller: controller,
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(
-                color: PlockTheme.primaryColor,
-                width: 3,
-              ),
-              insets: const EdgeInsets.symmetric(horizontal: 16),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(0, Icons.play_arrow_rounded, "Play"),
+                _buildNavItem(1, Icons.explore_rounded, "Discover"),
+                _buildNavItem(2, Icons.create_rounded, "My Games"),
+                _buildNavItem(3, Icons.person_rounded, "Profile"),
+              ],
             ),
-            labelColor: PlockTheme.primaryColor,
-            unselectedLabelColor: PlockTheme.textMuted,
-            tabs: const <Widget>[
-              Tab(
-                icon: Icon(Icons.play_arrow),
-                text: "Play",
-              ),
-              Tab(
-                icon: Icon(Icons.search),
-                text: "Discover",
-              ),
-              Tab(
-                icon: Icon(Icons.create),
-                text: "My Games",
-              ),
-              Tab(
-                icon: Icon(Icons.person),
-                text: "Profile",
-              ),
-            ],
           ),
         ),
       ),
@@ -410,6 +402,71 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ],
         );
       },
+    );
+  }
+
+  // Build navigation item
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final bool isSelected = controller.index == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          controller.index = index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        width: 75,
+        height: 60,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? PlockTheme.primaryColor.withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: EdgeInsets.all(isSelected ? 8 : 6),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? PlockTheme.primaryColor.withOpacity(0.2)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: PlockTheme.primaryColor.withOpacity(0.3),
+                          blurRadius: 12,
+                          spreadRadius: -2,
+                        )
+                      ]
+                    : null,
+              ),
+              child: Icon(
+                icon,
+                color:
+                    isSelected ? PlockTheme.primaryColor : PlockTheme.textMuted,
+                size: isSelected ? 24 : 22,
+              ),
+            ),
+            const SizedBox(height: 4),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 250),
+              style: TextStyle(
+                color:
+                    isSelected ? PlockTheme.primaryColor : PlockTheme.textMuted,
+                fontSize: isSelected ? 12 : 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                letterSpacing: isSelected ? 0.5 : 0,
+              ),
+              child: Text(label),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

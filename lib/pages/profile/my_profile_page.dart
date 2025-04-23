@@ -499,6 +499,9 @@ class _ProfilePageState extends State<ProfilePage> {
               onRefresh: _fetchUserProfile,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    bottom:
+                        100), // Added bottom padding to prevent overlap with nav bar
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
@@ -508,6 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildProfileHeader(),
                       const SizedBox(height: 40),
                       _buildInfoCard(),
+                      const SizedBox(height: 24), // Added extra bottom spacing
                     ],
                   ),
                 ),
