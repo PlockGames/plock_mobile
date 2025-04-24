@@ -19,7 +19,7 @@ class ApiService {
   /// If [page] is not null, it will return the games for that specific page only.
   static Future<http.Response> getAllGames(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/game?page=$page&perPage=3");
+      return await _httpClient.get("/game?page=$page&perPage=50");
     }
     return await _httpClient.get("/game");
   }
@@ -29,7 +29,7 @@ class ApiService {
   /// If [page] is not null, it will return the games for that specific page only.
   static Future<http.Response> getMyGames(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/game/my?page=$page&perPage=10");
+      return await _httpClient.get("/game/my?page=$page&perPage=50");
     }
     return await _httpClient.get("/game/my");
   }
@@ -42,7 +42,7 @@ class ApiService {
     print("Fetching games for user ID: $userId, page: $page");
     try {
       final endpoint = page != null
-          ? "/game/user/$userId?page=$page&perPage=10"
+          ? "/game/user/$userId?page=$page&perPage=50"
           : "/game/user/$userId";
 
       final response = await _httpClient.get(endpoint);
@@ -183,7 +183,7 @@ class ApiService {
   static Future<http.Response> getRecommendedGames(int? page) async {
     if (page != null) {
       return await _httpClient
-          .get("/game/recommendation?page=$page&perPage=10");
+          .get("/game/recommendation?page=$page&perPage=50");
     }
     return await _httpClient.get("/game/recommendation");
   }
@@ -193,7 +193,7 @@ class ApiService {
   /// If [page] is not null, it will return the tags for that specific page.
   static Future<http.Response> getTags(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/tag?page=$page&perPage=10");
+      return await _httpClient.get("/tag?page=$page&perPage=50");
     }
     return await _httpClient.get("/tag");
   }
@@ -205,7 +205,7 @@ class ApiService {
       {int? page}) async {
     if (page != null) {
       return await _httpClient
-          .get("/comment/game/$gameId?page=$page&perPage=10");
+          .get("/comment/game/$gameId?page=$page&perPage=50");
     }
     return await _httpClient.get("/comment/game/$gameId");
   }
