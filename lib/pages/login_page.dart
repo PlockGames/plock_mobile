@@ -295,11 +295,11 @@ class _LoginPageState extends State<LoginPage>
                               width: 100,
                               height: 100,
                               decoration: BoxDecoration(
-                                color: PlockTheme.primaryColor,
+                                color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: PlockTheme.primaryColor
+                                    color: PlockTheme.primaryBlue // Utiliser primaryBlue
                                         .withOpacity(0.5),
                                     blurRadius: 15,
                                     spreadRadius: 2,
@@ -402,13 +402,13 @@ class _LoginPageState extends State<LoginPage>
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _validateAndLogin,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: PlockTheme.primaryColor,
+                              backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               elevation: 5,
                               shadowColor:
-                                  PlockTheme.primaryColor.withOpacity(0.5),
+                                  PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser primaryBlue
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -505,7 +505,7 @@ class _LoginPageState extends State<LoginPage>
                                 TextSpan(
                                   text: 'Sign Up',
                                   style: TextStyle(
-                                    color: PlockTheme.primaryColor,
+                                    color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
