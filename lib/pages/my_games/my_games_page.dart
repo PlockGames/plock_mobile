@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/theme.dart'; // Importer le thème
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 import '../../models/games/game.dart';
 import 'package:http/http.dart' as http;
 
@@ -144,10 +146,11 @@ class _MyGamesPageState extends State<MyGamesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My projects'),
-        backgroundColor: Colors.grey[800],
-      ),
+      // appBar: AppBar( // AppBar est géré par MyHomePage maintenant
+      //   title: const Text('My projects'),
+      //   backgroundColor: PlockTheme.backgroundLight, // Utiliser backgroundLight
+      // ),
+      backgroundColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
       body: RefreshIndicator(
         onRefresh: () async {
           // Refresh games data when pulled down
@@ -159,7 +162,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
           future: FuturProjects,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingLogoAnimation(); // Utiliser l'animation du logo
             } else if (snapshot.hasError) {
               return Center(child: Text('Error : ${snapshot.error}'));
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -188,20 +191,20 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.games_outlined, size: 60, color: Colors.grey),
+                    Icon(Icons.games_outlined, size: 60, color: PlockTheme.textMuted), // Utiliser textMuted
                     SizedBox(height: 16),
                     Text(
                       'No games found',
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.grey,
+                        color: PlockTheme.textMuted, // Utiliser textMuted
                       ),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'Tap + to create your first game',
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: PlockTheme.textMuted, // Utiliser textMuted
                       ),
                     ),
                   ],
@@ -215,7 +218,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
         onPressed: () {
           _showGameCreationDialog(context);
         },
-        backgroundColor: Colors.grey[500],
+        backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
+        foregroundColor: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
         child: const Icon(Icons.add, size: 30),
       ),
     );
@@ -264,11 +268,11 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.black26,
+                        color: PlockTheme.backgroundDark.withOpacity(0.6), // Fond semi-transparent
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.white),
+                        icon: const Icon(Icons.edit, color: PlockTheme.textPrimary), // Utiliser textPrimary
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
@@ -289,11 +293,11 @@ class _MyGamesPageState extends State<MyGamesPage> {
                     const SizedBox(width: 4),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.black26,
+                        color: PlockTheme.backgroundDark.withOpacity(0.6), // Fond semi-transparent
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.white),
+                        icon: const Icon(Icons.delete, color: PlockTheme.textPrimary), // Utiliser textPrimary
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
@@ -332,7 +336,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                     'Type: ${game.gameType ?? 'Unknown'}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: PlockTheme.textMuted, // Utiliser textMuted
                     ),
                   ),
                   const Spacer(),
@@ -345,7 +349,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
                         _formatDate(game.lastUpdate),
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey[600],
+                          color: PlockTheme.textMuted, // Utiliser textMuted
                         ),
                       ),
                       // Stats row
@@ -357,14 +361,14 @@ class _MyGamesPageState extends State<MyGamesPage> {
                               const Icon(
                                 Icons.comment,
                                 size: 14,
-                                color: Colors.blueAccent,
+                                color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${game.commentsCount}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: PlockTheme.textMuted, // Utiliser textMuted
                                 ),
                               ),
                             ],
@@ -376,14 +380,14 @@ class _MyGamesPageState extends State<MyGamesPage> {
                               const Icon(
                                 Icons.favorite,
                                 size: 14,
-                                color: Colors.redAccent,
+                                color: PlockTheme.errorColor, // Utiliser errorColor pour les likes (ou une autre couleur)
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${game.likes ?? 0}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: PlockTheme.textMuted, // Utiliser textMuted
                                 ),
                               ),
                             ],
@@ -406,25 +410,24 @@ class _MyGamesPageState extends State<MyGamesPage> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  /// Devuelve un color específico según el tipo de juego
+  /// Devuelve un color específico según el tipo de juego (Utilise les couleurs du thème)
   Color _getCardColor(String? gameType) {
-    if (gameType == null) return Colors.blue;
-
-    switch (gameType.toLowerCase()) {
+    // Utiliser les couleurs du thème pour les cartes
+    switch (gameType?.toLowerCase()) {
       case 'puzzle':
-        return Colors.purple;
+        return PlockTheme.secondaryOrange; // Orange
       case 'adventure':
-        return Colors.green;
+        return PlockTheme.primaryOrange; // Orange Foncé
       case 'arcade':
-        return Colors.orange;
+        return PlockTheme.secondaryBlue; // Bleu Clair
       case 'action':
-        return Colors.red;
+        return PlockTheme.errorColor; // Rouge (Erreur)
       case 'strategy':
-        return Colors.blue;
+        return PlockTheme.primaryBlue; // Bleu
       case 'test':
-        return Colors.grey;
+        return PlockTheme.textMuted; // Gris
       default:
-        return Colors.teal;
+        return PlockTheme.secondaryOrange; // Orange par défaut
     }
   }
 
@@ -446,6 +449,9 @@ class _MyGamesPageState extends State<MyGamesPage> {
               child: const Text('Back'),
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
+              ),
               onPressed: () {
                 var name = nameController.text;
                 if (name.isEmpty) {
@@ -486,6 +492,9 @@ class _MyGamesPageState extends State<MyGamesPage> {
               child: const Text('Cancel'),
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: PlockTheme.errorColor, // Utiliser errorColor pour la suppression
+              ),
               onPressed: () {
                 removeProject(game);
                 Navigator.pop(context);

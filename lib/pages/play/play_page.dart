@@ -11,9 +11,16 @@ import 'package:plock_mobile/services/api.dart';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'package:plock_mobile/theme.dart'; // Importer le thème
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class PlayPage extends StatefulWidget {
-  const PlayPage({Key? key}) : super(key: key);
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
+
+  const PlayPage({
+    Key? key,
+    this.onGameModeChanged,
+  }) : super(key: key);
 
   @override
   State<PlayPage> createState() => _PlayPageState();
@@ -26,6 +33,23 @@ class _PlayPageState extends State<PlayPage>
   late Future<List<plock.Game>> _gamesFuture;
   final Map<String, bool> _isLiked = {};
   final Map<String, int> _likesCount = {};
+  
+  // État du défilement
+  bool _isScrollingEnabled = true;
+  
+  // Méthode pour désactiver le défilement
+  void disableScrolling() {
+    setState(() {
+      _isScrollingEnabled = false;
+    });
+  }
+  
+  // Méthode pour activer le défilement
+  void enableScrolling() {
+    setState(() {
+      _isScrollingEnabled = true;
+    });
+  }
 
   @override
   void initState() {
@@ -123,7 +147,7 @@ class _PlayPageState extends State<PlayPage>
           future: _gamesFuture,
           builder: (context, snap) {
             if (snap.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingLogoAnimation(); // Utiliser l'animation du logo
             }
             if (snap.hasError || snap.data!.isEmpty) {
               return Center(
@@ -158,7 +182,9 @@ class _PlayPageState extends State<PlayPage>
             return PageView.builder(
               controller: _pageController,
               scrollDirection: Axis.vertical,
-              physics: const BouncingScrollPhysics(),
+              physics: _isScrollingEnabled 
+                  ? const BouncingScrollPhysics() 
+                  : const NeverScrollableScrollPhysics(),
               itemCount: games.length,
               itemBuilder: (context, index) {
                 final game = games[index];
@@ -168,6 +194,9 @@ class _PlayPageState extends State<PlayPage>
                   isLiked: _isLiked[game.uuid] ?? false,
                   likes: _likesCount[game.uuid] ?? 0,
                   onLikeToggle: _handleLikeToggle,
+                  enableScrolling: enableScrolling,
+                  disableScrolling: disableScrolling,
+                  onGameModeChanged: widget.onGameModeChanged, // Passer le callback
                 );
               },
             );
@@ -191,11 +220,14 @@ class _PlayPageState extends State<PlayPage>
 }
 
 // ─────────────────────────  GAME SCREEN WIDGET
-class _GameScreen extends StatelessWidget {
+class _GameScreen extends StatefulWidget {
   final plock.Game game;
   final bool isLiked;
   final int likes;
   final void Function(String id, bool like) onLikeToggle;
+  final VoidCallback enableScrolling;
+  final VoidCallback disableScrolling;
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
 
   const _GameScreen({
     super.key,
@@ -203,27 +235,230 @@ class _GameScreen extends StatelessWidget {
     required this.isLiked,
     required this.likes,
     required this.onLikeToggle,
+    required this.enableScrolling,
+    required this.disableScrolling,
+    this.onGameModeChanged,
   });
+
+  @override
+  State<_GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<_GameScreen> {
+  // État du jeu
+  bool _isGameActive = false;
+  bool _isPaused = false;
+  late GamePlayer _gamePlayer;
+  
+  // Contrôleur pour verrouiller/déverrouiller le défilement
+  ScrollPhysics _scrollPhysics = const BouncingScrollPhysics();
+  
+  // Méthode pour activer le mode jeu
+  void _startGame() {
+    setState(() {
+      _isGameActive = true;
+      _isPaused = false;
+    });
+    
+    // Désactiver le défilement vertical
+    widget.disableScrolling();
+    // Informer le parent que le mode jeu est actif
+    widget.onGameModeChanged?.call(true);
+  }
+  
+  // Méthode pour quitter le jeu
+  void _exitGame() {
+    // Réinitialiser le jeu
+    _resetGame();
+    
+    setState(() {
+      _isGameActive = false;
+      _isPaused = false;
+    });
+    
+    // Réactiver le défilement vertical
+    widget.enableScrolling();
+    // Informer le parent que le mode jeu est inactif
+    widget.onGameModeChanged?.call(false);
+  }
+  
+  // Méthode pour mettre en pause le jeu
+  void _pauseGame() {
+    setState(() {
+      _isPaused = true;
+    });
+    // Arrêter les mises à jour du jeu
+    _gamePlayer.paused = true;
+  }
+  
+  // Méthode pour reprendre le jeu
+  void _resumeGame() {
+    setState(() {
+      _isPaused = false;
+    });
+    // Reprendre les mises à jour du jeu
+    _gamePlayer.paused = false;
+  }
+  
+  // Méthode pour réinitialiser le jeu
+  void _resetGame() {
+    // Réinitialiser le GamePlayer avec une nouvelle instance du jeu
+    setState(() {
+      _isPaused = false;
+    });
+    
+    // Plutôt que de recréer l'objet, on réinitialise son état
+    _gamePlayer.resetGame();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Juego ocupando toda la pantalla
-        GameWidget(game: GamePlayer(game: game)),
-
-        // Capa de información
-        _BottomOverlay(game: game),
-
-        // Botones flotantes
-        _ActionButtons(
-          game: game,
-          isLiked: isLiked,
-          likes: likes,
-          onLikeToggle: onLikeToggle,
+        // Jeu occupant toute la pantalla
+        GameWidget<GamePlayer>(
+          game: _gamePlayer = GamePlayer(game: widget.game),
+          overlayBuilderMap: {
+            'pauseOverlay': (context, game) => _PauseOverlay(
+              onResume: _resumeGame,
+              onReset: () {
+                _resetGame();
+                _resumeGame();
+              },
+            ),
+          },
         ),
+
+        // Overlay "Appuyez pour jouer" (visible uniquement quand le jeu n'est pas actif)
+        if (!_isGameActive)
+          GestureDetector(
+            onTap: _startGame,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: Text(
+                  "Appuyez pour jouer",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+        // Overlay de pause (visible uniquement quand le jeu est en pause)
+        if (_isPaused)
+          _PauseOverlay(
+            onResume: _resumeGame,
+            onReset: () {
+              _resetGame();
+              _resumeGame();
+            },
+          ),
+
+        // Capa de información (visible uniquement quand le jeu n'est PAS actif)
+        if (!_isGameActive)
+          _BottomOverlay(game: widget.game),
+
+        // Botones flotantes (likes, commentaires, partage - visible uniquement quand le jeu n'est PAS actif)
+        if (!_isGameActive)
+          _ActionButtons(
+            game: widget.game,
+            isLiked: widget.isLiked,
+            likes: widget.likes,
+            onLikeToggle: widget.onLikeToggle,
+          ),
+        
+        // Boutons de contrôle de jeu (visible uniquement quand le jeu est actif)
+        if (_isGameActive)
+          Positioned(
+            right: 10,
+            bottom: 10,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Bouton pause/reprendre
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: PlockTheme.primaryBlue.withOpacity(0.8), // Utiliser primaryBlue
+                  child: Icon(
+                    _isPaused ? Icons.play_arrow : Icons.pause,
+                    color: PlockTheme.textOnPrimaryBlue, // Utiliser textOnPrimaryBlue
+                  ),
+                  onPressed: _isPaused ? _resumeGame : _pauseGame,
+                ),
+                const SizedBox(height: 8),
+                // Bouton fermer
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: PlockTheme.errorColor.withOpacity(0.8), // Garder errorColor pour fermer
+                  child: const Icon(Icons.close, color: PlockTheme.textOnError), // Utiliser textOnError
+                  onPressed: _exitGame,
+                ),
+              ],
+            ),
+          ),
       ],
+    );
+  }
+}
+
+// Overlay pour le jeu en pause
+class _PauseOverlay extends StatelessWidget {
+  final VoidCallback onResume;
+  final VoidCallback onReset;
+
+  const _PauseOverlay({
+    required this.onResume,
+    required this.onReset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.7),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Jeu en pause",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: onResume,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text(
+                "Reprendre",
+                style: TextStyle(fontSize: 18, color: PlockTheme.textOnPrimaryBlue), // Utiliser textOnPrimaryBlue
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onReset,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange comme accent
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text(
+                "Rafraîchir",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -329,16 +564,16 @@ class _ActionButtons extends StatelessWidget {
           // Like button
           IconButton(
             icon: Icon(Icons.favorite,
-                color: isLiked ? Colors.red : Colors.white, size: 40),
+                color: isLiked ? PlockTheme.errorColor : PlockTheme.textMuted, size: 40), // Utiliser errorColor ou textMuted
             onPressed: () => onLikeToggle(game.uuid, !isLiked),
           ),
           Text('$likes',
-              style: const TextStyle(color: Colors.white, fontSize: 14)),
+              style: const TextStyle(color: PlockTheme.textPrimary, fontSize: 14)), // Utiliser textPrimary
 
           // Comment button
           const SizedBox(height: 24),
           IconButton(
-            icon: const Icon(Icons.comment, color: Colors.white, size: 36),
+            icon: const Icon(Icons.comment, color: PlockTheme.primaryBlue, size: 36), // Utiliser primaryBlue
             onPressed: () async {
               // Show the comments bottom sheet and wait for it to close
               await showModalBottomSheet(
@@ -355,12 +590,12 @@ class _ActionButtons extends StatelessWidget {
             },
           ),
           Text('${game.commentsCount}',
-              style: const TextStyle(color: Colors.white, fontSize: 14)),
+              style: const TextStyle(color: PlockTheme.textPrimary, fontSize: 14)), // Utiliser textPrimary
 
           // Share button
           const SizedBox(height: 24),
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.white, size: 36),
+            icon: const Icon(Icons.share, color: PlockTheme.secondaryBlue, size: 36), // Utiliser secondaryBlue
             onPressed: () {
               final url = 'https://plock.app/games/${game.uuid}';
               Clipboard.setData(ClipboardData(text: url));
@@ -566,7 +801,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: const BoxDecoration(
-        color: Colors.black,
+        color: PlockTheme.backgroundDark, // Utiliser backgroundDark
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -575,7 +810,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.grey[900],
+              color: PlockTheme.backgroundLight, // Utiliser backgroundLight
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -585,13 +820,13 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 Text(
                   'Comments (${widget.game.commentsCount})',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: PlockTheme.textPrimary, // Utiliser textPrimary
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: PlockTheme.textPrimary), // Utiliser textPrimary
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -605,14 +840,14 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     _comments.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingLogoAnimation(size: 60); // Utiliser l'animation du logo
                 }
 
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
                       'Error loading comments: ${snapshot.error}',
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(color: PlockTheme.errorColor), // Utiliser errorColor
                     ),
                   );
                 }
@@ -621,7 +856,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   return const Center(
                     child: Text(
                       'No comments yet. Be the first to comment!',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: PlockTheme.textMuted), // Utiliser textMuted
                     ),
                   );
                 }
@@ -635,7 +870,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                       return const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(),
+                          child: LoadingLogoAnimation(size: 30), // Utiliser l'animation du logo (petite)
                         ),
                       );
                     }
@@ -651,21 +886,21 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           // Comment input
           Container(
             padding: const EdgeInsets.all(12),
-            color: Colors.grey[900],
+            color: PlockTheme.backgroundLight, // Utiliser backgroundLight
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _commentController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: PlockTheme.textPrimary), // Utiliser textPrimary
                     maxLines: null,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                       hintText: 'Add a comment...',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(),
+                      hintStyle: TextStyle(color: PlockTheme.textMuted), // Utiliser textMuted
+                      border: OutlineInputBorder(borderSide: BorderSide.none), // Pas de bordure
                       filled: true,
-                      fillColor: Colors.black,
+                      fillColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -676,8 +911,8 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: _isSubmitting
-                      ? const CircularProgressIndicator()
-                      : const Icon(Icons.send, color: Colors.blue),
+                      ? const SizedBox(width: 24, height: 24, child: LoadingLogoAnimation(size: 24)) // Utiliser l'animation pendant l'envoi
+                      : const Icon(Icons.send, color: PlockTheme.primaryOrange), // Utiliser primaryOrange
                   onPressed: _isSubmitting ? null : _submitComment,
                 ),
               ],
@@ -703,7 +938,7 @@ class _CommentItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[850],
+        color: PlockTheme.cardColor, // Utiliser cardColor
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -715,7 +950,7 @@ class _CommentItem extends StatelessWidget {
               // User avatar
               CircleAvatar(
                 radius: 16,
-                backgroundColor: Colors.blue,
+                backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
                 backgroundImage: comment.user.profilePic != null
                     ? NetworkImage(comment.user.profilePic!)
                     : null,
@@ -725,7 +960,7 @@ class _CommentItem extends StatelessWidget {
                             ? comment.user.username[0].toUpperCase()
                             : '?',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: PlockTheme.textOnPrimaryBlue, // Utiliser textOnPrimaryBlue
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -737,7 +972,7 @@ class _CommentItem extends StatelessWidget {
               Text(
                 comment.user.username,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: PlockTheme.textPrimary, // Utiliser textPrimary
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -748,7 +983,7 @@ class _CommentItem extends StatelessWidget {
               Text(
                 _formatDate(comment.createdAt),
                 style: TextStyle(
-                  color: Colors.grey[400],
+                  color: PlockTheme.textMuted, // Utiliser textMuted
                   fontSize: 12,
                 ),
               ),
@@ -760,7 +995,7 @@ class _CommentItem extends StatelessWidget {
           // Comment content
           Text(
             comment.content,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: PlockTheme.textPrimary), // Utiliser textPrimary
           ),
         ],
       ),

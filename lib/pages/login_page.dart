@@ -267,7 +267,7 @@ class _LoginPageState extends State<LoginPage>
                   end: Alignment.bottomCenter,
                   colors: [
                     PlockTheme.backgroundDark,
-                    Color(0xFF0D47A1).withOpacity(0.6),
+                    PlockTheme.primaryBlue.withOpacity(0.6), // Utiliser la couleur du thème
                   ],
                 ),
               ),
@@ -291,26 +291,10 @@ class _LoginPageState extends State<LoginPage>
                         Center(
                           child: Hero(
                             tag: 'app_logo',
-                            child: Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: PlockTheme.primaryColor,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: PlockTheme.primaryColor
-                                        .withOpacity(0.5),
-                                    blurRadius: 15,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.games,
-                                size: 50,
-                                color: Colors.white,
-                              ),
+                            child: Image.asset(
+                              'assets/images/app_logo.png',
+                              width: 120,
+                              height: 120,
                             ),
                           ),
                         ),
@@ -402,13 +386,13 @@ class _LoginPageState extends State<LoginPage>
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _validateAndLogin,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: PlockTheme.primaryColor,
+                              backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               elevation: 5,
                               shadowColor:
-                                  PlockTheme.primaryColor.withOpacity(0.5),
+                                  PlockTheme.primaryOrange.withOpacity(0.5), // Utiliser primaryOrange
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -478,7 +462,7 @@ class _LoginPageState extends State<LoginPage>
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.white.withOpacity(0.5)),
+                              side: const BorderSide(color: PlockTheme.secondaryBlue), // Utiliser secondaryBlue
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -505,7 +489,7 @@ class _LoginPageState extends State<LoginPage>
                                 TextSpan(
                                   text: 'Sign Up',
                                   style: TextStyle(
-                                    color: PlockTheme.primaryColor,
+                                    color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

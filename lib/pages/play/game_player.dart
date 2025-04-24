@@ -27,6 +27,9 @@ class GamePlayer extends Forge2DGame {
   ///
   /// If yes, specials options are activated.
   bool isTest = false;
+  
+  /// Indique si le jeu est en pause
+  bool paused = false;
 
   /// Callback to exit the game.
   ///
@@ -183,6 +186,11 @@ class GamePlayer extends Forge2DGame {
 
   @override
   void update(double dt) {
+    // Si le jeu est en pause, ne pas mettre à jour la logique
+    if (paused) {
+      return;
+    }
+    
     super.update(dt);
 
     if (!isAllObjectsLoaded) {
@@ -238,6 +246,60 @@ class GamePlayer extends Forge2DGame {
         }
       }
     }
+  }
+  
+  /// Réinitialise le jeu à son état initial
+  void resetGame() {
+    // Arrêter les événements
+    for (var object in components) {
+      if (object is GamePlayerObject) {
+        object.stopEvents();
+      }
+    }
+    for (var object in uiComponents) {
+      if (object is GamePlayerUiObject) {
+        object.stopEvents();
+      }
+    }
+    
+    // Vider les composants actuels
+    for (var comp in components) {
+      if (comp is GamePlayerObject) {
+        world.remove(comp);
+      }
+    }
+    components.clear();
+    
+    for (var comp in uiComponents) {
+      if (comp is GamePlayerUiObject) {
+        camera.viewport.remove(comp);
+      }
+    }
+    uiComponents.clear();
+    
+    // Réinitialiser à la scène initiale 
+    game.currentSceneIndex = game.firstScene;
+    
+    // Recréer tous les objets de la scène
+    for (var object in game.scenes[game.currentSceneIndex].objects) {
+      Component newComponent = GamePlayerObject(gameObject: object, plockGame: game);
+      components.add(newComponent);
+    }
+
+    for (var object in game.scenes[game.currentSceneIndex].uiObjects) {
+      Component newComponent = GamePlayerUiObject(gameObject: object, plockGame: game);
+      uiComponents.add(newComponent);
+    }
+    
+    // Ajouter les objets au monde
+    addObjectsToWorld();
+    
+    // Réactiver le jeu
+    paused = false;
+    isAllObjectsLoaded = true;
+    
+    // Marquer le jeu comme étant modifié pour forcer la mise à jour
+    game.isDirty = true;
   }
 
   @override

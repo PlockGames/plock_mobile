@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/services/api.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plock_mobile/theme.dart'; // Importer le thème
 import 'dart:io';
 import 'dart:convert';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -73,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: PlockTheme.errorColor, // Utiliser errorColor du thème
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),
@@ -84,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green.shade800,
+        backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange comme couleur de succès/accent
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
@@ -151,12 +153,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               return Theme(
                                 data: Theme.of(context).copyWith(
                                   colorScheme: ColorScheme.dark(
-                                    primary: Colors.blue.shade700,
-                                    onPrimary: Colors.white,
-                                    surface: Colors.grey.shade900,
-                                    onSurface: Colors.white,
+                                    primary: PlockTheme.secondaryBlue, // Utiliser secondaryBlue
+                                    onPrimary: Colors.black, // Texte sur bleu clair (noir pour contraste)
+                                    surface: PlockTheme.backgroundLight, // Utiliser backgroundLight
+                                    onSurface: PlockTheme.textPrimary, // Utiliser textPrimary
                                   ),
-                                  dialogBackgroundColor: Colors.grey.shade800,
+                                  dialogBackgroundColor: PlockTheme.backgroundLight, // Utiliser backgroundLight
                                 ),
                                 child: child!,
                               );
@@ -173,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade800,
+                            color: PlockTheme.cardColor, // Utiliser cardColor
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(
@@ -188,8 +190,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: controller.text.isNotEmpty
-                                        ? Colors.white
-                                        : Colors.grey,
+                                        ? PlockTheme.textPrimary // Utiliser textPrimary
+                                        : PlockTheme.textMuted, // Utiliser textMuted
                                   ),
                                 ),
                               ),
@@ -201,11 +203,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     : TextField(
                         controller: controller,
                         obscureText: isPassword ? obscurePassword : false,
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16, color: PlockTheme.textPrimary), // Assurer la couleur du texte
                         decoration: InputDecoration(
                           hintText: "Enter your $title",
                           filled: true,
-                          fillColor: Colors.grey.shade800,
+                          fillColor: PlockTheme.cardColor, // Utiliser cardColor
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 16,
@@ -237,7 +239,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey.shade300,
+                        foregroundColor: PlockTheme.textSecondary, // Utiliser textSecondary
                       ),
                       child: const Text('CANCEL'),
                     ),
@@ -248,8 +250,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         await _updateField(title, controller.text, onSave);
                       },
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
+                        backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
@@ -450,13 +452,13 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.blue.shade700,
+              color: PlockTheme.primaryOrange, // Utiliser primaryOrange
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 30,
-              color: Colors.white,
+              color: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
             ),
           ),
           const SizedBox(height: 8),
@@ -476,25 +478,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[900],
-      appBar: AppBar(
-        title: const Text(
-          'My Profile',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.grey[850],
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchUserProfile,
-            tooltip: 'Refresh profile',
-          ),
-        ],
-      ),
+      backgroundColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
+      // AppBar retirée
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingLogoAnimation() // Utiliser l'animation du logo
           : RefreshIndicator(
               onRefresh: _fetchUserProfile,
               child: SingleChildScrollView(
@@ -532,14 +519,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.grey[800],
+                  color: PlockTheme.cardColor, // Utiliser cardColor
                   border: Border.all(
-                    color: Colors.blue.shade700,
+                    color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                     width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: PlockTheme.backgroundDark.withOpacity(0.5), // Ombre plus subtile
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -563,7 +550,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: PlockTheme.textPrimary, // Utiliser textPrimary
                           ),
                         ),
                       )
@@ -578,11 +565,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade700,
+                    color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: PlockTheme.backgroundDark.withOpacity(0.5), // Ombre plus subtile
                         blurRadius: 5,
                         spreadRadius: 1,
                       ),
@@ -590,7 +577,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: const Icon(
                     Icons.camera_alt,
-                    color: Colors.white,
+                    color: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
                     size: 20,
                   ),
                 ),
@@ -611,7 +598,7 @@ class _ProfilePageState extends State<ProfilePage> {
           email,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[400],
+            color: PlockTheme.textMuted, // Utiliser textMuted
           ),
         ),
       ],
@@ -621,11 +608,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildInfoCard() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[850],
+        color: PlockTheme.backgroundLight, // Utiliser backgroundLight
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: PlockTheme.backgroundDark.withOpacity(0.3), // Ombre plus subtile
             blurRadius: 10,
             spreadRadius: 1,
           ),
@@ -695,12 +682,12 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue.shade700.withOpacity(0.2),
+                color: PlockTheme.primaryOrange.withOpacity(0.2), // Utiliser primaryOrange
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 icon,
-                color: Colors.blue.shade700,
+                color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                 size: 24,
               ),
             ),
@@ -713,7 +700,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     title,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[400],
+                      color: PlockTheme.textMuted, // Utiliser textMuted
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -722,7 +709,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: isValueSet ? Colors.white : Colors.grey[600],
+                      color: isValueSet ? PlockTheme.textPrimary : PlockTheme.textMuted, // Utiliser textPrimary ou textMuted
                     ),
                   ),
                 ],
@@ -730,7 +717,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Icon(
               Icons.edit,
-              color: Colors.blue,
+              color: PlockTheme.primaryOrange, // Utiliser primaryOrange
               size: 20,
             ),
           ],
@@ -741,7 +728,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildDivider() {
     return Divider(
-      color: Colors.grey[800],
+      color: PlockTheme.dividerColor, // Utiliser dividerColor
       height: 1,
       indent: 20,
       endIndent: 20,

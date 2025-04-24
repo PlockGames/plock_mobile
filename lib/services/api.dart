@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'auth_service.dart';
 import 'http_client_service.dart';
 import 'api_service.dart';
 
@@ -11,6 +12,7 @@ class ApiService {
   static final String url =
       dotenv.env['API_URL'] ?? 'http://localhost:3000/api';
   static final HttpClientService _httpClient = HttpClientService();
+  static final AuthService _authService = AuthService();
 
   /// Returns a list of all games.
   ///
@@ -138,14 +140,36 @@ class ApiService {
       String gameId, Uint8List data) async {
     var request =
         http.MultipartRequest('POST', Uri.parse("$url/game/$gameId/images"));
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'images',
+        data,
+        filename: 'image.png',
+        contentType: http.MediaType('image', 'png'),
+      ),
+    );
 
-    // Get the access token
-    final response = await _httpClient.multipartRequest(
-        "/game/$gameId/images", {}, {'images': data},
-        headers: {"Content-Type": "multipart/form-data"});
+    // Set the headers
+    final token = await _authService.getAccessToken();
+    request.headers.addAll({
+      "content-type": "multipart/form-data",
+      "Authorization": "Bearer $token",
+    });
 
-    print(response.body);
-    return response;
+    // Send the request
+    final response = await request.send();
+
+    // Convert the response to a http.Response
+    final responseBytes = await response.stream.toBytes();
+    final responseString = String.fromCharCodes(responseBytes);
+    final http.Response httpResponse = http.Response(
+      responseString,
+      response.statusCode,
+      headers: response.headers,
+    );
+    print("Response Body: ${httpResponse.body}");
+
+    return httpResponse;
   }
 
   /// Retrieves the media associated with a game.

@@ -2,10 +2,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:plock_mobile/theme.dart'; // Importer le thème
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 import 'package:flame/game.dart';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class GamesSearchPage extends StatefulWidget {
   const GamesSearchPage({Key? key}) : super(key: key);
@@ -136,6 +138,7 @@ class _GamesSearchPageState extends State<GamesSearchPage>
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAlive
     return Scaffold(
+      backgroundColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
       body: Column(
         children: [
           _buildSearchBar(),
@@ -145,7 +148,7 @@ class _GamesSearchPageState extends State<GamesSearchPage>
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     _isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingLogoAnimation(); // Utiliser l'animation du logo
                 }
 
                 if (snapshot.hasError) {
@@ -156,6 +159,10 @@ class _GamesSearchPageState extends State<GamesSearchPage>
                         const Text('Error loading games'),
                         const SizedBox(height: 16),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
+                            foregroundColor: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
+                          ),
                           onPressed: _refreshGames,
                           child: const Text('Retry'),
                         ),
@@ -176,6 +183,10 @@ class _GamesSearchPageState extends State<GamesSearchPage>
                         ],
                         const SizedBox(height: 16),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
+                            foregroundColor: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
+                          ),
                           onPressed: _refreshGames,
                           child: const Text('Refresh'),
                         ),
@@ -222,15 +233,17 @@ class _GamesSearchPageState extends State<GamesSearchPage>
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      color: Theme.of(context).colorScheme.surface,
+      color: PlockTheme.backgroundLight, // Utiliser backgroundLight
       child: TextField(
         controller: _searchController,
+        style: TextStyle(color: PlockTheme.textPrimary), // Couleur du texte
         decoration: InputDecoration(
           hintText: 'Search games...',
-          prefixIcon: const Icon(Icons.search),
+          hintStyle: TextStyle(color: PlockTheme.textMuted), // Couleur du hint
+          prefixIcon: const Icon(Icons.search, color: PlockTheme.textMuted), // Couleur icône
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: const Icon(Icons.clear, color: PlockTheme.textMuted), // Couleur icône
                   onPressed: () {
                     _searchController.clear();
                   },
@@ -238,9 +251,10 @@ class _GamesSearchPageState extends State<GamesSearchPage>
               : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none, // Pas de bordure
           ),
           filled: true,
-          fillColor: Theme.of(context).colorScheme.surfaceVariant,
+          fillColor: PlockTheme.cardColor, // Utiliser cardColor
         ),
       ),
     );
@@ -312,7 +326,7 @@ class _GameCard extends StatelessWidget {
                         return Container(
                           color: Colors.grey[800],
                           child: const Center(
-                            child: CircularProgressIndicator(),
+                            child: LoadingLogoAnimation(size: 40), // Utiliser l'animation du logo (plus petite)
                           ),
                         );
                       },
@@ -344,7 +358,7 @@ class _GameCard extends StatelessWidget {
                       game.gameType ?? 'Unknown',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[400],
+                        color: PlockTheme.textMuted, // Utiliser textMuted
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -359,7 +373,7 @@ class _GameCard extends StatelessWidget {
                             // Likes count
                             Icon(
                               Icons.favorite,
-                              color: isLiked ? Colors.red : Colors.grey,
+                              color: isLiked ? PlockTheme.errorColor : PlockTheme.textMuted, // Utiliser errorColor ou textMuted
                               size: 18,
                             ),
                             const SizedBox(width: 4),
@@ -369,7 +383,7 @@ class _GameCard extends StatelessWidget {
                             const SizedBox(width: 12),
                             const Icon(
                               Icons.comment,
-                              color: Colors.blueAccent,
+                              color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                               size: 18,
                             ),
                             const SizedBox(width: 4),
@@ -381,7 +395,7 @@ class _GameCard extends StatelessWidget {
                         IconButton(
                           icon: Icon(
                             isLiked ? Icons.favorite : Icons.favorite_border,
-                            color: isLiked ? Colors.red : null,
+                            color: isLiked ? PlockTheme.errorColor : PlockTheme.textMuted, // Utiliser errorColor ou textMuted
                           ),
                           iconSize: 22,
                           onPressed: () => onLikeToggle(game.uuid, !isLiked),
