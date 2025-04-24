@@ -117,6 +117,7 @@ class _PlayPageState extends State<PlayPage>
 
           _isLiked[game.uuid] = raw['hasLiked'] ?? false;
           _likesCount[game.uuid] = raw['likes'] ?? 0;
+
           games.add(game);
         } catch (e) {
           print('Error processing game: $e');

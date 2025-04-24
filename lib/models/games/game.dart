@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flame/components.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/models/games/media.dart';
 
 import '../../pages/play/game_player.dart';
 import '../../pages/play/game_player_object.dart';
+import '../../services/api.dart';
 import 'game_object.dart';
 import 'media/media_set.dart';
 import 'scene.dart' as Plock;
@@ -245,7 +250,6 @@ class Game {
 
     json = json.replaceAll("\n", "");
 
-    print(json);
     return json;
   }
 
@@ -267,6 +271,7 @@ class Game {
       game.thumbnailUrl = json['thumbnailUrl'];
       game.gameType = json['gameType'];
       game.likes = json['likes'] ?? 0;
+      game.uuid = json['id'];
 
       var jsonScene = json['scenes'];
       for (var scene in jsonScene) {
@@ -282,9 +287,27 @@ class Game {
         }
       }
 
+      final mediasResponse = await ApiService.getMedias(game.uuid);
+      final mediasJson = jsonDecode(mediasResponse.body);
+
+      // Verificar que mediasJson['data'] no sea nulo y sea una lista antes de iterar
+      if (mediasJson != null &&
+          mediasJson['data'] != null &&
+          mediasJson['data'] is List) {
+        for (var media in mediasJson['data']) {
+          final int index = game.medias
+              .indexWhere((element) => element.uuid == media['id']);
+          if (index != -1) {
+            final fileRes =
+            await http.get(Uri.parse(media['filename'] ?? ''));
+            final file = XFile.fromData(fileRes.bodyBytes);
+            game.medias[index].file = file;
+          }
+        }
+      }
+
       game.assets.clear();
       var jsonAssets = json['assets'];
-      print(jsonAssets);
       for (var asset in jsonAssets) {
         GameObject assetObject = GameObject.fromJson(asset);
         game.assets.add(assetObject);

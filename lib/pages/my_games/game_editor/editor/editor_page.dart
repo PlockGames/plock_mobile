@@ -188,8 +188,6 @@ class _EditorPageState extends State<EditorPage> {
             id: widget.game.uuid,
           ));
 
-      print(finalRes.body);
-
       // Navegar a la página my_games_page en lugar de simplemente volver a la raíz
       Navigator.pushReplacement(
         context,
@@ -205,7 +203,6 @@ class _EditorPageState extends State<EditorPage> {
     return () async {
       Plock.Game tempGame = widget.game.instance();
       tempGame.currentSceneIndex = tempGame.firstScene;
-      print(tempGame.scenes[tempGame.firstScene].objects.length);
 
       for (var object in tempGame.scenes[tempGame.firstScene].objects) {
         for (var component in object.components) {
