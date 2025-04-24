@@ -26,16 +26,7 @@ class ApiService {
   // GET request with authentication token
   Future<Map<String, dynamic>> get(String endpoint) async {
     try {
-      final token = await _authService.getAccessToken();
-      final headers = {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
-
-      final response = await _client.get(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: headers,
-      );
+      final response = await _httpClient.get(endpoint);
       return _processResponse(response);
     } catch (e) {
       return {'success': false, 'message': 'Error: $e', 'data': null};

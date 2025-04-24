@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -55,19 +56,11 @@ class _EditorPageState extends State<EditorPage> {
                     objects: objects,
                     medias: widget.game.medias,
                     canvas: canvas,
-                    convertToAsset: convertToAsset,
+                    convertToAsset: (GameObject gameObject) {
+                      // Add your implementation for convertToAsset here
+                    },
                   )));
     };
-  }
-
-  /// Callback : Convert an object to an asset.
-  void convertToAsset(ObjectComponent object, EditorCanvas canvas) {
-    if (canvas == EditorCanvas.scene) {
-      widget.game.assets.add(object.getGameObject());
-    } else {
-      widget.game.uiAssets.add(object.getGameObject());
-    }
-
   }
 
   /// Callback : Add a game object to the game.
@@ -167,8 +160,6 @@ class _EditorPageState extends State<EditorPage> {
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
-
-        print(update);
       }
 
       // upload images
@@ -196,6 +187,8 @@ class _EditorPageState extends State<EditorPage> {
             contentGame: widget.game.toJson(),
             id: widget.game.uuid,
           ));
+
+      print(finalRes.body);
 
       // Navegar a la página my_games_page en lugar de simplemente volver a la raíz
       Navigator.pushReplacement(
@@ -266,10 +259,10 @@ class _EditorPageState extends State<EditorPage> {
     };
   }
 
-  Function(Function(GameObject, EditorCanvas), Function(GameObject), EditorCanvas canvas)
-      openAssets(BuildContext context) {
-    return (Function(GameObject, EditorCanvas) spawnAsset, Function(GameObject) updateAsset,
-        EditorCanvas canvas) {
+  Function(Function(GameObject, EditorCanvas), Function(GameObject),
+      EditorCanvas canvas) openAssets(BuildContext context) {
+    return (Function(GameObject, EditorCanvas) spawnAsset,
+        Function(GameObject) updateAsset, EditorCanvas canvas) {
       Navigator.push(
           context,
           MaterialPageRoute(
