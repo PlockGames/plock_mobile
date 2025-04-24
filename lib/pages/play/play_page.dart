@@ -83,6 +83,12 @@ class _PlayPageState extends State<PlayPage>
             ..gameType = raw['gameType'] ?? 'Unknown'
             ..commentsCount = raw['commentsCount'] ?? 0;
 
+          // Store creator information
+          if (raw['creator'] != null) {
+            game.creatorUsername = raw['creator']['username'] ?? '';
+            game.creatorAvatarUrl = raw['creator']['pofilePic'] ?? '';
+          }
+
           _isLiked[game.uuid] = raw['hasLiked'] ?? false;
           _likesCount[game.uuid] = raw['likes'] ?? 0;
           games.add(game);
@@ -234,6 +240,42 @@ class _BottomOverlay extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Creator info
+          if (game.creatorUsername.isNotEmpty)
+            Row(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.blue,
+                  backgroundImage: game.creatorAvatarUrl.isNotEmpty
+                      ? NetworkImage(game.creatorAvatarUrl)
+                      : null,
+                  child: game.creatorAvatarUrl.isEmpty
+                      ? Text(
+                          game.creatorUsername.isNotEmpty
+                              ? game.creatorUsername[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 8),
+                // Username
+                Text(
+                  game.creatorUsername,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 8),
           Text(game.name,
               style: const TextStyle(
                   color: Colors.white,

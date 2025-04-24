@@ -70,6 +70,12 @@ class Game {
   /// Set at runtime when the game is played, used to spawn and destroy objects.
   GamePlayer? gamePlayer;
 
+  /// The username of the game's creator.
+  String creatorUsername = "";
+
+  /// The avatar URL of the game's creator.
+  String creatorAvatarUrl = "";
+
   Game({required this.name}) {
     scenes.add(Plock.Scene(name: "scene"));
   }
@@ -86,6 +92,8 @@ class Game {
     instance.likes = likes;
     instance.gameType = gameType;
     instance.commentsCount = commentsCount;
+    instance.creatorUsername = creatorUsername;
+    instance.creatorAvatarUrl = creatorAvatarUrl;
 
     instance.scenes.clear();
 
@@ -243,8 +251,6 @@ class Game {
       if (lastUpdate != null) {
         game.lastUpdate = lastUpdate;
       }
-
-
 
       game.scenes.clear();
       game.objectCount = json['objectCount'];
