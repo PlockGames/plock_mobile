@@ -291,26 +291,10 @@ class _LoginPageState extends State<LoginPage>
                         Center(
                           child: Hero(
                             tag: 'app_logo',
-                            child: Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: PlockTheme.primaryBlue, // Utiliser primaryBlue
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: PlockTheme.primaryBlue // Utiliser primaryBlue
-                                        .withOpacity(0.5),
-                                    blurRadius: 15,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.games,
-                                size: 50,
-                                color: Colors.white,
-                              ),
+                            child: Image.asset(
+                              'assets/images/app_logo.png',
+                              width: 120,
+                              height: 120,
                             ),
                           ),
                         ),

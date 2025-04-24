@@ -7,6 +7,7 @@ import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
 import 'package:flame/game.dart';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class GamesSearchPage extends StatefulWidget {
   const GamesSearchPage({Key? key}) : super(key: key);
@@ -147,7 +148,7 @@ class _GamesSearchPageState extends State<GamesSearchPage>
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     _isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingLogoAnimation(); // Utiliser l'animation du logo
                 }
 
                 if (snapshot.hasError) {
@@ -325,7 +326,7 @@ class _GameCard extends StatelessWidget {
                         return Container(
                           color: Colors.grey[800],
                           child: const Center(
-                            child: CircularProgressIndicator(),
+                            child: LoadingLogoAnimation(size: 40), // Utiliser l'animation du logo (plus petite)
                           ),
                         );
                       },

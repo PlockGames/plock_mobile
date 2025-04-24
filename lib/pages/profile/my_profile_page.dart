@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/theme.dart'; // Importer le thème
 import 'dart:io';
 import 'dart:convert';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -480,7 +481,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
       // AppBar retirée
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingLogoAnimation() // Utiliser l'animation du logo
           : RefreshIndicator(
               onRefresh: _fetchUserProfile,
               child: SingleChildScrollView(

@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:plock_mobile/theme.dart'; // Importer le thème
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 
 class PlayPage extends StatefulWidget {
   final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
@@ -138,7 +139,7 @@ class _PlayPageState extends State<PlayPage>
           future: _gamesFuture,
           builder: (context, snap) {
             if (snap.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingLogoAnimation(); // Utiliser l'animation du logo
             }
             if (snap.hasError || snap.data!.isEmpty) {
               return const Center(child: Text('No games available'));
@@ -755,7 +756,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     _comments.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingLogoAnimation(size: 60); // Utiliser l'animation du logo
                 }
 
                 if (snapshot.hasError) {
@@ -785,7 +786,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                       return const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(),
+                          child: LoadingLogoAnimation(size: 30), // Utiliser l'animation du logo (petite)
                         ),
                       );
                     }
@@ -826,7 +827,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: _isSubmitting
-                      ? const CircularProgressIndicator()
+                      ? const SizedBox(width: 24, height: 24, child: LoadingLogoAnimation(size: 24)) // Utiliser l'animation pendant l'envoi
                       : const Icon(Icons.send, color: PlockTheme.primaryOrange), // Utiliser primaryOrange
                   onPressed: _isSubmitting ? null : _submitComment,
                 ),

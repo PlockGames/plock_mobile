@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:plock_mobile/theme.dart'; // Importer le thème
 import 'package:plock_mobile/pages/my_games/game_editor/editor/editor_page.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer le widget de chargement
 import '../../models/games/game.dart';
 import 'package:http/http.dart' as http;
 
@@ -161,7 +162,7 @@ class _MyGamesPageState extends State<MyGamesPage> {
           future: FuturProjects,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingLogoAnimation(); // Utiliser l'animation du logo
             } else if (snapshot.hasError) {
               return Center(child: Text('Error : ${snapshot.error}'));
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {

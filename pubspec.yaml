@@ -89,7 +89,7 @@ flutter:
 
   assets:
     - .env
-    - assets/images/google_logo.png
+    - assets/images/ # Ajout du dossier images
     - assets/svg/add.svg
     - assets/svg/delete.svg
     - assets/svg/edit.svg
