@@ -27,21 +27,22 @@ import 'package:plock_mobile/services/auth_service.dart' as _i2;
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthService extends _i1.Mock implements _i2.AuthService {
-  MockAuthService() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i3.Future<String?> getAccessToken() =>
       (super.noSuchMethod(
             Invocation.method(#getAccessToken, []),
             returnValue: _i3.Future<String?>.value(),
+            returnValueForMissingStub: _i3.Future<String?>.value(),
           )
           as _i3.Future<String?>);
 
   @override
   int min(int? a, int? b) =>
-      (super.noSuchMethod(Invocation.method(#min, [a, b]), returnValue: 0)
+      (super.noSuchMethod(
+            Invocation.method(#min, [a, b]),
+            returnValue: 0,
+            returnValueForMissingStub: 0,
+          )
           as int);
 
   @override
@@ -49,6 +50,7 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
       (super.noSuchMethod(
             Invocation.method(#getRefreshToken, []),
             returnValue: _i3.Future<String?>.value(),
+            returnValueForMissingStub: _i3.Future<String?>.value(),
           )
           as _i3.Future<String?>);
 
@@ -57,6 +59,7 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
       (super.noSuchMethod(
             Invocation.method(#isLoggedIn, []),
             returnValue: _i3.Future<bool>.value(false),
+            returnValueForMissingStub: _i3.Future<bool>.value(false),
           )
           as _i3.Future<bool>);
 
@@ -76,6 +79,9 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
             returnValue: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
+            returnValueForMissingStub: _i3.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
           )
           as _i3.Future<Map<String, dynamic>>);
 
@@ -84,6 +90,9 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
       (super.noSuchMethod(
             Invocation.method(#signup, [signupData]),
             returnValue: _i3.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+            returnValueForMissingStub: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
           )
@@ -98,6 +107,9 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
             returnValue: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
+            returnValueForMissingStub: _i3.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
           )
           as _i3.Future<Map<String, dynamic>>);
 
@@ -110,6 +122,9 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
             returnValue: _i3.Future<Map<String, String>>.value(
               <String, String>{},
             ),
+            returnValueForMissingStub: _i3.Future<Map<String, String>>.value(
+              <String, String>{},
+            ),
           )
           as _i3.Future<Map<String, String>>);
 }
@@ -118,10 +133,6 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNavigatorObserver extends _i1.Mock implements _i4.NavigatorObserver {
-  MockNavigatorObserver() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   void didPush(_i4.Route<dynamic>? route, _i4.Route<dynamic>? previousRoute) =>
       super.noSuchMethod(
