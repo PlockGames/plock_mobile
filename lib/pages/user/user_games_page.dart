@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/games/game.dart' as plock;
+import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:flame/game.dart';
 import 'dart:convert';
 
 /// A page that displays all games created by a specific user
@@ -516,14 +518,25 @@ class _GamePlayScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         title: Text(game.name),
         elevation: 0,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            "Game play screen placeholder for: ${game.name}",
-            style: const TextStyle(color: Colors.white),
+        actions: [
+          // Share button in app bar
+          IconButton(
+            icon: const Icon(Icons.share, color: Colors.white),
+            onPressed: () {
+              final url = 'https://plock.app/games/${game.uuid}';
+              Clipboard.setData(ClipboardData(text: url));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Link copied to clipboard'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
           ),
-        ),
+        ],
+      ),
+      body: GameWidget(
+        game: GamePlayer(game: game),
       ),
     );
   }
