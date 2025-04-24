@@ -10,9 +10,15 @@ import 'package:plock_mobile/services/api.dart';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'package:plock_mobile/theme.dart'; // Importer le thème
 
 class PlayPage extends StatefulWidget {
-  const PlayPage({Key? key}) : super(key: key);
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
+
+  const PlayPage({
+    Key? key,
+    this.onGameModeChanged,
+  }) : super(key: key);
 
   @override
   State<PlayPage> createState() => _PlayPageState();
@@ -155,6 +161,7 @@ class _PlayPageState extends State<PlayPage>
                   onLikeToggle: _handleLikeToggle,
                   enableScrolling: enableScrolling,
                   disableScrolling: disableScrolling,
+                  onGameModeChanged: widget.onGameModeChanged, // Passer le callback
                 );
               },
             );
@@ -185,6 +192,7 @@ class _GameScreen extends StatefulWidget {
   final void Function(String id, bool like) onLikeToggle;
   final VoidCallback enableScrolling;
   final VoidCallback disableScrolling;
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
 
   const _GameScreen({
     super.key,
@@ -194,6 +202,7 @@ class _GameScreen extends StatefulWidget {
     required this.onLikeToggle,
     required this.enableScrolling,
     required this.disableScrolling,
+    this.onGameModeChanged,
   });
 
   @override
@@ -218,6 +227,8 @@ class _GameScreenState extends State<_GameScreen> {
     
     // Désactiver le défilement vertical
     widget.disableScrolling();
+    // Informer le parent que le mode jeu est actif
+    widget.onGameModeChanged?.call(true);
   }
   
   // Méthode pour quitter le jeu
@@ -232,6 +243,8 @@ class _GameScreenState extends State<_GameScreen> {
     
     // Réactiver le défilement vertical
     widget.enableScrolling();
+    // Informer le parent que le mode jeu est inactif
+    widget.onGameModeChanged?.call(false);
   }
   
   // Méthode pour mettre en pause le jeu
@@ -335,10 +348,10 @@ class _GameScreenState extends State<_GameScreen> {
                 // Bouton pause/reprendre
                 FloatingActionButton(
                   mini: true,
-                  backgroundColor: Colors.white.withOpacity(0.7),
+                  backgroundColor: PlockTheme.primaryColor.withOpacity(0.8), // Utiliser la couleur primaire avec opacité
                   child: Icon(
                     _isPaused ? Icons.play_arrow : Icons.pause,
-                    color: Colors.black,
+                    color: PlockTheme.textPrimary, // Utiliser la couleur de texte primaire
                   ),
                   onPressed: _isPaused ? _resumeGame : _pauseGame,
                 ),
@@ -346,8 +359,8 @@ class _GameScreenState extends State<_GameScreen> {
                 // Bouton fermer
                 FloatingActionButton(
                   mini: true,
-                  backgroundColor: Colors.white.withOpacity(0.7),
-                  child: const Icon(Icons.close, color: Colors.black),
+                  backgroundColor: PlockTheme.errorColor.withOpacity(0.8), // Utiliser la couleur d'erreur avec opacité
+                  child: const Icon(Icons.close, color: PlockTheme.textPrimary), // Utiliser la couleur de texte primaire
                   onPressed: _exitGame,
                 ),
               ],

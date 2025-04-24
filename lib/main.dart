@@ -358,7 +358,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ? const NeverScrollableScrollPhysics()
             : const AlwaysScrollableScrollPhysics(),
         children: <Widget>[
-          const PlayPage(),
+          PlayPage(onGameModeChanged: _handleGameModeChanged), // Passer le callback
           const GamesSearchPage(),
           const MyGamesPage(),
           const ProfilePage(),
