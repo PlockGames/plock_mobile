@@ -57,6 +57,9 @@ class Game {
   /// Number of comments the game has received
   int commentsCount = 0;
 
+  /// Tags associated with the game
+  List<String> tags = [];
+
   /// ID of the game's creator.
   String creatorId = "";
 
@@ -98,6 +101,7 @@ class Game {
     instance.creatorId = creatorId;
     instance.creatorUsername = creatorUsername;
     instance.creatorAvatarUrl = creatorAvatarUrl;
+    instance.tags = List.from(tags); // Copy the tags
 
     instance.scenes.clear();
 

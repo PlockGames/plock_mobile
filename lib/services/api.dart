@@ -16,12 +16,46 @@ class ApiService {
 
   /// Returns a list of all games.
   ///
-  /// If [page] is not null, it will return the games for that specific page only.
-  static Future<http.Response> getAllGames(int? page) async {
+  /// Parameters:
+  /// - [page]: The page number to fetch
+  /// - [perPage]: Number of items per page (default: 50)
+  /// - [tags]: List of tag IDs to filter games
+  /// - [search]: Text to search in game titles
+  static Future<http.Response> getAllGames(
+    int? page, {
+    int perPage = 50,
+    List<String>? tags,
+    String? search,
+  }) async {
+    // Build query parameters
+    final queryParams = <String, String>{};
+
     if (page != null) {
-      return await _httpClient.get("/game?page=$page&perPage=50");
+      queryParams['page'] = page.toString();
+      queryParams['perPage'] = perPage.toString();
     }
-    return await _httpClient.get("/game");
+
+    if (tags != null && tags.isNotEmpty) {
+      queryParams['tags'] = tags.join(',');
+    }
+
+    if (search != null && search.isNotEmpty) {
+      queryParams['search'] = search;
+    }
+
+    // Convert query params to URL string
+    String queryString = '';
+    if (queryParams.isNotEmpty) {
+      queryString =
+          '?${queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
+    }
+
+    // Log the complete URL for debugging
+    final endpoint = "/game$queryString";
+    print("API Request URL: $url$endpoint");
+    print("Tags parameter: ${tags?.join(',')}");
+
+    return await _httpClient.get(endpoint);
   }
 
   /// Returns only the games of the current user.
