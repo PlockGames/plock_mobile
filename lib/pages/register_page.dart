@@ -83,13 +83,13 @@ class _RegisterPageState extends State<RegisterPage>
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: PlockTheme.primaryBlue, // Utiliser primaryBlue
-              onPrimary: Colors.white,
-              surface: PlockTheme.cardColor,
-              onSurface: PlockTheme.textPrimary,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme.dark(
+          primary: PlockTheme.secondaryBlue, // Utiliser secondaryBlue comme accent
+          onPrimary: Colors.black, // Texte sur bleu clair (noir pour contraste)
+          surface: PlockTheme.cardColor,
+          onSurface: PlockTheme.textPrimary,
             ),
             dialogBackgroundColor: PlockTheme.backgroundLight,
           ),
@@ -270,7 +270,7 @@ class _RegisterPageState extends State<RegisterPage>
                 end: Alignment.bottomCenter,
                 colors: [
                   PlockTheme.backgroundDark,
-                  const Color(0xFF0D47A1).withOpacity(0.5),
+                  PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser la couleur du thème
                 ],
               ),
             ),
@@ -468,14 +468,14 @@ class _RegisterPageState extends State<RegisterPage>
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _validateAndRegister,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                            backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 4,
                             shadowColor:
-                                PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser primaryBlue
+                                PlockTheme.primaryOrange.withOpacity(0.5), // Utiliser primaryOrange
                           ),
                           child: _isLoading
                               ? const SizedBox(
@@ -516,7 +516,7 @@ class _RegisterPageState extends State<RegisterPage>
                                 TextSpan(
                                   text: 'Sign In',
                                   style: TextStyle(
-                                    color: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                                    color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

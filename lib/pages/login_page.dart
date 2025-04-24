@@ -267,7 +267,7 @@ class _LoginPageState extends State<LoginPage>
                   end: Alignment.bottomCenter,
                   colors: [
                     PlockTheme.backgroundDark,
-                    Color(0xFF0D47A1).withOpacity(0.6),
+                    PlockTheme.primaryBlue.withOpacity(0.6), // Utiliser la couleur du thème
                   ],
                 ),
               ),
@@ -402,13 +402,13 @@ class _LoginPageState extends State<LoginPage>
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _validateAndLogin,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                              backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               elevation: 5,
                               shadowColor:
-                                  PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser primaryBlue
+                                  PlockTheme.primaryOrange.withOpacity(0.5), // Utiliser primaryOrange
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -478,7 +478,7 @@ class _LoginPageState extends State<LoginPage>
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.white.withOpacity(0.5)),
+                              side: const BorderSide(color: PlockTheme.secondaryBlue), // Utiliser secondaryBlue
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -505,7 +505,7 @@ class _LoginPageState extends State<LoginPage>
                                 TextSpan(
                                   text: 'Sign Up',
                                   style: TextStyle(
-                                    color: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                                    color: PlockTheme.primaryOrange, // Utiliser primaryOrange
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

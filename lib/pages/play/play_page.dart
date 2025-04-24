@@ -479,16 +479,16 @@ class _ActionButtons extends StatelessWidget {
           // Like button
           IconButton(
             icon: Icon(Icons.favorite,
-                color: isLiked ? Colors.red : Colors.white, size: 40),
+                color: isLiked ? PlockTheme.errorColor : PlockTheme.textMuted, size: 40), // Utiliser errorColor ou textMuted
             onPressed: () => onLikeToggle(game.uuid, !isLiked),
           ),
           Text('$likes',
-              style: const TextStyle(color: Colors.white, fontSize: 14)),
+              style: const TextStyle(color: PlockTheme.textPrimary, fontSize: 14)), // Utiliser textPrimary
 
           // Comment button
           const SizedBox(height: 24),
           IconButton(
-            icon: const Icon(Icons.comment, color: Colors.white, size: 36),
+            icon: const Icon(Icons.comment, color: PlockTheme.primaryBlue, size: 36), // Utiliser primaryBlue
             onPressed: () async {
               // Show the comments bottom sheet and wait for it to close
               await showModalBottomSheet(
@@ -505,12 +505,12 @@ class _ActionButtons extends StatelessWidget {
             },
           ),
           Text('${game.commentsCount}',
-              style: const TextStyle(color: Colors.white, fontSize: 14)),
+              style: const TextStyle(color: PlockTheme.textPrimary, fontSize: 14)), // Utiliser textPrimary
 
           // Share button
           const SizedBox(height: 24),
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.white, size: 36),
+            icon: const Icon(Icons.share, color: PlockTheme.secondaryBlue, size: 36), // Utiliser secondaryBlue
             onPressed: () {
               final url = 'https://plock.app/games/${game.uuid}';
               Clipboard.setData(ClipboardData(text: url));
@@ -716,7 +716,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: const BoxDecoration(
-        color: Colors.black,
+        color: PlockTheme.backgroundDark, // Utiliser backgroundDark
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -725,7 +725,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.grey[900],
+              color: PlockTheme.backgroundLight, // Utiliser backgroundLight
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -735,13 +735,13 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 Text(
                   'Comments (${widget.game.commentsCount})',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: PlockTheme.textPrimary, // Utiliser textPrimary
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: PlockTheme.textPrimary), // Utiliser textPrimary
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -762,7 +762,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   return Center(
                     child: Text(
                       'Error loading comments: ${snapshot.error}',
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(color: PlockTheme.errorColor), // Utiliser errorColor
                     ),
                   );
                 }
@@ -771,7 +771,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   return const Center(
                     child: Text(
                       'No comments yet. Be the first to comment!',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: PlockTheme.textMuted), // Utiliser textMuted
                     ),
                   );
                 }
@@ -801,21 +801,21 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           // Comment input
           Container(
             padding: const EdgeInsets.all(12),
-            color: Colors.grey[900],
+            color: PlockTheme.backgroundLight, // Utiliser backgroundLight
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _commentController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: PlockTheme.textPrimary), // Utiliser textPrimary
                     maxLines: null,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                       hintText: 'Add a comment...',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(),
+                      hintStyle: TextStyle(color: PlockTheme.textMuted), // Utiliser textMuted
+                      border: OutlineInputBorder(borderSide: BorderSide.none), // Pas de bordure
                       filled: true,
-                      fillColor: Colors.black,
+                      fillColor: PlockTheme.backgroundDark, // Utiliser backgroundDark
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -827,7 +827,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 IconButton(
                   icon: _isSubmitting
                       ? const CircularProgressIndicator()
-                      : const Icon(Icons.send, color: Colors.blue),
+                      : const Icon(Icons.send, color: PlockTheme.primaryOrange), // Utiliser primaryOrange
                   onPressed: _isSubmitting ? null : _submitComment,
                 ),
               ],
@@ -853,7 +853,7 @@ class _CommentItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[850],
+        color: PlockTheme.cardColor, // Utiliser cardColor
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -865,7 +865,7 @@ class _CommentItem extends StatelessWidget {
               // User avatar
               CircleAvatar(
                 radius: 16,
-                backgroundColor: Colors.blue,
+                backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
                 backgroundImage: comment.user.profilePic != null
                     ? NetworkImage(comment.user.profilePic!)
                     : null,
@@ -875,7 +875,7 @@ class _CommentItem extends StatelessWidget {
                             ? comment.user.username[0].toUpperCase()
                             : '?',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: PlockTheme.textOnPrimaryBlue, // Utiliser textOnPrimaryBlue
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -887,7 +887,7 @@ class _CommentItem extends StatelessWidget {
               Text(
                 comment.user.username,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: PlockTheme.textPrimary, // Utiliser textPrimary
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -898,7 +898,7 @@ class _CommentItem extends StatelessWidget {
               Text(
                 _formatDate(comment.createdAt),
                 style: TextStyle(
-                  color: Colors.grey[400],
+                  color: PlockTheme.textMuted, // Utiliser textMuted
                   fontSize: 12,
                 ),
               ),
@@ -910,7 +910,7 @@ class _CommentItem extends StatelessWidget {
           // Comment content
           Text(
             comment.content,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: PlockTheme.textPrimary), // Utiliser textPrimary
           ),
         ],
       ),
