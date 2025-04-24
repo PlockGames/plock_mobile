@@ -10,9 +10,15 @@ import 'package:plock_mobile/services/api.dart';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'package:plock_mobile/theme.dart'; // Importer le thème
 
 class PlayPage extends StatefulWidget {
-  const PlayPage({Key? key}) : super(key: key);
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
+
+  const PlayPage({
+    Key? key,
+    this.onGameModeChanged,
+  }) : super(key: key);
 
   @override
   State<PlayPage> createState() => _PlayPageState();
@@ -25,6 +31,23 @@ class _PlayPageState extends State<PlayPage>
   late Future<List<plock.Game>> _gamesFuture;
   final Map<String, bool> _isLiked = {};
   final Map<String, int> _likesCount = {};
+  
+  // État du défilement
+  bool _isScrollingEnabled = true;
+  
+  // Méthode pour désactiver le défilement
+  void disableScrolling() {
+    setState(() {
+      _isScrollingEnabled = false;
+    });
+  }
+  
+  // Méthode pour activer le défilement
+  void enableScrolling() {
+    setState(() {
+      _isScrollingEnabled = true;
+    });
+  }
 
   @override
   void initState() {
@@ -124,7 +147,9 @@ class _PlayPageState extends State<PlayPage>
             return PageView.builder(
               controller: _pageController,
               scrollDirection: Axis.vertical,
-              physics: const BouncingScrollPhysics(),
+              physics: _isScrollingEnabled 
+                  ? const BouncingScrollPhysics() 
+                  : const NeverScrollableScrollPhysics(),
               itemCount: games.length,
               itemBuilder: (context, index) {
                 final game = games[index];
@@ -134,6 +159,9 @@ class _PlayPageState extends State<PlayPage>
                   isLiked: _isLiked[game.uuid] ?? false,
                   likes: _likesCount[game.uuid] ?? 0,
                   onLikeToggle: _handleLikeToggle,
+                  enableScrolling: enableScrolling,
+                  disableScrolling: disableScrolling,
+                  onGameModeChanged: widget.onGameModeChanged, // Passer le callback
                 );
               },
             );
@@ -157,11 +185,14 @@ class _PlayPageState extends State<PlayPage>
 }
 
 // ─────────────────────────  GAME SCREEN WIDGET
-class _GameScreen extends StatelessWidget {
+class _GameScreen extends StatefulWidget {
   final plock.Game game;
   final bool isLiked;
   final int likes;
   final void Function(String id, bool like) onLikeToggle;
+  final VoidCallback enableScrolling;
+  final VoidCallback disableScrolling;
+  final Function(bool)? onGameModeChanged; // Callback pour l'état du mode jeu
 
   const _GameScreen({
     super.key,
@@ -169,27 +200,230 @@ class _GameScreen extends StatelessWidget {
     required this.isLiked,
     required this.likes,
     required this.onLikeToggle,
+    required this.enableScrolling,
+    required this.disableScrolling,
+    this.onGameModeChanged,
   });
+
+  @override
+  State<_GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<_GameScreen> {
+  // État du jeu
+  bool _isGameActive = false;
+  bool _isPaused = false;
+  late GamePlayer _gamePlayer;
+  
+  // Contrôleur pour verrouiller/déverrouiller le défilement
+  ScrollPhysics _scrollPhysics = const BouncingScrollPhysics();
+  
+  // Méthode pour activer le mode jeu
+  void _startGame() {
+    setState(() {
+      _isGameActive = true;
+      _isPaused = false;
+    });
+    
+    // Désactiver le défilement vertical
+    widget.disableScrolling();
+    // Informer le parent que le mode jeu est actif
+    widget.onGameModeChanged?.call(true);
+  }
+  
+  // Méthode pour quitter le jeu
+  void _exitGame() {
+    // Réinitialiser le jeu
+    _resetGame();
+    
+    setState(() {
+      _isGameActive = false;
+      _isPaused = false;
+    });
+    
+    // Réactiver le défilement vertical
+    widget.enableScrolling();
+    // Informer le parent que le mode jeu est inactif
+    widget.onGameModeChanged?.call(false);
+  }
+  
+  // Méthode pour mettre en pause le jeu
+  void _pauseGame() {
+    setState(() {
+      _isPaused = true;
+    });
+    // Arrêter les mises à jour du jeu
+    _gamePlayer.paused = true;
+  }
+  
+  // Méthode pour reprendre le jeu
+  void _resumeGame() {
+    setState(() {
+      _isPaused = false;
+    });
+    // Reprendre les mises à jour du jeu
+    _gamePlayer.paused = false;
+  }
+  
+  // Méthode pour réinitialiser le jeu
+  void _resetGame() {
+    // Réinitialiser le GamePlayer avec une nouvelle instance du jeu
+    setState(() {
+      _isPaused = false;
+    });
+    
+    // Plutôt que de recréer l'objet, on réinitialise son état
+    _gamePlayer.resetGame();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Juego ocupando toda la pantalla
-        GameWidget(game: GamePlayer(game: game)),
-
-        // Capa de información
-        _BottomOverlay(game: game),
-
-        // Botones flotantes
-        _ActionButtons(
-          game: game,
-          isLiked: isLiked,
-          likes: likes,
-          onLikeToggle: onLikeToggle,
+        // Jeu occupant toute la pantalla
+        GameWidget<GamePlayer>(
+          game: _gamePlayer = GamePlayer(game: widget.game),
+          overlayBuilderMap: {
+            'pauseOverlay': (context, game) => _PauseOverlay(
+              onResume: _resumeGame,
+              onReset: () {
+                _resetGame();
+                _resumeGame();
+              },
+            ),
+          },
         ),
+
+        // Overlay "Appuyez pour jouer" (visible uniquement quand le jeu n'est pas actif)
+        if (!_isGameActive)
+          GestureDetector(
+            onTap: _startGame,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: Text(
+                  "Appuyez pour jouer",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+        // Overlay de pause (visible uniquement quand le jeu est en pause)
+        if (_isPaused)
+          _PauseOverlay(
+            onResume: _resumeGame,
+            onReset: () {
+              _resetGame();
+              _resumeGame();
+            },
+          ),
+
+        // Capa de información (visible uniquement quand le jeu n'est PAS actif)
+        if (!_isGameActive)
+          _BottomOverlay(game: widget.game),
+
+        // Botones flotantes (likes, commentaires, partage - visible uniquement quand le jeu n'est PAS actif)
+        if (!_isGameActive)
+          _ActionButtons(
+            game: widget.game,
+            isLiked: widget.isLiked,
+            likes: widget.likes,
+            onLikeToggle: widget.onLikeToggle,
+          ),
+        
+        // Boutons de contrôle de jeu (visible uniquement quand le jeu est actif)
+        if (_isGameActive)
+          Positioned(
+            right: 10,
+            bottom: 10,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Bouton pause/reprendre
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: PlockTheme.primaryColor.withOpacity(0.8), // Utiliser la couleur primaire avec opacité
+                  child: Icon(
+                    _isPaused ? Icons.play_arrow : Icons.pause,
+                    color: PlockTheme.textPrimary, // Utiliser la couleur de texte primaire
+                  ),
+                  onPressed: _isPaused ? _resumeGame : _pauseGame,
+                ),
+                const SizedBox(height: 8),
+                // Bouton fermer
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: PlockTheme.errorColor.withOpacity(0.8), // Utiliser la couleur d'erreur avec opacité
+                  child: const Icon(Icons.close, color: PlockTheme.textPrimary), // Utiliser la couleur de texte primaire
+                  onPressed: _exitGame,
+                ),
+              ],
+            ),
+          ),
       ],
+    );
+  }
+}
+
+// Overlay pour le jeu en pause
+class _PauseOverlay extends StatelessWidget {
+  final VoidCallback onResume;
+  final VoidCallback onReset;
+
+  const _PauseOverlay({
+    required this.onResume,
+    required this.onReset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.7),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Jeu en pause",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: onResume,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text(
+                "Reprendre",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onReset,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text(
+                "Rafraîchir",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
