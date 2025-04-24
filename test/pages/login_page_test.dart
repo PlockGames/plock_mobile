@@ -51,11 +51,9 @@ void main() {
 
     testWidgets('Should show validation errors when fields are empty', (WidgetTester tester) async {
       await tester.pumpWidget(createLoginScreen());
-
       // Trouver le bouton de connexion et cliquer dessus sans remplir les champs
       await tester.tap(find.widgetWithText(ElevatedButton, 'Log In'));
       await tester.pump();
-
       // Vérifier qu'un message d'erreur est affiché
       expect(find.text('Email and password are required.'), findsOneWidget);
     });
