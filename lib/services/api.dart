@@ -215,6 +215,11 @@ class ApiService {
       String gameId, String content) async {
     return await _httpClient.post("/comment/$gameId", {"content": content});
   }
+
+  /// Delete a comment
+  static Future<http.Response> deleteComment(String commentId) async {
+    return await _httpClient.delete("/comment/$commentId");
+  }
 }
 
 class CreateGameDto {
