@@ -163,11 +163,11 @@ class SplashScreen extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: PlockTheme.primaryColor,
+                  color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: PlockTheme.primaryColor.withOpacity(0.5),
+                      color: PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser primaryBlue
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),
@@ -209,7 +209,7 @@ class SplashScreen extends StatelessWidget {
                 height: 40,
                 child: CircularProgressIndicator(
                   valueColor:
-                      AlwaysStoppedAnimation<Color>(PlockTheme.accentColor),
+                      AlwaysStoppedAnimation<Color>(PlockTheme.primaryOrange), // Utiliser primaryOrange
                   strokeWidth: 3,
                 ),
               ),
@@ -325,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
-              color: PlockTheme.primaryColor.withOpacity(0.15),
+              color: PlockTheme.primaryBlue.withOpacity(0.15), // Utiliser primaryBlue
               blurRadius: 12,
               spreadRadius: -3,
               offset: const Offset(0, -3),
@@ -358,7 +358,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ? const NeverScrollableScrollPhysics()
             : const AlwaysScrollableScrollPhysics(),
         children: <Widget>[
-          const PlayPage(),
+          PlayPage(onGameModeChanged: _handleGameModeChanged), // Passer le callback
           const GamesSearchPage(),
           const MyGamesPage(),
           const ProfilePage(),
@@ -399,10 +399,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               },
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: PlockTheme.errorColor,
-              ),
-              child: const Text('LOGOUT'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: PlockTheme.errorColor, // Garder errorColor pour logout
+        ),
+        child: const Text('LOGOUT'),
               onPressed: () async {
                 Navigator.of(context).pop();
                 await authService.logout();
@@ -432,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         height: 60,
         decoration: BoxDecoration(
           color: isSelected
-              ? PlockTheme.primaryColor.withOpacity(0.15)
+              ? PlockTheme.primaryBlue.withOpacity(0.15) // Utiliser primaryBlue
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -444,13 +444,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               padding: EdgeInsets.all(isSelected ? 8 : 6),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? PlockTheme.primaryColor.withOpacity(0.2)
+                    ? PlockTheme.primaryBlue.withOpacity(0.2) // Utiliser primaryBlue
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: PlockTheme.primaryColor.withOpacity(0.3),
+                          color: PlockTheme.primaryBlue.withOpacity(0.3), // Utiliser primaryBlue
                           blurRadius: 12,
                           spreadRadius: -2,
                         )
@@ -460,7 +460,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: Icon(
                 icon,
                 color:
-                    isSelected ? PlockTheme.primaryColor : PlockTheme.textMuted,
+                    isSelected ? PlockTheme.primaryBlue : PlockTheme.textMuted, // Utiliser primaryBlue
                 size: isSelected ? 24 : 22,
               ),
             ),
@@ -469,7 +469,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               duration: const Duration(milliseconds: 250),
               style: TextStyle(
                 color:
-                    isSelected ? PlockTheme.primaryColor : PlockTheme.textMuted,
+                    isSelected ? PlockTheme.primaryBlue : PlockTheme.textMuted, // Utiliser primaryBlue
                 fontSize: isSelected ? 12 : 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 letterSpacing: isSelected ? 0.5 : 0,

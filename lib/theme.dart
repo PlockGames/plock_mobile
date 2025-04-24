@@ -1,93 +1,91 @@
 import 'package:flutter/material.dart';
 
 class PlockTheme {
-  // Main color palette
-  static const Color primaryColor = Color(0xFF2563EB); // Vibrant blue
-  static const Color accentColor = Color(0xFF4ADE80); // Accent green
-  static const Color errorColor = Color(0xFFEF4444); // Error red
+  // --- Nouvelle Palette ---
+  // Couleurs Primaires
+  static const Color primaryBlue = Color(0xFF074888); // Bleu
+  static const Color primaryOrange = Color(0xFFFA6317); // Orange Foncé
 
-  // Background colors
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color backgroundLight = Color(0xFF1E1E1E);
-  static const Color cardColor = Color(0xFF2A2A2A);
-  static const Color dividerColor = Color(0xFF3A3A3A);
+  // Couleurs Secondaires
+  static const Color secondaryBlue = Color(0xFF47F8FF); // Bleu Clair
+  static const Color secondaryOrange = Color(0xFFFFA13A); // Orange
+  static const Color secondaryLightOrange = Color(0xFFFFFDE2); // Orange Clair
 
-  // Text colors
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFBBBBBB);
-  static const Color textMuted = Color(0xFF888888);
+  // Couleurs Neutres (Adaptées pour un thème sombre)
+  static const Color backgroundDark = Color(0xFF121212); // Fond principal sombre
+  static const Color backgroundLight = Color(0xFF1E1E1E); // Fond légèrement plus clair
+  static const Color cardColor = Color(0xFF2A2A2A); // Couleur des cartes/surfaces
+  static const Color dividerColor = Color(0xFF3A3A3A); // Séparateurs
+
+  // Couleurs de Texte
+  static const Color textPrimary = Color(0xFFFFFFFF); // Texte principal (blanc)
+  static const Color textSecondary = Color(0xFFBBBBBB); // Texte secondaire (gris clair)
+  static const Color textMuted = Color(0xFF888888); // Texte atténué (gris moyen)
+  static const Color textOnPrimaryBlue = Color(0xFFFFFFFF); // Texte sur fond bleu primaire
+  static const Color textOnPrimaryOrange = Color(0xFFFFFFFF); // Texte sur fond orange primaire
+  static const Color textOnError = Color(0xFFFFFFFF); // Texte sur fond d'erreur
+
+  // Couleur d'Erreur (Standard)
+  static const Color errorColor = Color(0xFFEF4444); // Rouge pour les erreurs
+
+  // --- Polices ---
+  static const String fontHelveticaNeue = 'Helvetica Neue'; // Police principale (Titres)
+  static const String fontMontserrat = 'Montserrat'; // Police secondaire (Corps)
 
   // Create our dark theme
   static ThemeData darkTheme() {
+    // Définir le TextTheme de base avec Montserrat
+    final textThemeBase = ThemeData.dark().textTheme.apply(
+          fontFamily: fontMontserrat,
+          bodyColor: textSecondary, // Couleur par défaut pour le corps
+          displayColor: textPrimary, // Couleur par défaut pour les titres/affichages
+        );
+
+    // Appliquer Helvetica Neue aux styles de titres/importants
+    final textTheme = textThemeBase.copyWith(
+      headlineLarge: textThemeBase.headlineLarge?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.bold),
+      headlineMedium: textThemeBase.headlineMedium?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.bold),
+      headlineSmall: textThemeBase.headlineSmall?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.bold),
+      titleLarge: textThemeBase.titleLarge?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.w600),
+      titleMedium: textThemeBase.titleMedium?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.w600),
+      titleSmall: textThemeBase.titleSmall?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.w600),
+      // Styles pour le corps du texte (utilisent Montserrat par défaut via apply)
+      bodyLarge: textThemeBase.bodyLarge?.copyWith(color: textPrimary),
+      bodyMedium: textThemeBase.bodyMedium?.copyWith(color: textSecondary),
+      bodySmall: textThemeBase.bodySmall?.copyWith(color: textMuted),
+      // Styles pour les boutons, etc.
+      labelLarge: textThemeBase.labelLarge?.copyWith(fontFamily: fontHelveticaNeue, color: textPrimary, fontWeight: FontWeight.bold), // Utilisé par ElevatedButton
+    );
+
     return ThemeData.dark().copyWith(
-      primaryColor: primaryColor,
+      primaryColor: primaryBlue, // Utiliser le bleu comme couleur primaire principale
       scaffoldBackgroundColor: backgroundDark,
       cardColor: cardColor,
       dividerColor: dividerColor,
       colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
-        secondary: accentColor,
+        primary: primaryBlue, // Bleu primaire
+        secondary: primaryOrange, // Orange foncé comme secondaire (peut être ajusté)
+        tertiary: secondaryBlue, // Bleu clair comme tertiaire
         error: errorColor,
         background: backgroundDark,
         surface: cardColor,
-        onPrimary: textPrimary,
-        onSecondary: textPrimary,
+        onPrimary: textOnPrimaryBlue, // Texte sur fond bleu
+        onSecondary: textOnPrimaryOrange, // Texte sur fond orange
+        onTertiary: textPrimary, // Texte sur fond bleu clair (à ajuster si nécessaire)
         onBackground: textPrimary,
         onSurface: textPrimary,
-        onError: textPrimary,
+        onError: textOnError,
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: textPrimary,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: textSecondary,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: textMuted,
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
+      textTheme: textTheme, // Appliquer le TextTheme personnalisé
+      appBarTheme: AppBarTheme(
         backgroundColor: backgroundLight,
         elevation: 0,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-        ),
-        iconTheme: IconThemeData(color: textPrimary),
+        titleTextStyle: textTheme.titleLarge, // Utiliser le style de titre du thème
+        iconTheme: const IconThemeData(color: textPrimary),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: backgroundLight,
-        selectedItemColor: primaryColor,
+        selectedItemColor: primaryBlue, // Utiliser le bleu primaire pour l'élément sélectionné
         unselectedItemColor: textMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -109,18 +107,18 @@ class PlockTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderSide: const BorderSide(color: primaryBlue, width: 2), // Utiliser le bleu primaire
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: errorColor, width: 2),
         ),
-        hintStyle: const TextStyle(color: textMuted),
+        hintStyle: TextStyle(color: textMuted, fontFamily: fontMontserrat), // Police pour le hint
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: textPrimary,
-          backgroundColor: primaryColor,
+          foregroundColor: textOnPrimaryBlue, // Texte sur le bouton
+          backgroundColor: primaryBlue, // Fond bleu primaire
           padding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 16,
@@ -129,21 +127,23 @@ class PlockTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
+          textStyle: textTheme.labelLarge?.copyWith(fontFamily: fontHelveticaNeue), // Police pour le bouton
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primaryColor,
+          foregroundColor: primaryBlue, // Texte bleu primaire
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
           ),
+          textStyle: textTheme.labelLarge?.copyWith(fontFamily: fontHelveticaNeue), // Police pour le bouton
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryColor,
-          side: const BorderSide(color: primaryColor),
+          foregroundColor: primaryBlue, // Texte bleu primaire
+          side: const BorderSide(color: primaryBlue), // Bordure bleue primaire
           padding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 16,
@@ -151,6 +151,7 @@ class PlockTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          textStyle: textTheme.labelLarge?.copyWith(fontFamily: fontHelveticaNeue), // Police pour le bouton
         ),
       ),
       cardTheme: CardTheme(
@@ -165,20 +166,13 @@ class PlockTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: textPrimary,
-        ),
-        contentTextStyle: const TextStyle(
-          fontSize: 16,
-          color: textSecondary,
-        ),
+        titleTextStyle: textTheme.titleLarge, // Utiliser le style de titre du thème
+        contentTextStyle: textTheme.bodyMedium, // Utiliser le style de corps du thème
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: cardColor,
-        contentTextStyle: const TextStyle(color: textPrimary),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: textPrimary), // Utiliser le style de corps du thème
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -188,7 +182,7 @@ class PlockTheme {
           color: backgroundLight.withOpacity(0.9),
           borderRadius: BorderRadius.circular(8),
         ),
-        textStyle: const TextStyle(color: textPrimary),
+        textStyle: textTheme.bodySmall?.copyWith(color: textPrimary), // Utiliser le style de corps du thème
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: backgroundLight,
@@ -196,27 +190,29 @@ class PlockTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
-      tabBarTheme: const TabBarTheme(
-        labelColor: primaryColor,
+      tabBarTheme: TabBarTheme(
+        labelColor: primaryBlue, // Utiliser le bleu primaire
         unselectedLabelColor: textMuted,
-        indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(color: primaryColor, width: 2),
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(color: primaryBlue, width: 2), // Utiliser le bleu primaire
         ),
+        labelStyle: textTheme.titleSmall?.copyWith(fontFamily: fontHelveticaNeue), // Police pour les onglets
+        unselectedLabelStyle: textTheme.titleSmall?.copyWith(fontFamily: fontHelveticaNeue), // Police pour les onglets
       ),
       sliderTheme: SliderThemeData(
-        activeTrackColor: primaryColor,
-        inactiveTrackColor: primaryColor.withOpacity(0.3),
-        thumbColor: primaryColor,
-        overlayColor: primaryColor.withOpacity(0.2),
+        activeTrackColor: primaryBlue, // Utiliser le bleu primaire
+        inactiveTrackColor: primaryBlue.withOpacity(0.3),
+        thumbColor: primaryBlue, // Utiliser le bleu primaire
+        overlayColor: primaryBlue.withOpacity(0.2),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
-            return primaryColor;
+            return primaryBlue; // Utiliser le bleu primaire
           }
           return Colors.transparent;
         }),
-        checkColor: MaterialStateProperty.all(textPrimary),
+        checkColor: MaterialStateProperty.all(textOnPrimaryBlue),
         side: const BorderSide(color: textMuted),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
@@ -225,7 +221,7 @@ class PlockTheme {
       radioTheme: RadioThemeData(
         fillColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
-            return primaryColor;
+            return primaryBlue; // Utiliser le bleu primaire
           }
           return textMuted;
         }),
@@ -233,13 +229,13 @@ class PlockTheme {
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
-            return primaryColor;
+            return primaryBlue; // Utiliser le bleu primaire
           }
           return textMuted;
         }),
         trackColor: MaterialStateProperty.resolveWith<Color>((states) {
           if (states.contains(MaterialState.selected)) {
-            return primaryColor.withOpacity(0.5);
+            return primaryBlue.withOpacity(0.5); // Utiliser le bleu primaire
           }
           return textMuted.withOpacity(0.5);
         }),

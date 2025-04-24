@@ -1,21 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flame/components.dart';
-import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/component_fields/component_field_text.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
 import 'package:plock_mobile/models/component_fields/component_field_color.dart';
-import 'package:plock_mobile/models/component_flame/component_flame_text.dart';
-import 'package:plock_mobile/pages/play/game_player_object.dart';
-import 'package:plock_mobile/models/component_types/component_sprite.dart';
 import 'package:plock_mobile/models/component_types/component_text.dart';
-import 'package:plock_mobile/models/games/display_components.dart';
-import 'package:plock_mobile/models/component_fields/component_field_list.dart';
+import 'package:flutter/material.dart';
+import 'package:plock_mobile/models/games/component_field.dart';
 import 'package:plock_mobile/models/games/media.dart';
-import 'package:plock_mobile/models/component_fields/component_field_sprite.dart';
-import 'package:plock_mobile/models/component_fields/sprite/sprite_animation.dart';
-
 
 void main() {
   group('ComponentText', () {
@@ -57,6 +49,7 @@ void main() {
       expect(newInstance.fields['text']!.value, equals('Custom Text'));
       expect(newInstance.fields['size']!.value, equals(2.5));
       expect(newInstance.fields['color']!.value, equals(Color(0xffFF0000)));
+      expect(newInstance, isNot(same(componentText)));
     });
 
     test('fields should be independently modifiable', () {
@@ -84,5 +77,53 @@ void main() {
       componentText.fields['color']!.value = Color(0xff000000);
       expect(componentText.fields['color']!.value, equals(Color(0xff000000)));
     });
+  });
+
+  group('ComponentFieldTextField', () {
+
+    testWidgets('TextField onChanged updates the field value', (tester) async {
+      final field = ComponentFieldText(value: 'initial text');
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: field.getField('Text Field', false, [], {}),
+        ),
+      ));
+
+      await tester.enterText(find.widgetWithText(TextField, 'Text Field'), 'new text');
+      await tester.pump(); // Trigger rebuild after text input
+
+      expect(field.value, 'new text');
+    });
+
+    testWidgets('TextField onChanged calls onUpdate if provided', (tester) async {
+      String? updatedValue;
+      void testOnUpdate() {
+        updatedValue = 'updated!';
+      }
+      final field = ComponentFieldText(value: 'initial', onUpdate: testOnUpdate);
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: field.getField('Text Field', false, [], {}),
+        ),
+      ));
+
+      await tester.enterText(find.widgetWithText(TextField, 'Text Field'), 'updated!');
+      await tester.pump();
+
+      expect(updatedValue, 'updated!');
+    });
+
+    testWidgets('TextField has correct label text', (tester) async {
+      final field = ComponentFieldText(value: 'some text');
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: field.getField('Custom Label', false, [], {}),
+        ),
+      ));
+
+      expect(find.widgetWithText(TextField, 'Custom Label'), findsOneWidget);
+    });
+
   });
 }
