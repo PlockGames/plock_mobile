@@ -1,291 +1,356 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:plock_mobile/services/auth_service.dart';
-
-// Importer le widget RegisterPage
+import 'package:mockito/mockito.dart';
 import 'package:plock_mobile/pages/register_page.dart';
+import 'package:plock_mobile/services/auth_service.dart';
+import 'package:plock_mobile/theme.dart';
 
-// Générer le mock de AuthService
-@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<NavigatorObserver>()])
 import 'register_page_test.mocks.dart';
 
+@GenerateMocks([AuthService, NavigatorObserver])
 void main() {
   late MockAuthService mockAuthService;
   late MockNavigatorObserver mockNavigatorObserver;
-
-  // Wrap RegisterPage dans un widget testable
-  Widget createRegisterPage() {
-    return MaterialApp(
-      home: RegisterPage(authService: mockAuthService),
-      navigatorObservers: [mockNavigatorObserver],
-      routes: {
-        '/home': (context) => const Scaffold(body: Center(child: Text('Home Page'))),
-        '/login': (context) => const Scaffold(body: Center(child: Text('Login Page'))),
-      },
-    );
-  }
 
   setUp(() {
     mockAuthService = MockAuthService();
     mockNavigatorObserver = MockNavigatorObserver();
   });
 
-  group('RegisterPage - UI Tests', () {
-    testWidgets('shows all form fields', (WidgetTester tester) async {
-      // Définir une taille d'écran plus grande pour le test
-      tester.binding.window.physicalSizeTestValue = const Size(800, 900);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+  Widget createRegisterPage() {
+    return MaterialApp(
+      routes: {
+        '/login': (context) => const Scaffold(body: Text('Login Page')),
+        '/home': (context) => const Scaffold(body: Text('Home Page')),
+      },
+      home: MediaQuery( // Ajoutez MediaQuery pour simuler une taille d'écran
+        data: const MediaQueryData(size: Size(800, 600)), // Taille d'écran typique pour le test
+        child: RegisterPage(authService: mockAuthService),
+      ),
+      navigatorObservers: [mockNavigatorObserver],
+    );
+  }
 
-      // Création du widget
+  group('RegisterPage UI Tests', () {
+    testWidgets('should render all form fields', (WidgetTester tester) async {
       await tester.pumpWidget(createRegisterPage());
-
-      // Vérification de la présence de tous les champs du formulaire en cherchant par labelText
-      expect(find.widgetWithText(TextField, 'First Name'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Last Name'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Username'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Email'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Phone Number (Optional)'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Password'), findsOneWidget);
-
-      // Vérification de la présence du bouton d'inscription
-      expect(find.widgetWithText(ElevatedButton, 'Register'), findsOneWidget);
-
-      // Faire défiler vers le bas pour trouver le lien de connexion
-      await tester.dragUntilVisible(
-        find.text('Already have an account? Log in'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, 50), // Faire défiler vers le bas
-      );
-
-      // Vérification de la présence du lien vers la page de connexion
-      expect(find.text('Already have an account? Log in'), findsOneWidget);
-    });
-
-    testWidgets('tapping login link navigates to login page', (WidgetTester tester) async {
-      // Définir une taille d'écran plus grande pour le test
-      tester.binding.window.physicalSizeTestValue = const Size(800, 900);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-
-      // Création du widget
-      await tester.pumpWidget(createRegisterPage());
-
-      // Faire défiler vers le bas pour trouver le lien de connexion
-      await tester.dragUntilVisible(
-        find.text('Already have an account? Log in'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, 50),
-      );
-
-      // Clic sur le lien de connexion
-      await tester.tap(find.text('Already have an account? Log in'));
       await tester.pumpAndSettle();
 
-      // Vérification de la navigation
-      verify(mockNavigatorObserver.didPush(any, any));
+      // Vérifier que tous les champs de formulaire sont rendus
+      expect(find.text('Join Plock'), findsOneWidget);
+      expect(find.text('Username'), findsOneWidget);
+      expect(find.text('First Name'), findsOneWidget);
+      expect(find.text('Last Name'), findsOneWidget);
+      expect(find.text('Email'), findsOneWidget);
+      expect(find.text('Date of Birth'), findsOneWidget);
+      expect(find.text('Phone Number (Optional)'), findsOneWidget);
+      expect(find.text('Password'), findsOneWidget);
+      expect(find.text('CREATE ACCOUNT'), findsOneWidget);
+      expect(find.text('Already have an account? Sign In'), findsOneWidget);
     });
 
-    testWidgets('shows date picker when calendar icon is tapped', (WidgetTester tester) async {
-      // Création du widget
+    testWidgets('back button navigates back', (WidgetTester tester) async {
       await tester.pumpWidget(createRegisterPage());
-
-      // Localisation et clic sur l'icône du calendrier
-      await tester.tap(find.byIcon(Icons.date_range));
       await tester.pumpAndSettle();
 
-      // Vérification que le DatePicker est affiché
-      expect(find.byType(DatePickerDialog), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.arrow_back_ios));
+      await tester.pumpAndSettle();
+
+      verify(mockNavigatorObserver.didPop(any, any)).called(1);
+    });
+
+
+    testWidgets('Sign In button navigates to login page', (WidgetTester tester) async {
+      await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
+
+      // Si le bouton "Sign In" est dans une zone scrollable, assurez-vous qu'il est visible
+      await tester.ensureVisible(find.text('Sign In'));
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Login Page'), findsOneWidget);
     });
   });
 
-  group('RegisterPage - Validation Tests', () {
-    testWidgets('validates empty fields', (WidgetTester tester) async {
-      // Création du widget
-      await tester.pumpWidget(createRegisterPage());
-
-      // Clic sur le bouton d'inscription sans remplir de champs
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-      await tester.pump();
-
-      // Vérification du message d'erreur
-      expect(find.text('All mandatory fields must be filled.'), findsOneWidget);
-    });
-
-    testWidgets('validates email format', (WidgetTester tester) async {
-      // Création du widget
-      await tester.pumpWidget(createRegisterPage());
-
-      // Remplissage des champs avec un email invalide
-      await tester.enterText(find.widgetWithText(TextField, 'First Name'), 'John');
-      await tester.enterText(find.widgetWithText(TextField, 'Last Name'), 'Doe');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'johndoe');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'invalid-email');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), '1990-01-01');
-
-      // Clic sur le bouton d'inscription
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-      await tester.pump();
-
-      // Vérification du message d'erreur
-      expect(find.text('Invalid email format.'), findsOneWidget);
-    });
-  });
-
-  group('RegisterPage - Registration Process Tests', () {
-    testWidgets('successful registration shows success message and navigates to home',
+  group('Form Validation Tests', () {
+    testWidgets('should show errors when form is submitted with empty fields',
             (WidgetTester tester) async {
-          // Configuration des mocks
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
+
+          await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+          await tester.tap(find.text('CREATE ACCOUNT'));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Username is required'), findsOneWidget);
+          expect(find.text('First name is required'), findsOneWidget);
+          expect(find.text('Last name is required'), findsOneWidget);
+          expect(find.text('Email is required'), findsOneWidget);
+          expect(find.text('Date of birth is required'), findsOneWidget);
+          expect(find.text('Password is required'), findsOneWidget);
+        });
+
+    testWidgets('should validate email format', (WidgetTester tester) async {
+      await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
+
+      // Remplir un email invalide
+      await tester.enterText(find.byType(TextFormField).at(3), 'invalid-email');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Vérifier l'erreur de validation de l'email
+      expect(find.text('Please enter a valid email address'), findsOneWidget);
+
+      // Maintenant essayer avec un email valide
+      await tester.enterText(find.byType(TextFormField).at(3), 'valid@email.com');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Ne devrait plus trouver l'erreur de validation de l'email
+      expect(find.text('Please enter a valid email address'), findsNothing);
+    });
+
+    testWidgets('should validate username length', (WidgetTester tester) async {
+      await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
+
+      // Remplir un nom d'utilisateur court
+      await tester.enterText(find.byType(TextFormField).at(0), 'us');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Vérifier l'erreur de validation du nom d'utilisateur
+      expect(find.text('Username must be at least 3 characters'), findsOneWidget);
+
+      // Maintenant essayer avec un nom d'utilisateur valide
+      await tester.enterText(find.byType(TextFormField).at(0), 'validuser');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Ne devrait plus trouver l'erreur de validation du nom d'utilisateur
+      expect(find.text('Username must be at least 3 characters'), findsNothing);
+    });
+
+    testWidgets('should validate password length', (WidgetTester tester) async {
+      await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
+
+      // Remplir un mot de passe court
+      await tester.enterText(find.byType(TextFormField).at(6), '12345');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Vérifier l'erreur de validation du mot de passe
+      expect(find.text('Password must be at least 6 characters'), findsOneWidget);
+
+      // Maintenant essayer avec un mot de passe valide
+      await tester.enterText(find.byType(TextFormField).at(6), '123456');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Ne devrait plus trouver l'erreur de validation du mot de passe
+      expect(find.text('Password must be at least 6 characters'), findsNothing);
+    });
+
+    testWidgets('should validate date format', (WidgetTester tester) async {
+      await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
+
+      // Entrer un format de date invalide manuellement (contourner le sélecteur de date)
+      await tester.enterText(find.byType(TextFormField).at(4), '01-01-2000');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Vérifier l'erreur de validation du format de la date
+      expect(find.text('Use format:yyyy-MM-DD'), findsOneWidget);
+
+      // Maintenant essayer avec un format de date valide
+      await tester.enterText(find.byType(TextFormField).at(4), '2000-01-01');
+      await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+      await tester.tap(find.text('CREATE ACCOUNT'));
+      await tester.pumpAndSettle();
+
+      // Ne devrait plus trouver l'erreur de validation du format de la date
+      expect(find.text('Use format:yyyy-MM-DD'), findsNothing);
+    });
+  });
+
+  group('Registration Process Tests', () {
+    testWidgets('successful registration should navigate to home page',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
+
+          // Configurer les réponses de succès
           when(mockAuthService.signup(any)).thenAnswer((_) async => {
             'success': true,
-            'message': 'Signup successful',
-            'data': {'accessToken': 'fake_token', 'refreshToken': 'fake_refresh_token'}
+            'message': 'Registration successful'
           });
-
           when(mockAuthService.completeSignup(any)).thenAnswer((_) async => {
             'success': true,
-            'message': 'Registration completed successfully',
-            'data': {'accessToken': 'new_token', 'refreshToken': 'new_refresh_token'}
+            'message': 'Profile completed'
           });
 
-          // Création du widget
-          await tester.pumpWidget(createRegisterPage());
+          // Remplir le formulaire avec des données valides
+          await tester.enterText(find.byType(TextFormField).at(0), 'testuser');
+          await tester.enterText(find.byType(TextFormField).at(1), 'Test');
+          await tester.enterText(find.byType(TextFormField).at(2), 'User');
+          await tester.enterText(find.byType(TextFormField).at(3), 'test@example.com');
+          await tester.enterText(find.byType(TextFormField).at(4), '2000-01-01');
+          await tester.enterText(find.byType(TextFormField).at(5), '1234567890');
+          await tester.enterText(find.byType(TextFormField).at(6), 'password123');
 
-          // Remplissage de tous les champs
-          await tester.enterText(find.widgetWithText(TextField, 'First Name'), 'John');
-          await tester.enterText(find.widgetWithText(TextField, 'Last Name'), 'Doe');
-          await tester.enterText(find.widgetWithText(TextField, 'Username'), 'johndoe');
-          await tester.enterText(find.widgetWithText(TextField, 'Email'), 'john@example.com');
-          await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-          await tester.enterText(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), '1990-01-01');
+          // Soumettre le formulaire
+          await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+          await tester.tap(find.text('CREATE ACCOUNT'));
+          await tester.pumpAndSettle();
 
-          // Clic sur le bouton d'inscription
-          await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-          await tester.pump();
+          // Vérifier que signup a été appelé
+          verify(mockAuthService.signup({
+            'email': 'test@example.com',
+            'password': 'password123',
+            'username': 'testuser',
+            'birthDate': '2000-01-01',
+          })).called(1);
 
-          // Vérification des appels aux services
-          verify(mockAuthService.signup(any)).called(1);
-          verify(mockAuthService.completeSignup(any)).called(1);
+          // Vérifier que completeSignup a été appelé
+          verify(mockAuthService.completeSignup({
+            'firstName': 'Test',
+            'lastName': 'User',
+            'phoneNumber': '1234567890',
+            'birthDate': '2000-01-01',
+          })).called(1);
 
-          // Vérification du message de succès
-          await tester.pump();
-          expect(find.text('Registration completed successfully!'), findsOneWidget);
-
-          // Vérification de la navigation
-          verify(mockNavigatorObserver.didPush(any, any));
+          // Vérifier la navigation vers la page d'accueil
+          expect(find.text('Home Page'), findsOneWidget);
         });
 
-    testWidgets('signup failure (email exists) shows error message with login link',
+    testWidgets('shows error message when signup fails',
             (WidgetTester tester) async {
-          // Configuration des mocks
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
+
           when(mockAuthService.signup(any)).thenAnswer((_) async => {
             'success': false,
-            'message': 'Email already exists',
+            'message': 'Registration failed: Server error'
           });
 
-          // Création du widget
-          await tester.pumpWidget(createRegisterPage());
+          // Remplir le formulaire (au moins les champs obligatoires)
+          await tester.enterText(find.byType(TextFormField).at(0), 'testuser');
+          await tester.enterText(find.byType(TextFormField).at(3), 'test@example.com');
+          await tester.enterText(find.byType(TextFormField).at(4), '2000-01-01');
+          await tester.enterText(find.byType(TextFormField).at(6), 'password123');
+          await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+          await tester.tap(find.text('CREATE ACCOUNT'));
+          await tester.pumpAndSettle();
 
-          // Remplissage de tous les champs
-          await tester.enterText(find.widgetWithText(TextField, 'First Name'), 'John');
-          await tester.enterText(find.widgetWithText(TextField, 'Last Name'), 'Doe');
-          await tester.enterText(find.widgetWithText(TextField, 'Username'), 'johndoe');
-          await tester.enterText(find.widgetWithText(TextField, 'Email'), 'john@example.com');
-          await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-          await tester.enterText(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), '1990-01-01');
-
-          // Clic sur le bouton d'inscription
-          await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-          await tester.pump();
-
-          // Vérification de l'appel au service
-          verify(mockAuthService.signup(any)).called(1);
-
-          // Vérification du message d'erreur et du lien de connexion
-          await tester.pump();
-          expect(find.text('Email already exists Vous pouvez essayer de vous connecter.'), findsOneWidget);
-          expect(find.text('Se connecter'), findsOneWidget);
+          expect(find.byType(SnackBar), findsOneWidget); // Vérifier qu'une SnackBar est affichée
+          expect(find.descendant(of: find.byType(SnackBar), matching: find.text('Registration failed: Server error')), findsOneWidget);
         });
 
-    testWidgets('completeSignup failure shows error message', (WidgetTester tester) async {
-      // Configuration des mocks
-      when(mockAuthService.signup(any)).thenAnswer((_) async => {
-        'success': true,
-        'message': 'Signup successful',
-        'data': {'accessToken': 'fake_token', 'refreshToken': 'fake_refresh_token'}
-      });
+    testWidgets('shows dialog when account already exists',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
 
-      when(mockAuthService.completeSignup(any)).thenAnswer((_) async => {
-        'success': false,
-        'message': 'Profile data invalid',
-      });
+          when(mockAuthService.signup(any)).thenAnswer((_) async => {
+            'success': false,
+            'message': 'Email is already taken'
+          });
 
-      // Création du widget
+          // Remplir le formulaire (au moins les champs obligatoires)
+          await tester.enterText(find.byType(TextFormField).at(0), 'testuser');
+          await tester.enterText(find.byType(TextFormField).at(3), 'test@example.com');
+          await tester.enterText(find.byType(TextFormField).at(4), '2000-01-01');
+          await tester.enterText(find.byType(TextFormField).at(6), 'password123');
+          await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+          await tester.tap(find.text('CREATE ACCOUNT'));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsOneWidget); // Vérifier qu'une AlertDialog est affichée
+          expect(find.text('Account Already Exists'), findsOneWidget);
+          expect(find.text('Email is already taken\nWould you like to log in instead?'), findsOneWidget);
+
+          await tester.tap(find.text('LOG IN'));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Login Page'), findsOneWidget);
+        });
+
+    testWidgets('shows error when complete signup fails',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
+
+          // Configurer le succès pour l'inscription mais l'échec pour la complétion de l'inscription
+          when(mockAuthService.signup(any)).thenAnswer((_) async => {
+            'success': true,
+            'message': 'Registration successful'
+          });
+          when(mockAuthService.completeSignup(any)).thenAnswer((_) async => {
+            'success': false,
+            'message': 'Failed to complete profile'
+          });
+
+          // Remplir le formulaire avec des données valides
+          await tester.enterText(find.byType(TextFormField).at(0), 'testuser');
+          await tester.enterText(find.byType(TextFormField).at(1), 'Test');
+          await tester.enterText(find.byType(TextFormField).at(2), 'User');
+          await tester.enterText(find.byType(TextFormField).at(3), 'test@example.com');
+          await tester.enterText(find.byType(TextFormField).at(4), '2000-01-01');
+          await tester.enterText(find.byType(TextFormField).at(6), 'password123');
+
+          // Soumettre le formulaire
+          await tester.ensureVisible(find.text('CREATE ACCOUNT'));
+          await tester.tap(find.text('CREATE ACCOUNT'));
+          await tester.pumpAndSettle();
+
+          // Vérifier que la snackbar d'erreur est affichée
+          expect(find.text('Failed to complete profile'), findsOneWidget);
+        });
+  });
+
+  group('Date Picker Tests', () {
+    testWidgets('should open date picker when date field is tapped',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(createRegisterPage());
+          await tester.pumpAndSettle();
+
+          // Taper sur le TextFormField de la date
+          await tester.tap(find.byType(TextFormField).at(4));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(DatePickerDialog), findsOneWidget);
+        });
+  });
+
+  group('Loading Indicator Tests', () {
+    testWidgets('should show loading indicator during registration',
+    (WidgetTester tester) async {
       await tester.pumpWidget(createRegisterPage());
+      await tester.pumpAndSettle();
 
-      // Remplissage de tous les champs
-      await tester.enterText(find.widgetWithText(TextField, 'First Name'), 'John');
-      await tester.enterText(find.widgetWithText(TextField, 'Last Name'), 'Doe');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'johndoe');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'john@example.com');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), '1990-01-01');
+      // Vérifier que l'indicateur de chargement est affiché
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('CREATE ACCOUNT'), findsNothing);
 
-      // Clic sur le bouton d'inscription
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-      await tester.pump();
+      // Attendre la fin de l'opération
+      await Future.delayed(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
-      // Vérification des appels aux services
-      verify(mockAuthService.signup(any)).called(1);
-      verify(mockAuthService.completeSignup(any)).called(1);
-
-      // Vérification du message d'erreur
-      await tester.pump();
-      expect(find.text('Profile data invalid'), findsOneWidget);
-    });
-
-    testWidgets('shows loading indicator during registration process', (WidgetTester tester) async {
-      // Configuration des mocks avec un délai
-      when(mockAuthService.signup(any)).thenAnswer((_) async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        return {
-          'success': true,
-          'message': 'Signup successful',
-          'data': {'accessToken': 'fake_token', 'refreshToken': 'fake_refresh_token'}
-        };
-      });
-
-      when(mockAuthService.completeSignup(any)).thenAnswer((_) async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        return {
-          'success': true,
-          'message': 'Registration completed successfully',
-          'data': {'accessToken': 'new_token', 'refreshToken': 'new_refresh_token'}
-        };
-      });
-
-      // Création du widget
-      await tester.pumpWidget(createRegisterPage());
-
-      // Remplissage de tous les champs
-      await tester.enterText(find.widgetWithText(TextField, 'First Name'), 'John');
-      await tester.enterText(find.widgetWithText(TextField, 'Last Name'), 'Doe');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'johndoe');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'john@example.com');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Date of Birth (YYYY-MM-DD)'), '1990-01-01');
-
-      // Clic sur le bouton d'inscription
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
-      await tester.pump();
-
-      // Vérification de l'indicateur de chargement
-      expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
-
-      // Attente de la fin du processus
-      await tester.pump(const Duration(milliseconds: 300));
+      // L'indicateur de chargement devrait avoir disparu
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text('CREATE ACCOUNT'), findsOneWidget);
     });
   });
 }

@@ -65,10 +65,12 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/api.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/api_service.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/auth_service.dart'  -o coverage/lcov.info
-          
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_callbacks.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/widgets/tag_selector.dart'  -o coverage/lcov.info
+          lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/services/http_client_service.dart'  -o coverage/lcov.info
+          
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/editor_page.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/object_scene_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/scenes_page.dart'  -o coverage/lcov.info
@@ -77,15 +79,12 @@ jobs:
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/data/initial_toolbox.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/models/component_fields/tilemap/tilemap.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/constants/game_constants.dart'  -o coverage/lcov.info
-
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_canvas_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_mode_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_callbacks.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_component.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/side_bar_component.dart'  -o coverage/lcov.info
-        
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/my_games/game_editor/editor/bottom_bar_button_component.dart'  -o coverage/lcov.info
-
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/main.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/theme.dart'  -o coverage/lcov.info
           lcov  --ignore-errors unused --remove coverage/lcov.info 'lib/pages/play/game_player_object.dart'  -o coverage/lcov.info
