@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:flutter_js_plus/flutter_js.dart';
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
@@ -12,7 +12,7 @@ import '../../models/games/game.dart';
 import '../../models/games/game_object.dart';
 
 /// A flame object that represents a game object in the game engine.
-class GamePlayerObject extends BodyComponent with ContactCallbacks {
+class GamePlayerObject extends forge2d.BodyComponent with forge2d.ContactCallbacks {
 
   /// The game object linked to this Flame object.
   late GameObject gameObject;
@@ -33,10 +33,10 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   bool needAbort = false;
 
   /// A list of all untreated start contacts.
-  List<Contact> beginContacts = [];
+  List<forge2d.Contact> beginContacts = [];
 
   /// A list of all untreated end contacts.
-  List<Contact> endContacts = [];
+  List<forge2d.Contact> endContacts = [];
 
   /// lock X position
   bool lockX = false;
@@ -79,16 +79,16 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
       }
     }
 
-    bodyDef = BodyDef()
-      ..position = Vector2(gameObject.position.x, gameObject.position.y)
+    bodyDef = forge2d.BodyDef()
+      ..position = forge2d.Vector2(gameObject.position.x, gameObject.position.y)
       // rotation from degree to radian
       ..angle = gameObject.rotation * 3.141592653589793 / 180.0
-      ..type = BodyType.static
+      ..type = forge2d.BodyType.static
       ..userData = this;
 
     fixtureDefs = [
-      FixtureDef(
-        PolygonShape()
+      forge2d.FixtureDef(
+        forge2d.PolygonShape()
           ..setAsBoxXY((width / 2), (height / 2)),
         density: 1.0,
         friction: 0.3,
@@ -130,7 +130,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     if (!gameObject.enabled) {
       for (var component in this.children) {
         if (component is ComponentFlame) {
-          if (component is BodyComponent) {
+          if (component is forge2d.BodyComponent) {
             world.remove(component);
           } else {
             remove(component);
@@ -174,8 +174,8 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
             onDragEnd,
             onDragCancel);
           if (comp != null) {
-            if (comp is BodyComponent) {
-              comp.bodyDef!.position = Vector2(gameObject.position.x, gameObject.position.y);
+            if (comp is forge2d.BodyComponent) {
+              comp.bodyDef!.position = forge2d.Vector2(gameObject.position.x, gameObject.position.y);
               world.add(comp);
             } else {
               add(comp);
@@ -193,12 +193,12 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     }
 
     if (gameObject.force != null) {
-      body.applyForce(Vector2(gameObject.force!.x, gameObject.force!.y));
+      body.applyForce(forge2d.Vector2(gameObject.force!.x, gameObject.force!.y));
       gameObject.force = null;
     }
 
     if (gameObject.velocity != null) {
-      body.linearVelocity = Vector2(gameObject.velocity!.x, gameObject.velocity!.y);
+      body.linearVelocity = forge2d.Vector2(gameObject.velocity!.x, gameObject.velocity!.y);
       gameObject.velocity = null;
     }
 
@@ -215,10 +215,10 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
       if (gameObject.isPhysicsDirty && body.isAwake) {
         gameObject.isPhysicsDirty = false;
-        Vector2 oldPos = this.body.position;
+        forge2d.Vector2 oldPos = this.body.position;
         double oldAngle = this.body.angle;
         if (gameObject.isPositionDirty) {
-          oldPos = Vector2(gameObject.position.x, gameObject.position.y);
+          oldPos = forge2d.Vector2(gameObject.position.x, gameObject.position.y);
           gameObject.isPositionDirty = false;
         }
         world.destroyBody(body);
@@ -232,10 +232,10 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
         if (gameObject.isPositionDirty) {
           gameObject.isPositionDirty = false;
           body.setTransform(
-              Vector2(gameObject.position.x, gameObject.position.y),
+              forge2d.Vector2(gameObject.position.x, gameObject.position.y),
               body.angle);
           for (var contact in body.contacts) {
-            Vector2 pos = contact.bodyB.position;
+            forge2d.Vector2 pos = contact.bodyB.position;
             contact.bodyB.setTransform(pos, contact.bodyB.angle);
             contact.bodyB.setAwake(true);
           }
@@ -255,7 +255,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
 
   /// Update the object data.
   void updateObjectData() {
-    bodyDef?.position = Vector2(gameObject.position.x, gameObject.position.y);
+    bodyDef?.position = forge2d.Vector2(gameObject.position.x, gameObject.position.y);
   }
 
   @override
@@ -280,12 +280,12 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
     isAllComponentsLoaded = true;
 
     if (lockX) {
-      body.linearVelocity = Vector2(0, body.linearVelocity.y);
+      body.linearVelocity = forge2d.Vector2(0, body.linearVelocity.y);
       body.position.x = lockXPosition;
     }
 
     if (lockY) {
-      body.linearVelocity = Vector2(body.linearVelocity.x, 0);
+      body.linearVelocity = forge2d.Vector2(body.linearVelocity.x, 0);
       body.position.y = lockYPosition;
     }
 
@@ -445,7 +445,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   @override
-  void beginContact(Object other, Contact contact) {
+  void beginContact(Object other, forge2d.Contact contact) {
     super.beginContact(other, contact);
 
     if (other is GamePlayerObject) {
@@ -454,7 +454,7 @@ class GamePlayerObject extends BodyComponent with ContactCallbacks {
   }
 
   @override
-  void endContact(Object other, Contact contact) {
+  void endContact(Object other, forge2d.Contact contact) {
     super.endContact(other, contact);
 
     if (other is GamePlayerObject) {

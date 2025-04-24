@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:plock_mobile/models/component_fields/component_field_bool.dart';
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
@@ -71,16 +71,16 @@ class ComponentPhysics extends ComponentType {
   Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
       String type = fields["bodyType"]!.value.toString();
       double gravity = fields["gravity"]!.value.toDouble();
-      BodyType bodyType = BodyType.static;
+      forge2d.BodyType bodyType = forge2d.BodyType.static;
 
       if (type == "dynamic") {
-        bodyType = BodyType.dynamic;
+        bodyType = forge2d.BodyType.dynamic;
       } else if (type == "kinematic") {
-        bodyType = BodyType.kinematic;
+        bodyType = forge2d.BodyType.kinematic;
       }
 
-      if (parent.fixtureDefs?[0].shape is! PolygonShape) {
-        parent.fixtureDefs?[0].shape = PolygonShape()
+      if (parent.fixtureDefs?[0].shape is! forge2d.PolygonShape) {
+        parent.fixtureDefs?[0].shape = forge2d.PolygonShape()
           ..setAsBoxXY(
             fields["width"]!.value.toDouble(),
             fields["height"]!.value.toDouble()
@@ -88,7 +88,7 @@ class ComponentPhysics extends ComponentType {
         parent.gameObject.isPhysicsDirty = true;
       }
 
-      parent.bodyDef!.gravityScale = Vector2(0, gravity);
+      parent.bodyDef!.gravityScale = forge2d.Vector2(0, gravity);
 
       // if lock rotation is true
       if (parent.lockRotation != fields["lock rotation"]!.value) {

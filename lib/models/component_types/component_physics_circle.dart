@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:plock_mobile/models/component_fields/component_field_bool.dart';
 import 'package:plock_mobile/models/component_fields/component_field_drop_down.dart';
 import 'package:plock_mobile/models/component_fields/component_field_number.dart';
@@ -70,21 +70,21 @@ class ComponentPhysicsCircle extends ComponentType {
   Future<GamePlayerObject> updateDisplay(Component? component, GamePlayerObject parent) async {
       String type = fields["type"]!.value.toString();
       double gravity = fields["gravity"]!.value.toDouble();
-      BodyType bodyType = BodyType.static;
+      forge2d.BodyType bodyType = forge2d.BodyType.static;
 
       if (type == "dynamic") {
-        bodyType = BodyType.dynamic;
+        bodyType = forge2d.BodyType.dynamic;
       } else if (type == "kinematic") {
-        bodyType = BodyType.kinematic;
+        bodyType = forge2d.BodyType.kinematic;
       }
 
-      if (parent.fixtureDefs?[0].shape is! CircleShape) {
-        parent.fixtureDefs?[0].shape = CircleShape()
+      if (parent.fixtureDefs?[0].shape is! forge2d.CircleShape) {
+        parent.fixtureDefs?[0].shape = forge2d.CircleShape()
           ..radius = fields["radius"]!.value.toDouble();
         parent.gameObject.isPhysicsDirty = true;
       }
 
-      parent.bodyDef!.gravityScale = Vector2(0, gravity);
+      parent.bodyDef!.gravityScale = forge2d.Vector2(0, gravity);
 
       // if lock rotation is true
       if (parent.bodyDef!.fixedRotation != fields["lock rotation"]!.value) {

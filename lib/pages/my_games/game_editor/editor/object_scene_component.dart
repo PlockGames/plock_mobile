@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_forge2d/body_component.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:plock_mobile/models/games/component_flame.dart';
 import 'package:plock_mobile/models/games/component_type.dart';
 import 'package:plock_mobile/models/games/display_components.dart';
@@ -112,14 +112,14 @@ class ObjectSceneComponent extends BodyComponent
 
     renderBody = false;
 
-    bodyDef = BodyDef()
-      ..position = Vector2(_gameObject.position.x, _gameObject.position.y)
+    bodyDef = forge2d.BodyDef()
+      ..position = forge2d.Vector2(_gameObject.position.x, _gameObject.position.y)
       ..angle = _gameObject.rotation * pi / 180
-      ..type = BodyType.static
+      ..type = forge2d.BodyType.static
       ..userData = this;
 
-    final shape = PolygonShape()..setAsBoxXY(0, 0);
-    fixtureDefs = [FixtureDef(shape)
+    final shape = forge2d.PolygonShape()..setAsBoxXY(0, 0);
+    fixtureDefs = [forge2d.FixtureDef(shape)
       ..density = 1.0
       ..friction = 0.3];
 
@@ -134,7 +134,7 @@ class ObjectSceneComponent extends BodyComponent
     if (!load) {
       this.position.x = _gameObject.position.x;
       this.position.y = _gameObject.position.y;
-      this.body.setTransform(Vector2(_gameObject.position.x, _gameObject.position.y), _gameObject.rotation * pi / 180);
+      this.body.setTransform(forge2d.Vector2(_gameObject.position.x, _gameObject.position.y), _gameObject.rotation * pi / 180);
     }
 
     // Empty the display component list
@@ -160,7 +160,7 @@ class ObjectSceneComponent extends BodyComponent
         displayComponents.add(displayComponent.display!);
         if (displayComponent.display is BodyComponent) {
           final bc = displayComponent.display as BodyComponent;
-          bc.bodyDef!.position = Vector2(_gameObject.position.x, _gameObject.position.y);
+          bc.bodyDef!.position = forge2d.Vector2(_gameObject.position.x, _gameObject.position.y);
           world.add(displayComponent.display!);
         } else {
           add(displayComponent.display!);

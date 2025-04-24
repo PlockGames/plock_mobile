@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame/events.dart' as forge2d;
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_types/component_ui_text.dart';
 import 'package:plock_mobile/models/games/game_object.dart';
@@ -19,7 +20,7 @@ import 'object_ui_component.dart';
 import 'side_bar_component.dart';
 
 /// The game editor.
-class Editor extends Forge2DGame with DragCallbacks {
+class Editor extends forge2d.Forge2DGame with forge2d.DragCallbacks {
 
   /// The currently selected object.
   ObjectComponent? selectedObject;
@@ -443,7 +444,7 @@ class Editor extends Forge2DGame with DragCallbacks {
     camera.viewport.add(exitButton);
 
     // add a body to the world to avoid error
-    world.createBody(BodyDef());
+    world.createBody(forge2d.BodyDef());
   }
 
   @override

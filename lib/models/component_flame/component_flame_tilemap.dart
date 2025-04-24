@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame_forge2d/flame_forge2d.dart' as forge2d;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/models/component_fields/tilemap/tilemap.dart';
@@ -15,7 +15,7 @@ import '../component_fields/tilemap/tile.dart';
 import '../games/media.dart';
 
 /// A flame component used in the editor to represent a rect component.
-class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
+class ComponentFlameTilemap extends forge2d.BodyComponent with TapCallbacks, DragCallbacks implements ComponentFlame {
 
   /// Callback : When the user tap up on the component.
   final Function onTapeUpCallback;
@@ -50,7 +50,7 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
   List<bool> collisions = [];
 
   /// List of all the bodies components of each tiles
-  List<BodyComponent> bodyComponents = [];
+  List<forge2d.BodyComponent> bodyComponents = [];
 
   /// The scale of the image.
   Vector2 initScale;
@@ -73,8 +73,8 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
     required this.medias,
   }) {
     fixtureDefs = [
-      FixtureDef(
-        PolygonShape()..setAsBoxXY(1, 1),
+      forge2d.FixtureDef(
+        forge2d.PolygonShape()..setAsBoxXY(1, 1),
         restitution: 0.0,
         density: 1.0,
         friction: 0.0,
@@ -82,10 +82,10 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
       ),
     ];
 
-    bodyDef = BodyDef(
-      position: Vector2(0,0),
+    bodyDef = forge2d.BodyDef(
+      position: forge2d.Vector2(0,0),
       angle: 0.0,
-      type: BodyType.static,
+      type: forge2d.BodyType.static,
     );
 
     renderBody = false;
@@ -176,25 +176,25 @@ class ComponentFlameTilemap extends BodyComponent with TapCallbacks, DragCallbac
           }
 
           if (collisions[tile]) {
-            final BodyComponent bodyComponent = BodyComponent(
+            final forge2d.BodyComponent bodyComponent = forge2d.BodyComponent(
               fixtureDefs: [
-                FixtureDef(PolygonShape()..setAsBoxXY((initScale.x + 0.005) / 2, (initScale.y + 0.005) / 2),
+                forge2d.FixtureDef(forge2d.PolygonShape()..setAsBoxXY((initScale.x + 0.005) / 2, (initScale.y + 0.005) / 2),
                   restitution: 0.0,
                   density: 1.0,
                   friction: 0.0,
                   userData: Vector2(x.toDouble(), y.toDouble()),
                 ),
               ],
-              bodyDef: BodyDef(
-                position: Vector2((x + 0.5) * initScale.x, (y + 0.5) * initScale.y),
+              bodyDef: forge2d.BodyDef(
+                position: forge2d.Vector2((x + 0.5) * initScale.x, (y + 0.5) * initScale.y),
                 angle: 0.0,
-                type: BodyType.static,
+                type: forge2d.BodyType.static,
               ),
               renderBody: false,
             );
 
             bodyComponents.add(bodyComponent);
-            bodyComponent.bodyDef!.position += Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
+            bodyComponent.bodyDef!.position += forge2d.Vector2(this.bodyDef!.position.x, this.bodyDef!.position.y);
             world.add(bodyComponent);
           }
         }
