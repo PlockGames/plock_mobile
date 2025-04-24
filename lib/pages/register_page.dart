@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage>
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.dark(
-              primary: PlockTheme.primaryColor,
+              primary: PlockTheme.primaryBlue, // Utiliser primaryBlue
               onPrimary: Colors.white,
               surface: PlockTheme.cardColor,
               onSurface: PlockTheme.textPrimary,
@@ -152,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text("Registration completed successfully!"),
-                backgroundColor: PlockTheme.accentColor,
+                backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange comme accent
                 behavior: SnackBarBehavior.floating,
                 margin: const EdgeInsets.all(16),
                 shape: RoundedRectangleBorder(
@@ -468,14 +468,14 @@ class _RegisterPageState extends State<RegisterPage>
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _validateAndRegister,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: PlockTheme.primaryColor,
+                            backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 4,
                             shadowColor:
-                                PlockTheme.primaryColor.withOpacity(0.5),
+                                PlockTheme.primaryBlue.withOpacity(0.5), // Utiliser primaryBlue
                           ),
                           child: _isLoading
                               ? const SizedBox(
@@ -516,7 +516,7 @@ class _RegisterPageState extends State<RegisterPage>
                                 TextSpan(
                                   text: 'Sign In',
                                   style: TextStyle(
-                                    color: PlockTheme.primaryColor,
+                                    color: PlockTheme.primaryBlue, // Utiliser primaryBlue
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

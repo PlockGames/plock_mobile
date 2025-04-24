@@ -348,10 +348,10 @@ class _GameScreenState extends State<_GameScreen> {
                 // Bouton pause/reprendre
                 FloatingActionButton(
                   mini: true,
-                  backgroundColor: PlockTheme.primaryColor.withOpacity(0.8), // Utiliser la couleur primaire avec opacité
+                  backgroundColor: PlockTheme.primaryBlue.withOpacity(0.8), // Utiliser primaryBlue
                   child: Icon(
                     _isPaused ? Icons.play_arrow : Icons.pause,
-                    color: PlockTheme.textPrimary, // Utiliser la couleur de texte primaire
+                    color: PlockTheme.textOnPrimaryBlue, // Utiliser textOnPrimaryBlue
                   ),
                   onPressed: _isPaused ? _resumeGame : _pauseGame,
                 ),
@@ -359,8 +359,8 @@ class _GameScreenState extends State<_GameScreen> {
                 // Bouton fermer
                 FloatingActionButton(
                   mini: true,
-                  backgroundColor: PlockTheme.errorColor.withOpacity(0.8), // Utiliser la couleur d'erreur avec opacité
-                  child: const Icon(Icons.close, color: PlockTheme.textPrimary), // Utiliser la couleur de texte primaire
+                  backgroundColor: PlockTheme.errorColor.withOpacity(0.8), // Garder errorColor pour fermer
+                  child: const Icon(Icons.close, color: PlockTheme.textOnError), // Utiliser textOnError
                   onPressed: _exitGame,
                 ),
               ],
@@ -401,19 +401,19 @@ class _PauseOverlay extends StatelessWidget {
             ElevatedButton(
               onPressed: onResume,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: PlockTheme.primaryBlue, // Utiliser primaryBlue
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
               ),
               child: const Text(
                 "Reprendre",
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18, color: PlockTheme.textOnPrimaryBlue), // Utiliser textOnPrimaryBlue
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: onReset,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange comme accent
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
               ),
               child: const Text(
