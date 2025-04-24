@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:plock_mobile/models/comment.dart';
 import 'package:plock_mobile/models/games/game.dart' as plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
+import 'package:plock_mobile/pages/user/user_games_page.dart'; // Add import for UserGamesPage
 import 'package:plock_mobile/services/api.dart';
 import 'dart:convert';
 import 'dart:developer' as developer;
@@ -85,6 +86,7 @@ class _PlayPageState extends State<PlayPage>
 
           // Store creator information
           if (raw['creator'] != null) {
+            game.creatorId = raw['creator']['id'] ?? '';
             game.creatorUsername = raw['creator']['username'] ?? '';
             game.creatorAvatarUrl = raw['creator']['pofilePic'] ?? '';
           }
@@ -242,38 +244,52 @@ class _BottomOverlay extends StatelessWidget {
         children: [
           // Creator info
           if (game.creatorUsername.isNotEmpty)
-            Row(
-              children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.blue,
-                  backgroundImage: game.creatorAvatarUrl.isNotEmpty
-                      ? NetworkImage(game.creatorAvatarUrl)
-                      : null,
-                  child: game.creatorAvatarUrl.isEmpty
-                      ? Text(
-                          game.creatorUsername.isNotEmpty
-                              ? game.creatorUsername[0].toUpperCase()
-                              : '?',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : null,
-                ),
-                const SizedBox(width: 8),
-                // Username
-                Text(
-                  game.creatorUsername,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            InkWell(
+              onTap: () {
+                // Use the actual creator ID stored in the game object
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserGamesPage(
+                      userId: game.creatorId,
+                      username: game.creatorUsername,
+                      profilePic: game.creatorAvatarUrl,
+                    ),
                   ),
-                ),
-              ],
+                );
+              },
+              child: Row(
+                children: [
+                  // Avatar
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.blue,
+                    backgroundImage: game.creatorAvatarUrl.isNotEmpty
+                        ? NetworkImage(game.creatorAvatarUrl)
+                        : null,
+                    child: game.creatorAvatarUrl.isEmpty
+                        ? Text(
+                            game.creatorUsername.isNotEmpty
+                                ? game.creatorUsername[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 8),
+                  // Username
+                  Text(
+                    game.creatorUsername,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
             ),
           const SizedBox(height: 8),
           Text(game.name,

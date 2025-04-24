@@ -32,6 +32,27 @@ class ApiService {
     return await _httpClient.get("/game/my");
   }
 
+  /// Returns games created by a specific user.
+  ///
+  /// [userId] is the ID of the user whose games to fetch.
+  /// If [page] is not null, it will return the games for that specific page only.
+  static Future<http.Response> getUserGames(String userId, {int? page}) async {
+    print("Fetching games for user ID: $userId, page: $page");
+    try {
+      final endpoint = page != null
+          ? "/game/user/$userId?page=$page&perPage=10"
+          : "/game/user/$userId";
+
+      final response = await _httpClient.get(endpoint);
+      print("getUserGames response status: ${response.statusCode}");
+      print("getUserGames response body: ${response.body}");
+      return response;
+    } catch (e) {
+      print("Error in getUserGames: $e");
+      rethrow;
+    }
+  }
+
   /// Retrieves the profile of the currently authenticated user.
   static Future<http.Response> getUserProfile() async {
     final response = await _httpClient

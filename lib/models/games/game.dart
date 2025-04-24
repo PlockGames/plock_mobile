@@ -57,6 +57,15 @@ class Game {
   /// Number of comments the game has received
   int commentsCount = 0;
 
+  /// ID of the game's creator.
+  String creatorId = "";
+
+  /// The username of the game's creator.
+  String creatorUsername = "";
+
+  /// The avatar URL of the game's creator.
+  String creatorAvatarUrl = "";
+
   /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
 
@@ -69,12 +78,6 @@ class Game {
   /// The game player.
   /// Set at runtime when the game is played, used to spawn and destroy objects.
   GamePlayer? gamePlayer;
-
-  /// The username of the game's creator.
-  String creatorUsername = "";
-
-  /// The avatar URL of the game's creator.
-  String creatorAvatarUrl = "";
 
   Game({required this.name}) {
     scenes.add(Plock.Scene(name: "scene"));
@@ -92,6 +95,7 @@ class Game {
     instance.likes = likes;
     instance.gameType = gameType;
     instance.commentsCount = commentsCount;
+    instance.creatorId = creatorId;
     instance.creatorUsername = creatorUsername;
     instance.creatorAvatarUrl = creatorAvatarUrl;
 
