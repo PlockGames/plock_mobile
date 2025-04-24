@@ -132,7 +132,7 @@ class ComponentImage extends ComponentType {
             component.sprite = Sprite(img);
           }
         } else {
-          component.sprite = null;
+          component.sprite = await Sprite.load("empty.png");
         }
     }
     return parent;
