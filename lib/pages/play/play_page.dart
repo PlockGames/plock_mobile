@@ -118,7 +118,33 @@ class _PlayPageState extends State<PlayPage>
               return const Center(child: CircularProgressIndicator());
             }
             if (snap.hasError || snap.data!.isEmpty) {
-              return const Center(child: Text('No games available'));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'No games available',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _gamesFuture = _fetchGames();
+                        });
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reload'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             final games = snap.data!;
             return PageView.builder(
