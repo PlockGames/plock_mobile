@@ -3,7 +3,6 @@ import 'package:plock_mobile/services/api.dart';
 import 'package:plock_mobile/services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -31,22 +30,20 @@ class _ProfilePageState extends State<ProfilePage> {
       print("Fetching user profile...");
 
       final response = await Api.getUserProfile();
+      
       if (response['success']) {
-        final Map<String, dynamic> jsonData = json.decode(response['data']);
+        
+        final userData = response['data'];
+        print("------");
+        setState(() {
+          email = userData['email'] ?? "";
+          phone = userData['phoneNumber'] ?? "";
+          username = userData['username'] ?? "";
+          // Formater la date de naissance si elle existe
+          dateOfBirth = userData['birthDate'] ?? "";
+        });
 
-        if (jsonData['status'] == 'success' ) {
-          final userData = jsonData['data'];
-          print("------");
-          setState(() {
-            email = userData['email'] ?? "";
-            phone = userData['phoneNumber'] ?? "";
-            username = userData['username'] ?? "";
-            // Formater la date de naissance si elle existe
-              dateOfBirth = userData['birthDate'];
-          });
-
-          print("Profil utilisateur chargé avec succès");
-        }
+        print("Profil utilisateur chargé avec succès");
       } else {
         // Gestion des erreurs
         print("Erreur lors de la récupération du profil utilisateur: ${response['message']}");
