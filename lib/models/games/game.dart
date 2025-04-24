@@ -57,6 +57,18 @@ class Game {
   /// Number of comments the game has received
   int commentsCount = 0;
 
+  /// Tags associated with the game
+  List<String> tags = [];
+
+  /// ID of the game's creator.
+  String creatorId = "";
+
+  /// The username of the game's creator.
+  String creatorUsername = "";
+
+  /// The avatar URL of the game's creator.
+  String creatorAvatarUrl = "";
+
   /// The size of the screen.
   Vector2 screenSize = Vector2(0, 0);
 
@@ -86,6 +98,10 @@ class Game {
     instance.likes = likes;
     instance.gameType = gameType;
     instance.commentsCount = commentsCount;
+    instance.creatorId = creatorId;
+    instance.creatorUsername = creatorUsername;
+    instance.creatorAvatarUrl = creatorAvatarUrl;
+    instance.tags = List.from(tags); // Copy the tags
 
     instance.scenes.clear();
 
@@ -243,8 +259,6 @@ class Game {
       if (lastUpdate != null) {
         game.lastUpdate = lastUpdate;
       }
-
-
 
       game.scenes.clear();
       game.objectCount = json['objectCount'];

@@ -251,6 +251,7 @@ Future<List<String>?> showTagSelector(
   BuildContext context, {
   List<String> initialSelectedTags = const [],
 }) async {
+  print("Opening tag selector with initial tags: $initialSelectedTags");
   List<String>? result;
 
   await showModalBottomSheet(
@@ -263,11 +264,13 @@ Future<List<String>?> showTagSelector(
       return TagSelector(
         initialSelectedTags: initialSelectedTags,
         onTagsSelected: (tags) {
+          print("Tags selected in selector: $tags");
           result = tags;
         },
       );
     },
   );
 
+  print("Tag selector returning: $result");
   return result;
 }

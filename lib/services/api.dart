@@ -16,12 +16,46 @@ class ApiService {
 
   /// Returns a list of all games.
   ///
-  /// If [page] is not null, it will return the games for that specific page only.
-  static Future<http.Response> getAllGames(int? page) async {
+  /// Parameters:
+  /// - [page]: The page number to fetch
+  /// - [perPage]: Number of items per page (default: 50)
+  /// - [tags]: List of tag IDs to filter games
+  /// - [search]: Text to search in game titles
+  static Future<http.Response> getAllGames(
+    int? page, {
+    int perPage = 50,
+    List<String>? tags,
+    String? search,
+  }) async {
+    // Build query parameters
+    final queryParams = <String, String>{};
+
     if (page != null) {
-      return await _httpClient.get("/game?page=$page&perPage=3");
+      queryParams['page'] = page.toString();
+      queryParams['perPage'] = perPage.toString();
     }
-    return await _httpClient.get("/game");
+
+    if (tags != null && tags.isNotEmpty) {
+      queryParams['tags'] = tags.join(',');
+    }
+
+    if (search != null && search.isNotEmpty) {
+      queryParams['search'] = search;
+    }
+
+    // Convert query params to URL string
+    String queryString = '';
+    if (queryParams.isNotEmpty) {
+      queryString =
+          '?${queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
+    }
+
+    // Log the complete URL for debugging
+    final endpoint = "/game$queryString";
+    print("API Request URL: $url$endpoint");
+    print("Tags parameter: ${tags?.join(',')}");
+
+    return await _httpClient.get(endpoint);
   }
 
   /// Returns only the games of the current user.
@@ -29,9 +63,30 @@ class ApiService {
   /// If [page] is not null, it will return the games for that specific page only.
   static Future<http.Response> getMyGames(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/game/my?page=$page&perPage=10");
+      return await _httpClient.get("/game/my?page=$page&perPage=50");
     }
     return await _httpClient.get("/game/my");
+  }
+
+  /// Returns games created by a specific user.
+  ///
+  /// [userId] is the ID of the user whose games to fetch.
+  /// If [page] is not null, it will return the games for that specific page only.
+  static Future<http.Response> getUserGames(String userId, {int? page}) async {
+    print("Fetching games for user ID: $userId, page: $page");
+    try {
+      final endpoint = page != null
+          ? "/game/user/$userId?page=$page&perPage=50"
+          : "/game/user/$userId";
+
+      final response = await _httpClient.get(endpoint);
+      print("getUserGames response status: ${response.statusCode}");
+      print("getUserGames response body: ${response.body}");
+      return response;
+    } catch (e) {
+      print("Error in getUserGames: $e");
+      rethrow;
+    }
   }
 
   /// Retrieves the profile of the currently authenticated user.
@@ -162,7 +217,7 @@ class ApiService {
   static Future<http.Response> getRecommendedGames(int? page) async {
     if (page != null) {
       return await _httpClient
-          .get("/game/recommendation?page=$page&perPage=10");
+          .get("/game/recommendation?page=$page&perPage=50");
     }
     return await _httpClient.get("/game/recommendation");
   }
@@ -172,7 +227,7 @@ class ApiService {
   /// If [page] is not null, it will return the tags for that specific page.
   static Future<http.Response> getTags(int? page) async {
     if (page != null) {
-      return await _httpClient.get("/tag?page=$page&perPage=10");
+      return await _httpClient.get("/tag?page=$page&perPage=50");
     }
     return await _httpClient.get("/tag");
   }
@@ -184,7 +239,7 @@ class ApiService {
       {int? page}) async {
     if (page != null) {
       return await _httpClient
-          .get("/comment/game/$gameId?page=$page&perPage=10");
+          .get("/comment/game/$gameId?page=$page&perPage=50");
     }
     return await _httpClient.get("/comment/game/$gameId");
   }
@@ -193,6 +248,11 @@ class ApiService {
   static Future<http.Response> addGameComment(
       String gameId, String content) async {
     return await _httpClient.post("/comment/$gameId", {"content": content});
+  }
+
+  /// Delete a comment
+  static Future<http.Response> deleteComment(String commentId) async {
+    return await _httpClient.delete("/comment/$commentId");
   }
 }
 

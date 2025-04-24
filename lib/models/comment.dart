@@ -7,6 +7,7 @@ class Comment {
   final String userId;
   final String gameId;
   final CommentUser user;
+  final bool isOwner;
 
   Comment({
     required this.id,
@@ -15,6 +16,7 @@ class Comment {
     required this.userId,
     required this.gameId,
     required this.user,
+    this.isOwner = false,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class Comment {
       userId: json['userId'] ?? '',
       gameId: json['gameId'] ?? '',
       user: CommentUser.fromJson(json['user'] ?? {}),
+      isOwner: json['isOwner'] ?? false,
     );
   }
 }
