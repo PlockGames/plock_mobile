@@ -324,7 +324,7 @@ class PlayPageState extends State<PlayPage> {
                                           SizedBox(height: 30),
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue,
+                                              backgroundColor: const Color(0xFF074888), // Bleu primaire
                                               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(30),
@@ -342,7 +342,7 @@ class PlayPageState extends State<PlayPage> {
                                           SizedBox(height: 15),
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.green,
+                                              backgroundColor: const Color(0xFFFA6317),
                                               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(30),
@@ -379,7 +379,7 @@ class PlayPageState extends State<PlayPage> {
                                     IconButton(
                                       icon: Icon(
                                         Icons.favorite,
-                                        color: isFavorite ? Colors.red : Colors.grey,
+                                        color: isFavorite ? const Color(0xFFFFa13a) : Colors.grey,
                                         size: 40.0,
                                       ),
                                       onPressed: () {
@@ -433,7 +433,7 @@ class PlayPageState extends State<PlayPage> {
                       FloatingActionButton(
                         heroTag: "pauseButton",
                         elevation: 5,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: const Color(0xFF074888), 
                         child: Icon(
                           isPaused ? Icons.play_arrow : Icons.pause,
                           color: Colors.white,
@@ -445,7 +445,7 @@ class PlayPageState extends State<PlayPage> {
                       FloatingActionButton(
                         heroTag: "closeButton",
                         elevation: 5,
-                        backgroundColor: Colors.red,
+                        backgroundColor: const Color(0xFFFA6317),
                         child: Icon(
                           Icons.close,
                           color: Colors.white,

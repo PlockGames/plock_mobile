@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plock_mobile/services/api.dart';
+import 'package:plock_mobile/services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -65,7 +66,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
         return StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
-            title: Text('Modifier $title'),
+            backgroundColor: Colors.black,
+            title: Text(
+              'Modifier $title',
+              style: const TextStyle(color: Colors.white),
+            ),
             content: title == "Date de naissance"
                 ? InkWell(
               onTap: () async {
@@ -88,23 +93,34 @@ class _ProfilePageState extends State<ProfilePage> {
               child: AbsorbPointer(
                 child: TextFormField(
                   controller: controller,
+                  style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
                     hintText: "Sélectionner une date",
-                    suffixIcon: Icon(Icons.calendar_today),
+                    hintStyle: TextStyle(color: Colors.white60),
+                    suffixIcon: Icon(Icons.calendar_today, color: Color(0xFF47F8FF)),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFFFa13a)),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF47F8FF), width: 2),
+                    ),
                   ),
                 ),
               ),
             )
                 : TextFormField(
               controller: controller,
+              style: const TextStyle(color: Colors.white),
               obscureText: isPassword ? obscurePassword : false,
               decoration: InputDecoration(
                 hintText: title,
+                hintStyle: const TextStyle(color: Colors.white60),
                 suffixIcon: isPassword
                     ? IconButton(
-                  icon: Icon(obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility),
+                  icon: Icon(
+                    obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: const Color(0xFF47F8FF),
+                  ),
                   onPressed: () {
                     setDialogState(() {
                       obscurePassword = !obscurePassword;
@@ -112,12 +128,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                 )
                     : null,
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFa13a)),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF47F8FF), width: 2),
+                ),
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Annuler'),
+                child: const Text(
+                  'Annuler',
+                  style: TextStyle(color: Color(0xFF47F8FF)), 
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -175,7 +200,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   Navigator.pop(context);
                 },
-                child: const Text('Enregistrer'),
+                child: const Text(
+                  'Enregistrer',
+                  style: TextStyle(color: Color(0xFFFA6317)), 
+                ),
               ),
             ],
           ),
@@ -195,13 +223,12 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  final authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mon Profil'),
-        backgroundColor: Colors.grey[800],
-      ),
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -213,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: profileImage != null ? FileImage(profileImage!) : null,
-                  child: profileImage == null ? const Icon(Icons.person, size: 50) : null,
+                  child: profileImage == null ? const Icon(Icons.person, size: 50, color: Color(0xFF47F8FF)) : null,
                 ),
               ),
               const SizedBox(height: 20),
@@ -224,6 +251,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
               _buildEditableField("Téléphone", phone, (value) => phone = value),
               _buildEditableField("Date de naissance", dateOfBirth, (value) => dateOfBirth = value),
+              
+              const SizedBox(height: 40),
+              
+              // Bouton de déconnexion en bas de la page
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await authService.logout();
+                  if (mounted) {
+                    Navigator.of(context).pushReplacementNamed('/login');
+                  }
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text('Se déconnecter'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFA6317),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+              ),
             ],
           ),
         ),
@@ -233,10 +279,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildEditableField(String title, String value, Function(String) onSave) {
     return ListTile(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(value.isNotEmpty ? value : "Non défini"),  // Default to "Non défini" if the value is empty
+      title: Text(
+        title, 
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        )
+      ),
+      subtitle: Text(
+        value.isNotEmpty ? value : "Non défini",
+        style: const TextStyle(color: Colors.white70),
+      ),
       trailing: IconButton(
-        icon: const Icon(Icons.edit),
+        icon: const Icon(
+          Icons.edit,
+          color: Color(0xFFFFa13a),
+        ),
         onPressed: () => _editField(title, value, onSave),
       ),
     );

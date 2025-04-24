@@ -103,10 +103,6 @@ class _MyGamesPageState extends State<MyGamesPage> {
 
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('My projects'),
-          backgroundColor: Colors.grey[800],
-        ),
         body: SingleChildScrollView(
           child: FutureBuilder<List<Game>>(
             future: FuturProjects,
