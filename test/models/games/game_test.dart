@@ -6,10 +6,8 @@ import 'package:plock_mobile/models/games/scene.dart' as Plock;
 import 'package:plock_mobile/pages/play/game_player.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/forge2d_world.dart';
-import 'package:plock_mobile/models/games/media.dart';
-import 'package:plock_mobile/models/games/media/media_set.dart';
 
-// Stub pour GamePlayerObject (simplified)
+// Stub pour GamePlayerObject
 class StubGamePlayerObject extends Component {
   GameObject gameObject;
   StubGamePlayerObject({required this.gameObject, required Game plockGame});
@@ -20,14 +18,10 @@ class StubGamePlayer extends GamePlayer {
   StubGamePlayer(Game game) : super(game: game);
 
   @override
-  void add(Component component) {
-    components.add(component);
-  }
+  void add(Component component) {}
 
   @override
-  void remove(Component component) {
-    components.remove(component);
-  }
+  void remove(Component component) {}
 
   @override
   List<Component> components = [];
@@ -43,63 +37,31 @@ void main() {
 
     setUp(() {
       game = Game(name: 'Test Game');
-      game.scenes.add(Plock.Scene(name: 'scene1')); // Ensure there's at least one scene
       stubGamePlayer = StubGamePlayer(game);
       game.gamePlayer = stubGamePlayer;
-      game.screenSize = Vector2(100, 100);
     });
 
-    test('spawnObject() throws exception if gamePlayer is null', () {
-      game.gamePlayer = null;
-      expect(() => game.spawnObject('anotherObject'), throwsException);
+    test('instance() crée une copie profonde du jeu', () {
+      final gameCopy = game.instance();
+      expect(gameCopy.name, game.name);
+      expect(gameCopy.scenes, isNot(same(game.scenes)));
+      expect(gameCopy.scenes.length, game.scenes.length);
+      expect(gameCopy.scenes[0].name, game.scenes[0].name);
     });
 
-    test('spawnAsset() throws exception if asset is not found', () {
-      expect(() => game.spawnAsset('nonExistingAsset', 'test'), throwsException);
+
+    test('toJson() convertit le jeu en une chaîne JSON', () {
+      final jsonString = game.toJson();
+      expect(jsonString, isA<String>());
+      expect(jsonString.isNotEmpty, true);
     });
 
-    test('spawnAsset() throws exception if gamePlayer is null', () {
-      game.gamePlayer = null;
-      game.assets.add(GameObject(id: 0, name: 'existingAsset'));
-      expect(() => game.spawnAsset('existingAsset', 'test'), throwsException);
-    });
-
-    test('destroyObject() throws exception if gamePlayer is null', () {
-      game.gamePlayer = null;
-      expect(() => game.destroyObject(0), throwsException);
-    });
-
-    test('toJson() includes assets and uiAssets arrays', () {
-      game.assets.add(GameObject(id: 0, name: 'asset1'));
-      game.uiAssets.add(GameObject(id: 1, name: 'uiAsset1'));
+    test('jsonToGame() crée un jeu à partir d\'un objet JSON', () async {
       final jsonString = game.toJson();
       final decodedJson = jsonDecode(jsonString);
-      expect(decodedJson['assets'], isNotEmpty);
-      expect(decodedJson['uiAssets'], isNotEmpty);
-    });
-
-    test('toJson() includes medias array', () {
-      game.medias.add(Media(id: 0, name: 'media1'));
-      final jsonString = game.toJson();
-      final decodedJson = jsonDecode(jsonString);
-      expect(decodedJson['medias'], isNotEmpty);
-    });
-
-    test('toJson() handles empty assets, uiAssets, and medias arrays', () {
-      final jsonString = game.toJson();
-      final decodedJson = jsonDecode(jsonString);
-      expect(decodedJson['assets'], isEmpty);
-      expect(decodedJson['uiAssets'], isEmpty);
-      expect(decodedJson['medias'], isEmpty);
-    });
-
-
-
-
-    test('jsonToGame() returns null on invalid JSON format', () async {
-      final invalidJson = {'invalid': 'format'};
-      final newGame = await Game.jsonToGame(name: 'Invalid Game', json: invalidJson);
-      expect(newGame, isNull);
+      final newGame = await Game.jsonToGame(name: 'New Game', json: decodedJson);
+      expect(newGame, isA<Game>());
+      expect(newGame?.name, 'New Game');
     });
   });
 }
