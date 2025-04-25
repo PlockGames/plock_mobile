@@ -340,7 +340,7 @@ class _GameScreenState extends State<_GameScreen> {
               color: Colors.black.withOpacity(0.5),
               child: const Center(
                 child: Text(
-                  "Appuyez pour jouer",
+                  "Tap to play",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
