@@ -138,8 +138,7 @@ class _EditorPageState extends State<EditorPage> {
           tags: selectedTags, // Use the selected tags
           playTime: "0",
           gameType: "test",
-          thumbnailUrl:
-              "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+          thumbnailUrl: "https://cdn-icons-png.freepik.com/512/394/394127.png",
           contentGame: widget.game.toJson(),
         ));
         var json = upload;
@@ -156,7 +155,7 @@ class _EditorPageState extends State<EditorPage> {
               playTime: "0",
               gameType: "test",
               thumbnailUrl:
-                  "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                  "https://cdn-icons-png.freepik.com/512/394/394127.png",
               contentGame: widget.game.toJson(),
               id: widget.game.uuid,
             ));
@@ -183,7 +182,7 @@ class _EditorPageState extends State<EditorPage> {
             playTime: "0",
             gameType: "test",
             thumbnailUrl:
-                "https://w7.pngwing.com/pngs/378/59/png-transparent-old-school-runescape-internet-meme-youtube-random-game-child-face-thumbnail.png",
+                "https://cdn-icons-png.freepik.com/512/394/394127.png",
             contentGame: widget.game.toJson(),
             id: widget.game.uuid,
           ));
