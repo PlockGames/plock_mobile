@@ -1,0 +1,254 @@
+{
+  "id": "pixel-runner-game-001",
+  "name": "Pixel Runner",
+  "objectCount": 10,
+  "assetCount": 3,
+  "firstScene": 0,
+  "thumbnailUrl": "https://via.placeholder.com/300x200/4287f5/ffffff?text=Pixel+Runner",
+  "gameType": "Arcade",
+  "likes": 42,
+  "assets": [
+    {
+      "id": 0,
+      "name": "Player",
+      "layer": 1,
+      "enabled": true,
+      "type": "asset",
+      "locked": false,
+      "visible": true,
+      "keep": false,
+      "components": [
+        {
+          "type": "ComponentRect",
+          "width": 0.5,
+          "height": 1.0,
+          "color": "#FF4287F5"
+        },
+        {
+          "type": "ComponentPhysics",
+          "width": 0.5,
+          "height": 1.0,
+          "gravity": 10.0,
+          "lock rotation": true,
+          "lock move X": true,
+          "lock move Y": false,
+          "is sensor": false,
+          "bodyType": "dynamic"
+        },
+        {
+          "type": "ComponentEvent",
+          "name": "Jump",
+          "event": "tap",
+          "code": "if (game.lastTouchPosition.y > game.screenSize.y / 2) {\n  var velocity = this.velocity;\n  if (velocity) {\n    if (velocity.y > -0.5) {\n      this.velocity = { x: 0, y: -10 };\n    }\n  }\n}"
+        }
+      ],
+      "position": {"x": 0, "y": 0}
+    },
+    {
+      "id": 1,
+      "name": "Obstacle",
+      "layer": 1,
+      "enabled": true,
+      "type": "asset",
+      "locked": false,
+      "visible": true,
+      "keep": false,
+      "components": [
+        {
+          "type": "ComponentRect",
+          "width": 0.5,
+          "height": 1.0,
+          "color": "#FFFF5733"
+        },
+        {
+          "type": "ComponentPhysics",
+          "width": 0.5,
+          "height": 1.0,
+          "gravity": 0.0,
+          "lock rotation": true,
+          "lock move Y": true,
+          "lock move X": false,
+          "is sensor": true,
+          "bodyType": "kinematic"
+        },
+        {
+          "type": "ComponentEvent",
+          "name": "Move",
+          "event": "update",
+          "code": "this.position.x -= 0.05;\nif (this.position.x < -10) {\n  game.destroyObject(this.id);\n  var scoreObj = game.scenes[game.currentSceneIndex].objects.find(obj => obj.name === 'Score');\n  if (scoreObj) {\n    var scoreComp = scoreObj.components.find(comp => comp.type === 'ComponentText');\n    if (scoreComp) {\n      var currentScore = parseInt(scoreComp.fields.text.value);\n      scoreComp.fields.text.value = (currentScore + 1).toString();\n    }\n  }\n}"
+        },
+        {
+          "type": "ComponentEvent",
+          "name": "Collision",
+          "event": "collision",
+          "code": "if (other.name.includes('Player')) {\n  var gameOverObj = game.scenes[game.currentSceneIndex].objects.find(obj => obj.name === 'GameOver');\n  if (gameOverObj) {\n    gameOverObj.visible = true;\n  }\n  var playerObj = game.scenes[game.currentSceneIndex].objects.find(obj => obj.name.includes('Player'));\n  if (playerObj) {\n    playerObj.enabled = false;\n  }\n}"
+        }
+      ],
+      "position": {"x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "name": "Floor",
+      "layer": 0,
+      "enabled": true,
+      "type": "asset",
+      "locked": false,
+      "visible": true,
+      "keep": false,
+      "components": [
+        {
+          "type": "ComponentRect",
+          "width": 20.0,
+          "height": 0.5,
+          "color": "#FF33FF57"
+        },
+        {
+          "type": "ComponentPhysics",
+          "width": 20.0,
+          "height": 0.5,
+          "gravity": 0.0,
+          "lock rotation": true,
+          "lock move X": true,
+          "lock move Y": true,
+          "is sensor": false,
+          "bodyType": "static"
+        }
+      ],
+      "position": {"x": 0, "y": 0}
+    }
+  ],
+  "uiAssets": [],
+  "medias": [],
+  "scenes": [
+    {
+      "id": 0,
+      "name": "Main Scene",
+      "objects": [
+        {
+          "id": 3,
+          "name": "Player_1",
+          "layer": 1,
+          "enabled": true,
+          "type": "asset",
+          "locked": false,
+          "visible": true,
+          "keep": false,
+          "components": [
+            {
+              "type": "ComponentRect",
+              "width": 0.5,
+              "height": 1.0,
+              "color": "#FF4287F5"
+            },
+            {
+              "type": "ComponentPhysics",
+              "width": 0.5,
+              "height": 1.0,
+              "gravity": 10.0,
+              "lock rotation": true,
+              "lock move X": true,
+              "lock move Y": false,
+              "is sensor": false,
+              "bodyType": "dynamic"
+            },
+            {
+              "type": "ComponentEvent",
+              "name": "Jump",
+              "event": "tap",
+              "code": "if (game.lastTouchPosition.y > game.screenSize.y / 2) {\n  var velocity = this.velocity;\n  if (velocity) {\n    if (velocity.y > -0.5) {\n      this.velocity = { x: 0, y: -10 };\n    }\n  }\n}"
+            }
+          ],
+          "position": {"x": -5, "y": 0}
+        },
+        {
+          "id": 4,
+          "name": "Floor_1",
+          "layer": 0,
+          "enabled": true,
+          "type": "asset",
+          "locked": false,
+          "visible": true,
+          "keep": false,
+          "components": [
+            {
+              "type": "ComponentRect",
+              "width": 20.0,
+              "height": 0.5,
+              "color": "#FF33FF57"
+            },
+            {
+              "type": "ComponentPhysics",
+              "width": 20.0,
+              "height": 0.5,
+              "gravity": 0.0,
+              "lock rotation": true,
+              "lock move X": true,
+              "lock move Y": true,
+              "is sensor": false,
+              "bodyType": "static"
+            }
+          ],
+          "position": {"x": 0, "y": 3}
+        },
+        {
+          "id": 5,
+          "name": "Score",
+          "layer": 2,
+          "enabled": true,
+          "type": "object",
+          "locked": false,
+          "visible": true,
+          "keep": false,
+          "components": [
+            {
+              "type": "ComponentText",
+              "text": "0",
+              "fontSize": 0.5,
+              "color": "#FFFFFFFF"
+            }
+          ],
+          "position": {"x": 0, "y": -2}
+        },
+        {
+          "id": 6,
+          "name": "GameOver",
+          "layer": 3,
+          "enabled": true,
+          "type": "object",
+          "locked": false,
+          "visible": false,
+          "keep": false,
+          "components": [
+            {
+              "type": "ComponentText",
+              "text": "Game Over",
+              "fontSize": 1.0,
+              "color": "#FFFF0000"
+            }
+          ],
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "id": 7,
+          "name": "ObstacleGenerator",
+          "layer": 0,
+          "enabled": true,
+          "type": "object",
+          "locked": false,
+          "visible": true,
+          "keep": false,
+          "components": [
+            {
+              "type": "ComponentEvent",
+              "name": "Generate",
+              "event": "update",
+              "code": "var time = Math.floor(game.deltaTime * 1000);\nif (time % 100 === 0) {\n  var chance = Math.random();\n  if (chance > 0.98) {\n    var obstacleId = game.spawnAsset('Obstacle', 'Obstacle_' + time);\n    var obstacle = game.scenes[game.currentSceneIndex].objects.find(obj => obj.id === obstacleId);\n    if (obstacle) {\n      obstacle.position.x = 10;\n      obstacle.position.y = 2.5;\n    }\n  }\n}"
+            }
+          ],
+          "position": {"x": 0, "y": 0}
+        }
+      ],
+      "uiObjects": []
+    }
+  ]
+}
