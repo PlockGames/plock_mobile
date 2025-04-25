@@ -9,7 +9,6 @@ import 'package:plock_mobile/widgets/loading_logo_animation.dart'; // Importer l
 import '../../models/games/game.dart';
 import 'package:http/http.dart' as http;
 
-
 /// The page that display the games created by the user
 class MyGamesPage extends StatefulWidget {
   const MyGamesPage({super.key});
@@ -136,11 +135,71 @@ class _MyGamesPageState extends State<MyGamesPage> {
     return game;
   }
 
-  void removeProject(Game game) {
-    setState(() {
-      ApiService.deleteGame(game.uuid);
-      projects.remove(game);
-    });
+  void removeProject(Game game) async {
+    try {
+      // Mostrar un indicador de progreso mientras se elimina el juego
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Dialog(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text("Deleting..."),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      // Eliminar el juego mediante la API
+      final response = await ApiService.deleteGame(game.uuid);
+
+      // Cerrar el diálogo de progreso
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // Eliminación exitosa - actualizar la UI
+        setState(() {
+          projects.remove(game);
+        });
+
+        // Mostrar notificación de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("${game.name} deleted"),
+            backgroundColor: PlockTheme.primaryBlue,
+          ),
+        );
+      } else {
+        // Error al eliminar - mostrar mensaje de error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error to delete ${game.name}: ${response.body}"),
+            backgroundColor: PlockTheme.errorColor,
+          ),
+        );
+      }
+    } catch (e) {
+      // Cerrar el diálogo de progreso en caso de error
+      Navigator.of(context, rootNavigator: true).pop();
+
+      // Mostrar mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error to delete ${game.name}: $e"),
+          backgroundColor: PlockTheme.errorColor,
+        ),
+      );
+
+      print("Error to delete ${game.name}: $e");
+    }
   }
 
   @override
@@ -191,7 +250,9 @@ class _MyGamesPageState extends State<MyGamesPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.games_outlined, size: 60, color: PlockTheme.textMuted), // Utiliser textMuted
+                    Icon(Icons.games_outlined,
+                        size: 60,
+                        color: PlockTheme.textMuted), // Utiliser textMuted
                     SizedBox(height: 16),
                     Text(
                       'No games found',
@@ -219,7 +280,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
           _showGameCreationDialog(context);
         },
         backgroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
-        foregroundColor: PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
+        foregroundColor:
+            PlockTheme.textOnPrimaryOrange, // Utiliser textOnPrimaryOrange
         child: const Icon(Icons.add, size: 30),
       ),
     );
@@ -268,11 +330,14 @@ class _MyGamesPageState extends State<MyGamesPage> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: PlockTheme.backgroundDark.withOpacity(0.6), // Fond semi-transparent
+                        color: PlockTheme.backgroundDark
+                            .withOpacity(0.6), // Fond semi-transparent
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.edit, color: PlockTheme.textPrimary), // Utiliser textPrimary
+                        icon: const Icon(Icons.edit,
+                            color:
+                                PlockTheme.textPrimary), // Utiliser textPrimary
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
@@ -293,11 +358,14 @@ class _MyGamesPageState extends State<MyGamesPage> {
                     const SizedBox(width: 4),
                     Container(
                       decoration: BoxDecoration(
-                        color: PlockTheme.backgroundDark.withOpacity(0.6), // Fond semi-transparent
+                        color: PlockTheme.backgroundDark
+                            .withOpacity(0.6), // Fond semi-transparent
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.delete, color: PlockTheme.textPrimary), // Utiliser textPrimary
+                        icon: const Icon(Icons.delete,
+                            color:
+                                PlockTheme.textPrimary), // Utiliser textPrimary
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
@@ -361,14 +429,16 @@ class _MyGamesPageState extends State<MyGamesPage> {
                               const Icon(
                                 Icons.comment,
                                 size: 14,
-                                color: PlockTheme.primaryBlue, // Utiliser primaryBlue
+                                color: PlockTheme
+                                    .primaryBlue, // Utiliser primaryBlue
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${game.commentsCount}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: PlockTheme.textMuted, // Utiliser textMuted
+                                  color: PlockTheme
+                                      .textMuted, // Utiliser textMuted
                                 ),
                               ),
                             ],
@@ -380,14 +450,16 @@ class _MyGamesPageState extends State<MyGamesPage> {
                               const Icon(
                                 Icons.favorite,
                                 size: 14,
-                                color: PlockTheme.errorColor, // Utiliser errorColor pour les likes (ou une autre couleur)
+                                color: PlockTheme
+                                    .errorColor, // Utiliser errorColor pour les likes (ou une autre couleur)
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${game.likes ?? 0}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: PlockTheme.textMuted, // Utiliser textMuted
+                                  color: PlockTheme
+                                      .textMuted, // Utiliser textMuted
                                 ),
                               ),
                             ],
@@ -450,7 +522,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: PlockTheme.primaryOrange, // Utiliser primaryOrange
+                foregroundColor:
+                    PlockTheme.primaryOrange, // Utiliser primaryOrange
               ),
               onPressed: () {
                 var name = nameController.text;
@@ -493,7 +566,8 @@ class _MyGamesPageState extends State<MyGamesPage> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: PlockTheme.errorColor, // Utiliser errorColor pour la suppression
+                foregroundColor: PlockTheme
+                    .errorColor, // Utiliser errorColor pour la suppression
               ),
               onPressed: () {
                 removeProject(game);

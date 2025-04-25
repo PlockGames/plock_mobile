@@ -144,11 +144,25 @@ class ApiService {
   }
 
   /// Deletes the like of a game by its [id].
-  static Future<http.Response> deleteGame(String gameId) async {
+  static Future<http.Response> deleteLike(String gameId) async {
     final response = await _httpClient.delete("/like/$gameId");
     print("Status Code: ${response.statusCode}");
     print("Response Body: ${response.body}");
     return response;
+  }
+
+  /// Deletes a game by its [id].
+  static Future<http.Response> deleteGame(String gameId) async {
+    try {
+      final response = await _httpClient.delete("/game/$gameId");
+      print("Delete game: $gameId");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+      return response;
+    } catch (e) {
+      print("Error deleting game: $e");
+      rethrow;
+    }
   }
 
   /// Adds a like to a game.
